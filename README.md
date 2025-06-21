@@ -2,6 +2,8 @@
 
 A comprehensive software platform for structured analysis and processing of safety-relevant technical documents in the field of hazardous substances. The platform integrates ontology management, knowledge graph generation, retrieval-augmented generation, and validation systems for comprehensive safety analysis.
 
+![HazardSafe-KG Platform Demo](docs/Recording.gif)
+
 ## 🏗️ Architecture Overview
 
 ```
