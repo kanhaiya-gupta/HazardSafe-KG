@@ -69,44 +69,163 @@ It describes their roles, workflows, and how they interact to enable structured 
 
 ---
 
-## 4. Module Interactions & Data Flow
+## 4. AI Technologies for Document Digitization and Analysis
 
-- **Ontology** defines the schema and validation rules for both the KG and RAG modules.
-- **RAG** extracts unstructured data, which can be validated and structured according to the ontology, then ingested into the KG.
-- **KG** provides structured, queryable knowledge that can be referenced by the RAG system for more accurate retrieval and generation.
+### **Core AI Applications**
 
-### **Example End-to-End Workflow**
-1. **Upload**: User uploads a PDF safety data sheet.
-2. **Extraction**: RAG module extracts text and metadata, stores as JSON, and generates embeddings.
-3. **Validation**: Extracted data is validated against the ontology (SHACL shapes).
-4. **Ingestion**: Validated data is ingested into the Neo4j knowledge graph.
-5. **Query**: User asks, "What containers are suitable for storing sulfuric acid?"
-6. **Retrieval**: RAG retrieves relevant document chunks; KG provides structured compatibility data.
-7. **Answer Generation**: System combines retrieved info and graph data to generate a comprehensive answer.
+#### **Document Digitization**
+- **PDF Text Extraction**: Uses AI-powered libraries (pdfplumber, PyPDF2) to extract text from complex PDF layouts
+- **OCR Capabilities**: Can integrate with OCR services for scanned documents and images
+- **Table Recognition**: AI algorithms to identify and extract tabular data from documents
+- **Layout Analysis**: Intelligent parsing of document structure (headers, sections, footers)
+
+#### **Natural Language Processing (NLP)**
+- **Text Preprocessing**: Tokenization, lemmatization, and cleaning using NLTK
+- **Entity Recognition**: Automatic extraction of chemical formulas, measurements, standards (OSHA, EPA, ASME)
+- **Keyword Extraction**: AI-based identification of key topics and concepts
+- **Sentiment Analysis**: Understanding document tone and urgency levels
+
+#### **Semantic Understanding**
+- **Vector Embeddings**: Converts text into high-dimensional vectors for semantic similarity
+- **Semantic Search**: AI-powered retrieval of relevant document chunks based on meaning, not just keywords
+- **Topic Modeling**: Automatic categorization of documents by content themes
+- **Document Clustering**: Grouping similar documents for better organization
+
+#### **Intelligent Query Processing**
+- **Query Understanding**: Natural language processing to understand user intent
+- **Context-Aware Retrieval**: AI algorithms that consider document context and relationships
+- **Answer Generation**: LLM integration for generating human-like responses
+- **Confidence Scoring**: AI-based assessment of answer reliability
+
+#### **Knowledge Extraction**
+- **Information Extraction**: AI algorithms to extract structured data from unstructured text
+- **Relationship Discovery**: Automatic identification of connections between entities
+- **Fact Validation**: AI-powered verification of extracted information against known facts
+- **Knowledge Graph Population**: Automated creation of graph nodes and relationships
+
+### **AI-Powered Features**
+
+#### **Smart Document Processing**
+```python
+# Example: AI-powered document analysis
+document_processor = DocumentProcessor()
+result = document_processor.process_document("safety_data_sheet.pdf", "safety")
+
+# AI extracts:
+# - Chemical formulas (H2SO4, CH3COOH)
+# - Measurements (100°C, 2.5 bar)
+# - Safety standards (OSHA, EPA)
+# - Key topics (corrosion, toxicity, flammability)
+# - Entities and relationships
+```
+
+#### **Intelligent Search and Retrieval**
+```python
+# Example: Semantic search with AI
+vector_store = VectorStore()
+results = vector_store.search("What containers are suitable for sulfuric acid?")
+
+# AI performs:
+# - Query embedding generation
+# - Semantic similarity matching
+# - Context-aware ranking
+# - Relevant chunk retrieval
+```
+
+#### **Automated Knowledge Graph Population**
+```python
+# Example: AI-driven knowledge extraction
+extracted_data = {
+    "substance": "Sulfuric Acid",
+    "formula": "H2SO4",
+    "hazards": ["corrosive", "toxic"],
+    "compatible_containers": ["polyethylene", "stainless_steel"],
+    "safety_standards": ["OSHA", "EPA"]
+}
+
+# AI automatically creates:
+# - Substance node
+# - Container nodes
+# - Hazard relationships
+# - Compliance relationships
+```
+
+### **AI Technology Stack**
+- **Document Processing**: PyPDF2, pdfplumber, python-docx
+- **NLP**: NLTK, spaCy (optional), transformers
+- **Vector Embeddings**: OpenAI embeddings, sentence-transformers
+- **Vector Databases**: Pinecone, Weaviate, ChromaDB, local storage
+- **LLM Integration**: OpenAI GPT, local models (optional)
+- **Knowledge Graph**: Neo4j with AI-powered population
 
 ---
 
-## 5. Diagrams
+## 5. Module Interactions & Data Flow
 
-### **High-Level Architecture**
+- **Ontology** defines the schema and validation rules for both the KG and RAG modules.
+- **RAG** extracts unstructured data using AI, which can be validated and structured according to the ontology, then ingested into the KG.
+- **KG** provides structured, queryable knowledge that can be referenced by the RAG system for more accurate retrieval and generation.
+
+### **Example End-to-End AI Workflow**
+1. **Upload**: User uploads a PDF safety data sheet.
+2. **AI Extraction**: RAG module uses AI to extract text, metadata, entities, and relationships.
+3. **AI Validation**: Extracted data is validated against the ontology using AI-powered validation.
+4. **AI Ingestion**: Validated data is automatically ingested into the Neo4j knowledge graph.
+5. **AI Query**: User asks, "What containers are suitable for storing sulfuric acid?"
+6. **AI Retrieval**: RAG uses semantic search to retrieve relevant document chunks; KG provides structured compatibility data.
+7. **AI Generation**: System combines retrieved info and graph data to generate a comprehensive answer using LLM.
+
+---
+
+## 6. Diagrams
+
+### **High-Level Architecture with AI**
 
 ```mermaid
 graph TD
-    A[User Uploads Document / Query] --> B(RAG: Document Processor)
-    B --> C{Ontology Validation}
-    C -- Valid --> D[KG: Neo4j Ingestion]
-    C -- Invalid --> E[Error/Feedback]
-    D --> F[KG: Query/Visualization]
-    B --> G[RAG: Vector Store]
-    G --> H[RAG: Semantic Search]
-    H --> I[LLM/Answer Generation]
-    F --> I
-    I --> J[User Receives Answer]
+    A[User Uploads Document / Query] --> B[AI: Document Processor]
+    B --> C[AI: Text Extraction & NLP]
+    C --> D[AI: Entity Recognition]
+    D --> E[AI: Vector Embeddings]
+    E --> F[Vector Store]
+    F --> G[AI: Semantic Search]
+    G --> H[AI: LLM Answer Generation]
+    C --> I[AI: Knowledge Extraction]
+    I --> J[KG: Neo4j Ingestion]
+    J --> K[KG: Graph Query]
+    K --> H
+    H --> L[User Receives AI-Generated Answer]
+    
+    style B fill:#ff9999
+    style C fill:#ff9999
+    style D fill:#ff9999
+    style E fill:#ff9999
+    style G fill:#ff9999
+    style H fill:#ff9999
+    style I fill:#ff9999
+```
+
+### **AI Document Processing Pipeline**
+
+```mermaid
+graph LR
+    A[PDF/DOCX/TXT] --> B[AI Text Extraction]
+    B --> C[AI NLP Processing]
+    C --> D[AI Entity Recognition]
+    D --> E[AI Vector Embeddings]
+    E --> F[Structured JSON]
+    F --> G[Vector Database]
+    F --> H[Knowledge Graph]
+    
+    style B fill:#ffcc99
+    style C fill:#ffcc99
+    style D fill:#ffcc99
+    style E fill:#ffcc99
 ```
 
 ---
 
-## 6. References
+## 7. References
 - See `docs/ontology_formats.md` for supported ontology formats and best practices.
 - See `data/rag/README.md` for RAG data structure and usage.
 - Main project README for setup and running instructions. 
