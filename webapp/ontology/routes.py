@@ -1,240 +1,346 @@
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse
+"""
+Ontology management routes for HazardSafe-KG platform.
+"""
+
+from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import json
 from pathlib import Path
+import logging
+import tempfile
+import os
+from ontology.src.manager import ontology_manager
+import uuid
+from datetime import datetime
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/ontology", tags=["ontology"])
 templates = Jinja2Templates(directory="webapp/templates")
 
 # Pydantic models for ontology operations
-class OntologyClass(BaseModel):
+class OntologyUpload(BaseModel):
     name: str
     description: str
-    properties: List[str] = []
-    parent_class: Optional[str] = None
+    version: str = "1.0"
+    format: str = "ttl"
+    tags: List[str] = []
 
-class OntologyProperty(BaseModel):
-    name: str
-    description: str
-    data_type: str
-    domain: str
-    range: str
+class OntologyQuery(BaseModel):
+    query: str
+    query_type: str = "sparql"  # sparql, owl, rdf
+    limit: int = 100
 
-class OntologyRelationship(BaseModel):
-    name: str
-    description: str
-    source_class: str
-    target_class: str
-    properties: List[str] = []
+class OntologyValidation(BaseModel):
+    ontology_id: str
+    validation_type: str = "shacl"  # shacl, owl, custom
+    rules: Optional[Dict[str, Any]] = None
 
-# Sample ontology data (in production, this would come from a database or file)
-SAMPLE_ONTOLOGY = {
-    "classes": [
-        {
-            "name": "HazardousSubstance",
-            "description": "A chemical substance that poses risks to health, safety, or the environment",
-            "properties": ["chemical_formula", "molecular_weight", "hazard_class", "flash_point"],
-            "parent_class": None
+# Sample ontology data (in production, this would come from the ontology manager)
+SAMPLE_ONTOLOGIES = [
+    {
+        "id": "onto_001",
+        "name": "Hazardous Substances Ontology",
+        "description": "Core ontology for hazardous substances and their properties",
+        "version": "1.0",
+        "format": "ttl",
+        "file_path": "ontology/data/hazardous_substances.ttl",
+        "upload_date": "2024-01-15",
+        "tags": ["hazardous_substances", "chemical_safety", "core"],
+        "classes": 25,
+        "properties": 45,
+        "instances": 150,
+        "status": "active"
+    },
+    {
+        "id": "onto_002",
+        "name": "Container Safety Ontology",
+        "description": "Ontology for container specifications and safety requirements",
+        "version": "1.2",
+        "format": "owl",
+        "file_path": "ontology/data/container_safety.owl",
+        "upload_date": "2024-01-10",
+        "tags": ["containers", "safety", "storage"],
+        "classes": 18,
+        "properties": 32,
+        "instances": 85,
+        "status": "active"
+    },
+    {
+        "id": "onto_003",
+        "name": "Testing Protocols Ontology",
+        "description": "Ontology for safety testing protocols and procedures",
+        "version": "0.9",
+        "format": "json-ld",
+        "file_path": "ontology/data/testing_protocols.json-ld",
+        "upload_date": "2024-01-12",
+        "tags": ["testing", "protocols", "safety"],
+        "classes": 12,
+        "properties": 28,
+        "instances": 45,
+        "status": "draft"
+    }
+]
+
+SAMPLE_VALIDATIONS = [
+    {
+        "id": "val_001",
+        "ontology_id": "onto_001",
+        "validation_type": "shacl",
+        "status": "passed",
+        "timestamp": "2024-01-20T10:30:00Z",
+        "results": {
+            "total_checks": 45,
+            "passed": 43,
+            "failed": 2,
+            "warnings": 1
         },
-        {
-            "name": "Container",
-            "description": "A vessel designed to safely store and transport hazardous substances",
-            "properties": ["material", "capacity", "pressure_rating", "temperature_rating"],
-            "parent_class": None
-        },
-        {
-            "name": "SafetyTest",
-            "description": "A test procedure to validate safety characteristics",
-            "properties": ["test_type", "test_conditions", "test_results", "test_date"],
-            "parent_class": None
-        },
-        {
-            "name": "RiskAssessment",
-            "description": "Evaluation of potential risks associated with substances or operations",
-            "properties": ["risk_level", "mitigation_measures", "assessment_date"],
-            "parent_class": None
-        }
-    ],
-    "properties": [
-        {
-            "name": "chemical_formula",
-            "description": "Chemical formula of the substance",
-            "data_type": "string",
-            "domain": "HazardousSubstance",
-            "range": "string"
-        },
-        {
-            "name": "material",
-            "description": "Material composition of the container",
-            "data_type": "string",
-            "domain": "Container",
-            "range": "string"
-        },
-        {
-            "name": "test_type",
-            "description": "Type of safety test performed",
-            "data_type": "string",
-            "domain": "SafetyTest",
-            "range": "string"
-        }
-    ],
-    "relationships": [
-        {
-            "name": "stored_in",
-            "description": "Relationship between substance and its container",
-            "source_class": "HazardousSubstance",
-            "target_class": "Container",
-            "properties": ["storage_conditions", "max_quantity"]
-        },
-        {
-            "name": "validated_by",
-            "description": "Relationship between container and safety test",
-            "source_class": "Container",
-            "target_class": "SafetyTest",
-            "properties": ["test_parameters", "validation_date"]
-        },
-        {
-            "name": "assesses_risk_of",
-            "description": "Relationship between risk assessment and substance",
-            "source_class": "RiskAssessment",
-            "target_class": "HazardousSubstance",
-            "properties": ["risk_factors", "assessment_method"]
-        }
-    ]
-}
+        "details": [
+            {
+                "severity": "error",
+                "message": "Missing required property 'hazard_class' for class 'HazardousSubstance'",
+                "location": "line 45"
+            },
+            {
+                "severity": "warning",
+                "message": "Deprecated property 'old_property' used in class 'Container'",
+                "location": "line 78"
+            }
+        ]
+    }
+]
 
 @router.get("/", response_class=HTMLResponse)
 async def ontology_dashboard(request: Request):
     """Ontology management dashboard"""
     return templates.TemplateResponse("ontology/index.html", {"request": request})
 
-@router.get("/stats")
-async def get_ontology_stats():
-    """Get ontology statistics"""
+@router.get("/list")
+async def list_ontologies():
+    """List all ontologies"""
+    return {"ontologies": SAMPLE_ONTOLOGIES}
+
+@router.get("/{ontology_id}")
+async def get_ontology(ontology_id: str):
+    """Get specific ontology details"""
+    ontology = next((o for o in SAMPLE_ONTOLOGIES if o["id"] == ontology_id), None)
+    if not ontology:
+        raise HTTPException(status_code=404, detail="Ontology not found")
+    
+    return {"ontology": ontology}
+
+@router.post("/upload")
+async def upload_ontology(
+    name: str = Form(...),
+    description: str = Form(...),
+    version: str = Form("1.0"),
+    format: str = Form("ttl"),
+    tags: str = Form(""),
+    file: UploadFile = File(...)
+):
+    """Upload a new ontology"""
+    # In production, this would use the ontology manager
+    ontology_id = str(uuid.uuid4())
+    
+    # Parse tags
+    tag_list = [tag.strip() for tag in tags.split(",") if tag.strip()]
+    
+    # Validate file format
+    allowed_formats = ["ttl", "owl", "rdf", "json-ld", "nt", "n3", "trig"]
+    if format not in allowed_formats:
+        raise HTTPException(status_code=400, detail=f"Unsupported format. Allowed: {allowed_formats}")
+    
+    new_ontology = {
+        "id": ontology_id,
+        "name": name,
+        "description": description,
+        "version": version,
+        "format": format,
+        "file_path": f"ontology/data/{file.filename}",
+        "upload_date": datetime.now().strftime("%Y-%m-%d"),
+        "tags": tag_list,
+        "classes": 0,  # Would be calculated from actual ontology
+        "properties": 0,
+        "instances": 0,
+        "status": "active"
+    }
+    
+    # In production, save file and process ontology
+    SAMPLE_ONTOLOGIES.append(new_ontology)
+    
     return {
-        "classes": len(SAMPLE_ONTOLOGY["classes"]),
-        "properties": len(SAMPLE_ONTOLOGY["properties"]),
-        "relationships": len(SAMPLE_ONTOLOGY["relationships"])
+        "message": "Ontology uploaded successfully",
+        "ontology_id": ontology_id,
+        "ontology": new_ontology
     }
 
-@router.get("/classes")
-async def get_ontology_classes():
-    """Get all ontology classes"""
-    return {"classes": SAMPLE_ONTOLOGY["classes"]}
-
-@router.post("/classes")
-async def create_ontology_class(ontology_class: OntologyClass):
-    """Create a new ontology class"""
-    # In production, this would save to a database or file
-    SAMPLE_ONTOLOGY["classes"].append(ontology_class.dict())
-    return {"message": "Class created successfully", "class": ontology_class}
-
-@router.get("/classes/{class_name}")
-async def get_ontology_class(class_name: str):
-    """Get a specific ontology class"""
-    for cls in SAMPLE_ONTOLOGY["classes"]:
-        if cls["name"] == class_name:
-            return cls
-    raise HTTPException(status_code=404, detail="Class not found")
-
-@router.get("/properties")
-async def get_ontology_properties():
-    """Get all ontology properties"""
-    return {"properties": SAMPLE_ONTOLOGY["properties"]}
-
-@router.post("/properties")
-async def create_ontology_property(property: OntologyProperty):
-    """Create a new ontology property"""
-    SAMPLE_ONTOLOGY["properties"].append(property.dict())
-    return {"message": "Property created successfully", "property": property}
-
-@router.get("/relationships")
-async def get_ontology_relationships():
-    """Get all ontology relationships"""
-    return {"relationships": SAMPLE_ONTOLOGY["relationships"]}
-
-@router.post("/relationships")
-async def create_ontology_relationship(relationship: OntologyRelationship):
-    """Create a new ontology relationship"""
-    SAMPLE_ONTOLOGY["relationships"].append(relationship.dict())
-    return {"message": "Relationship created successfully", "relationship": relationship}
-
-@router.get("/export/owl")
-async def export_owl():
-    """Export ontology as OWL/RDF"""
-    # This would generate actual OWL/RDF content
-    owl_content = f"""
-    <?xml version="1.0"?>
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:owl="http://www.w3.org/2002/07/owl#"
-             xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-             xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
-        
-        <owl:Ontology rdf:about="http://hazardsafe-kg.org/ontology"/>
-        
-        <!-- Classes -->
-        {chr(10).join([f'''
-        <owl:Class rdf:about="http://hazardsafe-kg.org/ontology#{cls['name']}">
-            <rdfs:label>{cls['name']}</rdfs:label>
-            <rdfs:comment>{cls['description']}</rdfs:comment>
-        </owl:Class>''' for cls in SAMPLE_ONTOLOGY["classes"]])}
-        
-        <!-- Properties -->
-        {chr(10).join([f'''
-        <owl:DatatypeProperty rdf:about="http://hazardsafe-kg.org/ontology#{prop['name']}">
-            <rdfs:label>{prop['name']}</rdfs:label>
-            <rdfs:comment>{prop['description']}</rdfs:comment>
-            <rdfs:domain rdf:resource="http://hazardsafe-kg.org/ontology#{prop['domain']}"/>
-            <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#{prop['data_type']}"/>
-        </owl:DatatypeProperty>''' for prop in SAMPLE_ONTOLOGY["properties"]])}
-        
-    </rdf:RDF>
-    """
+@router.post("/query")
+async def query_ontology(query: OntologyQuery):
+    """Query ontology using SPARQL or other query languages"""
+    # In production, this would use the ontology manager to execute queries
     
-    return {"owl_content": owl_content}
-
-@router.get("/export/shacl")
-async def export_shacl():
-    """Export SHACL constraints"""
-    # This would generate SHACL validation rules
-    shacl_content = f"""
-    @prefix sh: <http://www.w3.org/ns/shacl#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix hs: <http://hazardsafe-kg.org/ontology#> .
+    # Sample SPARQL query results
+    if "SELECT" in query.query.upper():
+        results = {
+            "query_type": "select",
+            "results": [
+                {"subject": "http://example.org/HazardousSubstance", "predicate": "rdf:type", "object": "owl:Class"},
+                {"subject": "http://example.org/Container", "predicate": "rdf:type", "object": "owl:Class"}
+            ],
+            "count": 2
+        }
+    elif "ASK" in query.query.upper():
+        results = {
+            "query_type": "ask",
+            "result": True
+        }
+    else:
+        results = {
+            "query_type": "construct",
+            "results": "Graph constructed successfully"
+        }
     
-    hs:OntologyShape
-        a sh:NodeShape ;
-        sh:targetClass hs:HazardousSubstance ;
-        sh:property [
-            sh:path hs:chemical_formula ;
-            sh:datatype xsd:string ;
-            sh:minCount 1 ;
-        ] ;
-        sh:property [
-            sh:path hs:hazard_class ;
-            sh:datatype xsd:string ;
-            sh:in ("flammable" "toxic" "corrosive" "explosive") ;
-        ] .
-    """
-    
-    return {"shacl_content": shacl_content}
+    return {
+        "query": query.query,
+        "query_type": query.query_type,
+        "results": results,
+        "timestamp": datetime.now().isoformat()
+    }
 
-@router.get("/validate")
-async def validate_ontology():
-    """Validate ontology consistency"""
-    # This would perform actual ontology validation
-    validation_results = {
-        "valid": True,
-        "warnings": [],
-        "errors": [],
-        "checks": [
-            {"name": "Class consistency", "status": "passed"},
-            {"name": "Property domains", "status": "passed"},
-            {"name": "Relationship integrity", "status": "passed"}
+@router.post("/validate")
+async def validate_ontology(validation: OntologyValidation):
+    """Validate ontology using SHACL or other validation methods"""
+    # In production, this would use the ontology manager for validation
+    
+    validation_id = str(uuid.uuid4())
+    
+    # Sample validation results
+    validation_result = {
+        "id": validation_id,
+        "ontology_id": validation.ontology_id,
+        "validation_type": validation.validation_type,
+        "status": "passed",
+        "timestamp": datetime.now().isoformat(),
+        "results": {
+            "total_checks": 50,
+            "passed": 48,
+            "failed": 2,
+            "warnings": 1
+        },
+        "details": [
+            {
+                "severity": "error",
+                "message": "Missing required property 'hazard_class'",
+                "location": "line 45"
+            },
+            {
+                "severity": "warning",
+                "message": "Deprecated property used",
+                "location": "line 78"
+            }
         ]
     }
     
-    return validation_results
+    SAMPLE_VALIDATIONS.append(validation_result)
+    
+    return validation_result
+
+@router.get("/{ontology_id}/export")
+async def export_ontology(ontology_id: str, format: str = "ttl"):
+    """Export ontology in specified format"""
+    ontology = next((o for o in SAMPLE_ONTOLOGIES if o["id"] == ontology_id), None)
+    if not ontology:
+        raise HTTPException(status_code=404, detail="Ontology not found")
+    
+    # In production, this would use the ontology manager to convert formats
+    allowed_formats = ["ttl", "owl", "rdf", "json-ld", "nt", "n3", "trig"]
+    if format not in allowed_formats:
+        raise HTTPException(status_code=400, detail=f"Unsupported export format. Allowed: {allowed_formats}")
+    
+    # Sample export content
+    export_content = f"""# Exported ontology: {ontology['name']}
+# Format: {format}
+# Version: {ontology['version']}
+
+# Sample ontology content in {format} format
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/HazardousSubstance> rdf:type owl:Class .
+<http://example.org/Container> rdf:type owl:Class .
+"""
+    
+    return {
+        "ontology_id": ontology_id,
+        "format": format,
+        "content": export_content,
+        "filename": f"{ontology['name'].replace(' ', '_')}.{format}"
+    }
+
+@router.get("/{ontology_id}/visualize")
+async def visualize_ontology(ontology_id: str):
+    """Get ontology visualization data"""
+    ontology = next((o for o in SAMPLE_ONTOLOGIES if o["id"] == ontology_id), None)
+    if not ontology:
+        raise HTTPException(status_code=404, detail="Ontology not found")
+    
+    # Sample visualization data
+    visualization_data = {
+        "nodes": [
+            {"id": "HazardousSubstance", "type": "class", "label": "Hazardous Substance"},
+            {"id": "Container", "type": "class", "label": "Container"},
+            {"id": "SafetyTest", "type": "class", "label": "Safety Test"},
+            {"id": "hazard_class", "type": "property", "label": "Hazard Class"},
+            {"id": "material", "type": "property", "label": "Material"}
+        ],
+        "edges": [
+            {"source": "HazardousSubstance", "target": "hazard_class", "type": "property"},
+            {"source": "Container", "target": "material", "type": "property"},
+            {"source": "HazardousSubstance", "target": "SafetyTest", "type": "relationship"}
+        ]
+    }
+    
+    return {
+        "ontology_id": ontology_id,
+        "visualization": visualization_data
+    }
+
+@router.get("/formats")
+async def get_supported_formats():
+    """Get list of supported ontology formats"""
+    return {
+        "formats": [
+            {"name": "Turtle", "extension": "ttl", "description": "Terse RDF Triple Language"},
+            {"name": "OWL/XML", "extension": "owl", "description": "Web Ontology Language XML"},
+            {"name": "RDF/XML", "extension": "rdf", "description": "Resource Description Framework XML"},
+            {"name": "JSON-LD", "extension": "json-ld", "description": "JSON for Linked Data"},
+            {"name": "N-Triples", "extension": "nt", "description": "Simple line-based RDF format"},
+            {"name": "Notation3", "extension": "n3", "description": "Compact RDF notation"},
+            {"name": "TriG", "extension": "trig", "description": "Terse RDF Triple Language for Named Graphs"}
+        ]
+    }
+
+@router.get("/validations")
+async def get_validation_history(ontology_id: Optional[str] = None):
+    """Get validation history"""
+    validations = SAMPLE_VALIDATIONS
+    
+    if ontology_id:
+        validations = [v for v in validations if v["ontology_id"] == ontology_id]
+    
+    return {"validations": validations}
+
+@router.delete("/{ontology_id}")
+async def delete_ontology(ontology_id: str):
+    """Delete an ontology"""
+    ontology = next((o for o in SAMPLE_ONTOLOGIES if o["id"] == ontology_id), None)
+    if not ontology:
+        raise HTTPException(status_code=404, detail="Ontology not found")
+    
+    # In production, this would remove from storage
+    SAMPLE_ONTOLOGIES.remove(ontology)
+    
+    return {"message": "Ontology deleted successfully", "ontology_id": ontology_id}

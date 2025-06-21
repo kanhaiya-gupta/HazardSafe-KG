@@ -8,7 +8,7 @@ from pathlib import Path
 import uuid
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/rag", tags=["rag"])
 templates = Jinja2Templates(directory="webapp/templates")
 
 # Pydantic models for RAG operations
@@ -205,57 +205,49 @@ async def get_query_history(limit: int = 50):
 @router.get("/suggestions")
 async def get_query_suggestions(query: str):
     """Get query suggestions based on partial input"""
-    # In production, this would use more sophisticated suggestion logic
-    suggestions = [
-        "What containers are suitable for storing sulfuric acid?",
-        "What safety measures are required for chemical storage?",
-        "How to test container corrosion resistance?",
-        "What are the regulatory requirements for hazardous chemical storage?"
-    ]
+    suggestions = []
+    query_lower = query.lower()
     
-    # Filter suggestions based on input
-    filtered_suggestions = [s for s in suggestions if query.lower() in s.lower()]
+    # Generate suggestions based on document content
+    for doc in SAMPLE_DOCUMENTS:
+        if query_lower in doc["title"].lower():
+            suggestions.append(f"What is {doc['title']}?")
+        if query_lower in doc["content"].lower():
+            suggestions.append(f"Tell me about {doc['title']}")
     
-    return {"suggestions": filtered_suggestions[:5]}
+    return {"suggestions": suggestions[:5]}
 
-# Helper functions
+# Helper functions for RAG operations
 def perform_rag_query(question: str, context_type: str, max_results: int):
-    """Perform RAG query (simplified implementation)"""
-    # In production, this would use actual RAG pipeline
+    """Perform RAG query (placeholder implementation)"""
+    # In production, this would:
+    # 1. Generate embeddings for the question
+    # 2. Search vector database for similar documents
+    # 3. Retrieve relevant context
+    # 4. Generate answer using LLM
+    
+    # Simple keyword-based search for now
+    relevant_docs = []
     question_lower = question.lower()
     
-    # Simple keyword matching
-    relevant_docs = []
     for doc in SAMPLE_DOCUMENTS:
         if context_type != "all" and doc["document_type"] != context_type:
             continue
         
-        relevance_score = 0
-        if "sulfuric acid" in question_lower and "sulfuric_acid" in doc["tags"]:
-            relevance_score += 2
-        if "container" in question_lower and "container" in doc["tags"]:
-            relevance_score += 2
-        if "safety" in question_lower and "safety" in doc["content"].lower():
-            relevance_score += 1
-        if "storage" in question_lower and "storage" in doc["content"].lower():
-            relevance_score += 1
-        
-        if relevance_score > 0:
-            relevant_docs.append((doc, relevance_score))
+        if (question_lower in doc["title"].lower() or 
+            question_lower in doc["content"].lower()):
+            relevant_docs.append(doc)
+            if len(relevant_docs) >= max_results:
+                break
     
-    # Sort by relevance and take top results
-    relevant_docs.sort(key=lambda x: x[1], reverse=True)
-    top_docs = relevant_docs[:max_results]
-    
-    if top_docs:
-        # Generate answer based on top documents
-        answer = generate_answer_from_documents(question, [doc for doc, score in top_docs])
-        confidence = min(0.95, 0.7 + len(top_docs) * 0.05)
-        sources = [doc["id"] for doc, score in top_docs]
+    if relevant_docs:
+        answer = generate_answer_from_documents(question, relevant_docs)
+        sources = [doc["id"] for doc in relevant_docs]
+        confidence = 0.85  # Placeholder confidence score
     else:
-        answer = "I couldn't find specific information about that in the available documents."
-        confidence = 0.3
+        answer = "I couldn't find relevant information to answer your question."
         sources = []
+        confidence = 0.0
     
     return {
         "answer": answer,
@@ -264,46 +256,41 @@ def perform_rag_query(question: str, context_type: str, max_results: int):
     }
 
 def generate_answer_from_documents(question: str, documents: List[Dict]):
-    """Generate answer from relevant documents (simplified implementation)"""
-    # In production, this would use LLM to generate coherent answers
-    question_lower = question.lower()
+    """Generate answer from relevant documents (placeholder)"""
+    # In production, this would use an LLM to generate the answer
+    # For now, return a simple summary
     
-    if "container" in question_lower and "sulfuric acid" in question_lower:
-        return "Polyethylene containers are suitable for storing sulfuric acid. These containers have a pressure rating of 2.0 bar and temperature rating of 60°C. The material is resistant to most acids and bases."
-    elif "safety" in question_lower:
-        return "Safety measures include proper ventilation, PPE (personal protective equipment), and spill containment procedures. Storage areas must have proper ventilation and emergency response equipment."
-    elif "test" in question_lower:
-        return "Corrosion resistance testing involves exposing container materials to the target chemical for 24 hours at 25°C. A container passes if it shows no significant degradation."
+    if not documents:
+        return "No relevant documents found."
+    
+    # Simple answer generation based on document content
+    if "container" in question.lower() and "sulfuric acid" in question.lower():
+        return "Polyethylene containers are suitable for storing sulfuric acid. They have a pressure rating of 2.0 bar and temperature rating of 60°C."
+    elif "safety" in question.lower():
+        return "Safety measures include proper ventilation, PPE, and spill containment procedures."
     else:
-        # Generic answer based on document content
-        content_pieces = [doc["content"][:200] for doc in documents[:2]]
-        return "Based on the available documents: " + " ".join(content_pieces)
+        return f"Based on {len(documents)} relevant documents: {documents[0]['content'][:200]}..."
 
 def perform_safety_validation(validation: SafetyValidation):
-    """Perform safety validation (simplified implementation)"""
+    """Perform safety validation using RAG (placeholder)"""
     # In production, this would use RAG to validate against safety standards
     
-    validation_results = {
+    validation_result = {
         "valid": True,
         "warnings": [],
-        "errors": [],
         "recommendations": [],
-        "validation_date": datetime.now().isoformat()
+        "compliance_score": 0.95
     }
     
     # Simple validation logic
     if validation.substance_name.lower() == "sulfuric acid":
-        if validation.container_type.lower() == "polyethylene":
-            validation_results["recommendations"].append("Container type is suitable for sulfuric acid storage")
-        else:
-            validation_results["warnings"].append("Verify container compatibility with sulfuric acid")
+        if validation.container_type.lower() != "polyethylene":
+            validation_result["warnings"].append("Sulfuric acid should be stored in polyethylene containers")
+            validation_result["compliance_score"] = 0.7
     
-    if "temperature" in validation.test_conditions:
-        temp = validation.test_conditions["temperature"]
-        if temp > 60:
-            validation_results["errors"].append("Temperature exceeds container rating")
+    if validation.test_conditions.get("pressure", 0) > 100:
+        validation_result["warnings"].append("High pressure test conditions detected")
     
-    if validation_results["errors"]:
-        validation_results["valid"] = False
+    validation_result["valid"] = len(validation_result["warnings"]) == 0
     
-    return validation_results
+    return validation_result

@@ -363,4 +363,537 @@ function deleteRelationship(relationshipName) {
     if (confirm(`Are you sure you want to delete the relationship '${relationshipName}'?`)) {
         HazardSafeKG.showNotification(`Delete functionality for relationship '${relationshipName}' not yet implemented`, 'info');
     }
-} 
+}
+
+// Ontology management JavaScript for HazardSafe-KG platform
+
+class OntologyManager {
+    constructor() {
+        this.baseUrl = '/ontology';
+        this.init();
+    }
+
+    async init() {
+        await this.loadOntologyInfo();
+        await this.loadSupportedFormats();
+        this.setupEventListeners();
+    }
+
+    async loadOntologyInfo() {
+        try {
+            const response = await fetch(this.baseUrl);
+            const data = await response.json();
+            
+            document.getElementById('ontology-status').textContent = data.status;
+            document.getElementById('ontology-triples').textContent = data.statistics.triples || 0;
+            document.getElementById('ontology-classes').textContent = data.statistics.classes || 0;
+            document.getElementById('ontology-properties').textContent = data.statistics.properties || 0;
+            document.getElementById('ontology-instances').textContent = data.statistics.instances || 0;
+            
+        } catch (error) {
+            console.error('Failed to load ontology info:', error);
+            this.showNotification('Failed to load ontology information', 'error');
+        }
+    }
+
+    async loadSupportedFormats() {
+        try {
+            const response = await fetch(`${this.baseUrl}/formats`);
+            const data = await response.json();
+            
+            const formatList = document.getElementById('supported-formats');
+            formatList.innerHTML = '';
+            
+            data.supported_formats.forEach(format => {
+                const formatItem = document.createElement('div');
+                formatItem.className = 'format-item';
+                formatItem.innerHTML = `
+                    <div class="format-header">
+                        <span class="format-extension">${format.extension}</span>
+                        <span class="format-name">${format.name}</span>
+                    </div>
+                    <div class="format-description">${format.description}</div>
+                `;
+                formatList.appendChild(formatItem);
+            });
+            
+        } catch (error) {
+            console.error('Failed to load supported formats:', error);
+            this.showNotification('Failed to load supported formats', 'error');
+        }
+    }
+
+    setupEventListeners() {
+        // File upload
+        const uploadForm = document.getElementById('upload-form');
+        if (uploadForm) {
+            uploadForm.addEventListener('submit', (e) => this.handleFileUpload(e));
+        }
+
+        // Format conversion
+        const convertForm = document.getElementById('convert-form');
+        if (convertForm) {
+            convertForm.addEventListener('submit', (e) => this.handleFormatConversion(e));
+        }
+
+        // Export
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.handleExport());
+        }
+
+        // CRUD operations
+        const addClassBtn = document.getElementById('add-class-btn');
+        if (addClassBtn) {
+            addClassBtn.addEventListener('click', () => this.showAddClassModal());
+        }
+
+        const addPropertyBtn = document.getElementById('add-property-btn');
+        if (addPropertyBtn) {
+            addPropertyBtn.addEventListener('click', () => this.showAddPropertyModal());
+        }
+
+        const addInstanceBtn = document.getElementById('add-instance-btn');
+        if (addInstanceBtn) {
+            addInstanceBtn.addEventListener('click', () => this.showAddInstanceModal());
+        }
+
+        // Validation
+        const validateBtn = document.getElementById('validate-btn');
+        if (validateBtn) {
+            validateBtn.addEventListener('click', () => this.handleValidation());
+        }
+
+        // Refresh buttons
+        const refreshClassesBtn = document.getElementById('refresh-classes');
+        if (refreshClassesBtn) {
+            refreshClassesBtn.addEventListener('click', () => this.loadClasses());
+        }
+
+        const refreshPropertiesBtn = document.getElementById('refresh-properties');
+        if (refreshPropertiesBtn) {
+            refreshPropertiesBtn.addEventListener('click', () => this.loadProperties());
+        }
+
+        const refreshInstancesBtn = document.getElementById('refresh-instances');
+        if (refreshInstancesBtn) {
+            refreshInstancesBtn.addEventListener('click', () => this.loadInstances());
+        }
+    }
+
+    async handleFileUpload(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const fileInput = document.getElementById('ontology-file');
+        
+        if (!fileInput.files[0]) {
+            this.showNotification('Please select a file to upload', 'error');
+            return;
+        }
+
+        formData.append('file', fileInput.files[0]);
+
+        try {
+            const response = await fetch(`${this.baseUrl}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showNotification(result.message, 'success');
+                await this.loadOntologyInfo();
+                event.target.reset();
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+            this.showNotification('Failed to upload file', 'error');
+        }
+    }
+
+    async handleFormatConversion(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const fileInput = document.getElementById('convert-file');
+        const outputFormat = document.getElementById('output-format').value;
+        
+        if (!fileInput.files[0]) {
+            this.showNotification('Please select a file to convert', 'error');
+            return;
+        }
+
+        if (!outputFormat) {
+            this.showNotification('Please select output format', 'error');
+            return;
+        }
+
+        formData.append('input_file', fileInput.files[0]);
+        formData.append('output_format', outputFormat);
+
+        try {
+            const response = await fetch(`${this.baseUrl}/convert`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showNotification(result.message, 'success');
+                
+                // Display converted content
+                const contentArea = document.getElementById('converted-content');
+                if (contentArea) {
+                    contentArea.value = result.content;
+                    contentArea.style.display = 'block';
+                }
+                
+                event.target.reset();
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Conversion failed:', error);
+            this.showNotification('Failed to convert file', 'error');
+        }
+    }
+
+    async handleExport() {
+        const format = document.getElementById('export-format').value || 'turtle';
+        
+        try {
+            const response = await fetch(`${this.baseUrl}/export?format=${format}`);
+            const result = await response.json();
+
+            if (response.ok) {
+                // Create download link
+                const blob = new Blob([result.content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ontology.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                this.showNotification('Ontology exported successfully', 'success');
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Export failed:', error);
+            this.showNotification('Failed to export ontology', 'error');
+        }
+    }
+
+    async loadClasses() {
+        try {
+            const response = await fetch(`${this.baseUrl}/classes`);
+            const data = await response.json();
+            
+            const classesList = document.getElementById('classes-list');
+            classesList.innerHTML = '';
+            
+            data.classes.forEach(cls => {
+                const classItem = document.createElement('div');
+                classItem.className = 'class-item';
+                classItem.innerHTML = `
+                    <div class="class-header">
+                        <h4>${cls.label || 'Unnamed Class'}</h4>
+                        <span class="class-uri">${cls.uri}</span>
+                    </div>
+                    <div class="class-comment">${cls.comment || 'No description'}</div>
+                    ${cls.superclass ? `<div class="class-superclass">Superclass: ${cls.superclass}</div>` : ''}
+                `;
+                classesList.appendChild(classItem);
+            });
+            
+        } catch (error) {
+            console.error('Failed to load classes:', error);
+            this.showNotification('Failed to load classes', 'error');
+        }
+    }
+
+    async loadProperties() {
+        try {
+            const response = await fetch(`${this.baseUrl}/properties`);
+            const data = await response.json();
+            
+            const propertiesList = document.getElementById('properties-list');
+            propertiesList.innerHTML = '';
+            
+            data.properties.forEach(prop => {
+                const propItem = document.createElement('div');
+                propItem.className = 'property-item';
+                propItem.innerHTML = `
+                    <div class="property-header">
+                        <h4>${prop.label || 'Unnamed Property'}</h4>
+                        <span class="property-type">${prop.type}</span>
+                    </div>
+                    <div class="property-uri">${prop.uri}</div>
+                    <div class="property-comment">${prop.comment || 'No description'}</div>
+                    ${prop.domain ? `<div class="property-domain">Domain: ${prop.domain}</div>` : ''}
+                    ${prop.range ? `<div class="property-range">Range: ${prop.range}</div>` : ''}
+                `;
+                propertiesList.appendChild(propItem);
+            });
+            
+        } catch (error) {
+            console.error('Failed to load properties:', error);
+            this.showNotification('Failed to load properties', 'error');
+        }
+    }
+
+    async loadInstances() {
+        try {
+            const classFilter = document.getElementById('instance-class-filter').value;
+            const url = classFilter ? `${this.baseUrl}/instances?class_uri=${encodeURIComponent(classFilter)}` : `${this.baseUrl}/instances`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            const instancesList = document.getElementById('instances-list');
+            instancesList.innerHTML = '';
+            
+            data.instances.forEach(instance => {
+                const instanceItem = document.createElement('div');
+                instanceItem.className = 'instance-item';
+                instanceItem.innerHTML = `
+                    <div class="instance-header">
+                        <h4>${instance.label || 'Unnamed Instance'}</h4>
+                        <span class="instance-uri">${instance.uri}</span>
+                    </div>
+                    <div class="instance-comment">${instance.comment || 'No description'}</div>
+                    ${instance.class ? `<div class="instance-class">Class: ${instance.class}</div>` : ''}
+                `;
+                instancesList.appendChild(instanceItem);
+            });
+            
+        } catch (error) {
+            console.error('Failed to load instances:', error);
+            this.showNotification('Failed to load instances', 'error');
+        }
+    }
+
+    showAddClassModal() {
+        const modal = document.getElementById('add-class-modal');
+        modal.style.display = 'block';
+    }
+
+    showAddPropertyModal() {
+        const modal = document.getElementById('add-property-modal');
+        modal.style.display = 'block';
+    }
+
+    showAddInstanceModal() {
+        const modal = document.getElementById('add-instance-modal');
+        modal.style.display = 'block';
+    }
+
+    async handleValidation() {
+        const substanceData = {
+            id: document.getElementById('substance-id').value,
+            chemicalFormula: document.getElementById('chemical-formula').value,
+            molecularWeight: parseFloat(document.getElementById('molecular-weight').value) || 0,
+            flashPoint: document.getElementById('flash-point').value,
+            boilingPoint: parseFloat(document.getElementById('boiling-point').value) || 0,
+            meltingPoint: parseFloat(document.getElementById('melting-point').value) || 0,
+            density: parseFloat(document.getElementById('density').value) || 0
+        };
+
+        try {
+            const response = await fetch(`${this.baseUrl}/validate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(substanceData)
+            });
+
+            const result = await response.json();
+
+            const validationResults = document.getElementById('validation-results');
+            validationResults.innerHTML = '';
+
+            if (result.valid) {
+                validationResults.innerHTML = '<div class="validation-success">✓ Data is valid</div>';
+            } else {
+                const errorsList = document.createElement('div');
+                errorsList.className = 'validation-errors';
+                errorsList.innerHTML = '<h4>Validation Errors:</h4>';
+                
+                result.errors.forEach(error => {
+                    const errorItem = document.createElement('div');
+                    errorItem.className = 'validation-error';
+                    errorItem.textContent = error.message || error;
+                    errorsList.appendChild(errorItem);
+                });
+                
+                validationResults.appendChild(errorsList);
+            }
+
+        } catch (error) {
+            console.error('Validation failed:', error);
+            this.showNotification('Failed to validate data', 'error');
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    // Close modal functions
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'none';
+    }
+
+    // Submit functions for modals
+    async submitClass(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const classData = {
+            uri: formData.get('uri'),
+            label: formData.get('label'),
+            comment: formData.get('comment'),
+            superclass: formData.get('superclass') || null
+        };
+
+        try {
+            const response = await fetch(`${this.baseUrl}/classes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(classData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showNotification(result.message, 'success');
+                this.closeModal('add-class-modal');
+                await this.loadClasses();
+                event.target.reset();
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Failed to add class:', error);
+            this.showNotification('Failed to add class', 'error');
+        }
+    }
+
+    async submitProperty(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const propertyData = {
+            uri: formData.get('uri'),
+            label: formData.get('label'),
+            comment: formData.get('comment'),
+            type: formData.get('type'),
+            domain: formData.get('domain') || null,
+            range: formData.get('range') || null
+        };
+
+        try {
+            const response = await fetch(`${this.baseUrl}/properties`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(propertyData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showNotification(result.message, 'success');
+                this.closeModal('add-property-modal');
+                await this.loadProperties();
+                event.target.reset();
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Failed to add property:', error);
+            this.showNotification('Failed to add property', 'error');
+        }
+    }
+
+    async submitInstance(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const instanceData = {
+            uri: formData.get('uri'),
+            label: formData.get('label'),
+            comment: formData.get('comment'),
+            class: formData.get('class'),
+            properties: {}
+        };
+
+        // Add custom properties if any
+        const customProps = formData.get('custom_properties');
+        if (customProps) {
+            try {
+                instanceData.properties = JSON.parse(customProps);
+            } catch (e) {
+                // Ignore parsing errors
+            }
+        }
+
+        try {
+            const response = await fetch(`${this.baseUrl}/instances`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(instanceData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.showNotification(result.message, 'success');
+                this.closeModal('add-instance-modal');
+                await this.loadInstances();
+                event.target.reset();
+            } else {
+                this.showNotification(result.detail, 'error');
+            }
+        } catch (error) {
+            console.error('Failed to add instance:', error);
+            this.showNotification('Failed to add instance', 'error');
+        }
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const ontologyManager = new OntologyManager();
+    
+    // Make it globally available
+    window.ontologyManager = ontologyManager;
+    
+    // Load initial data
+    ontologyManager.loadClasses();
+    ontologyManager.loadProperties();
+    ontologyManager.loadInstances();
+}); 

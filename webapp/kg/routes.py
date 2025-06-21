@@ -5,108 +5,107 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import json
 from pathlib import Path
+import uuid
+from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/kg", tags=["kg"])
 templates = Jinja2Templates(directory="webapp/templates")
 
 # Pydantic models for KG operations
 class KGQuery(BaseModel):
     query: str
-    query_type: str = "cypher"  # cypher, sparql, natural
+    query_type: str = "cypher"  # cypher, gremlin, sparql
     limit: int = 100
 
-class KGNode(BaseModel):
-    id: str
+class NodeData(BaseModel):
     labels: List[str]
     properties: Dict[str, Any]
 
-class KGRelationship(BaseModel):
-    id: str
-    type: str
-    start_node: str
-    end_node: str
-    properties: Dict[str, Any]
+class RelationshipData(BaseModel):
+    start_node_id: str
+    end_node_id: str
+    relationship_type: str
+    properties: Optional[Dict[str, Any]] = None
 
-# Sample knowledge graph data (in production, this would come from Neo4j)
-SAMPLE_KG_DATA = {
-    "nodes": [
-        {
-            "id": "substance_001",
-            "labels": ["HazardousSubstance"],
-            "properties": {
-                "name": "Sulfuric Acid",
-                "chemical_formula": "H2SO4",
-                "molecular_weight": 98.08,
-                "hazard_class": "corrosive",
-                "flash_point": "none"
-            }
-        },
-        {
-            "id": "container_001",
-            "labels": ["Container"],
-            "properties": {
-                "name": "Polyethylene Tank",
-                "material": "polyethylene",
-                "capacity": 1000,
-                "pressure_rating": 2.0,
-                "temperature_rating": 60
-            }
-        },
-        {
-            "id": "test_001",
-            "labels": ["SafetyTest"],
-            "properties": {
-                "name": "Corrosion Resistance Test",
-                "test_type": "corrosion",
-                "test_conditions": "25°C, 24h exposure",
-                "test_results": "passed",
-                "test_date": "2024-01-15"
-            }
-        },
-        {
-            "id": "risk_001",
-            "labels": ["RiskAssessment"],
-            "properties": {
-                "name": "Storage Risk Assessment",
-                "risk_level": "medium",
-                "mitigation_measures": "ventilation, PPE",
-                "assessment_date": "2024-01-10"
-            }
+# Sample KG data (in production, this would come from Neo4j)
+SAMPLE_NODES = [
+    {
+        "id": "node_001",
+        "labels": ["HazardousSubstance"],
+        "properties": {
+            "name": "Sulfuric Acid",
+            "chemical_formula": "H2SO4",
+            "molecular_weight": 98.08,
+            "hazard_class": "corrosive",
+            "flash_point": "none",
+            "boiling_point": 337
         }
-    ],
-    "relationships": [
-        {
-            "id": "rel_001",
-            "type": "STORED_IN",
-            "start_node": "substance_001",
-            "end_node": "container_001",
-            "properties": {
-                "storage_conditions": "ambient temperature",
-                "max_quantity": 500
-            }
-        },
-        {
-            "id": "rel_002",
-            "type": "VALIDATED_BY",
-            "start_node": "container_001",
-            "end_node": "test_001",
-            "properties": {
-                "test_parameters": "corrosion resistance",
-                "validation_date": "2024-01-15"
-            }
-        },
-        {
-            "id": "rel_003",
-            "type": "ASSESSES_RISK_OF",
-            "start_node": "risk_001",
-            "end_node": "substance_001",
-            "properties": {
-                "risk_factors": "corrosivity, toxicity",
-                "assessment_method": "hazard analysis"
-            }
+    },
+    {
+        "id": "node_002",
+        "labels": ["Container"],
+        "properties": {
+            "name": "Polyethylene Container",
+            "material": "polyethylene",
+            "capacity": 100,
+            "pressure_rating": 2.0,
+            "temperature_rating": 60
         }
-    ]
-}
+    },
+    {
+        "id": "node_003",
+        "labels": ["SafetyTest"],
+        "properties": {
+            "name": "Corrosion Resistance Test",
+            "test_type": "corrosion",
+            "duration": 24,
+            "temperature": 25,
+            "pressure": 1.0
+        }
+    },
+    {
+        "id": "node_004",
+        "labels": ["RiskAssessment"],
+        "properties": {
+            "name": "Sulfuric Acid Storage Assessment",
+            "risk_level": "medium",
+            "assessment_date": "2024-01-15",
+            "assessor": "Safety Team"
+        }
+    }
+]
+
+SAMPLE_RELATIONSHIPS = [
+    {
+        "id": "rel_001",
+        "start_node_id": "node_001",
+        "end_node_id": "node_002",
+        "type": "STORED_IN",
+        "properties": {
+            "compatibility": "compatible",
+            "max_concentration": 98
+        }
+    },
+    {
+        "id": "rel_002",
+        "start_node_id": "node_001",
+        "end_node_id": "node_003",
+        "type": "TESTED_BY",
+        "properties": {
+            "test_result": "passed",
+            "test_date": "2024-01-10"
+        }
+    },
+    {
+        "id": "rel_003",
+        "start_node_id": "node_001",
+        "end_node_id": "node_004",
+        "type": "ASSESSED_BY",
+        "properties": {
+            "assessment_type": "storage_safety"
+        }
+    }
+]
 
 @router.get("/", response_class=HTMLResponse)
 async def kg_dashboard(request: Request):
@@ -117,25 +116,27 @@ async def kg_dashboard(request: Request):
 async def get_kg_stats():
     """Get knowledge graph statistics"""
     return {
-        "nodes": len(SAMPLE_KG_DATA["nodes"]),
-        "relationships": len(SAMPLE_KG_DATA["relationships"]),
-        "node_types": len(set([node["labels"][0] for node in SAMPLE_KG_DATA["nodes"]])),
-        "relationship_types": len(set([rel["type"] for rel in SAMPLE_KG_DATA["relationships"]]))
+        "nodes": len(SAMPLE_NODES),
+        "relationships": len(SAMPLE_RELATIONSHIPS),
+        "node_types": len(set([label for node in SAMPLE_NODES for label in node["labels"]])),
+        "relationship_types": len(set([rel["type"] for rel in SAMPLE_RELATIONSHIPS]))
     }
 
 @router.get("/nodes")
-async def get_kg_nodes(node_type: Optional[str] = None, limit: int = 100):
-    """Get knowledge graph nodes"""
-    nodes = SAMPLE_KG_DATA["nodes"]
-    if node_type:
-        nodes = [node for node in nodes if node_type in node["labels"]]
+async def get_nodes(label: Optional[str] = None, limit: int = 100):
+    """Get nodes from the knowledge graph"""
+    nodes = SAMPLE_NODES
+    
+    if label:
+        nodes = [node for node in nodes if label in node["labels"]]
     
     return {"nodes": nodes[:limit]}
 
 @router.get("/relationships")
-async def get_kg_relationships(relationship_type: Optional[str] = None, limit: int = 100):
-    """Get knowledge graph relationships"""
-    relationships = SAMPLE_KG_DATA["relationships"]
+async def get_relationships(relationship_type: Optional[str] = None, limit: int = 100):
+    """Get relationships from the knowledge graph"""
+    relationships = SAMPLE_RELATIONSHIPS
+    
     if relationship_type:
         relationships = [rel for rel in relationships if rel["type"] == relationship_type]
     
@@ -144,123 +145,229 @@ async def get_kg_relationships(relationship_type: Optional[str] = None, limit: i
 @router.post("/query")
 async def query_kg(query: KGQuery):
     """Query the knowledge graph"""
-    # In production, this would execute actual Cypher/SPARQL queries
-    if query.query_type == "cypher":
-        return execute_cypher_query(query.query, query.limit)
-    elif query.query_type == "sparql":
-        return execute_sparql_query(query.query, query.limit)
+    # In production, this would use Neo4j to execute Cypher queries
+    
+    # Sample query results
+    if "MATCH" in query.query.upper():
+        results = {
+            "query_type": "match",
+            "results": [
+                {"node": SAMPLE_NODES[0]},
+                {"node": SAMPLE_NODES[1]},
+                {"relationship": SAMPLE_RELATIONSHIPS[0]}
+            ],
+            "count": 3
+        }
+    elif "CREATE" in query.query.upper():
+        results = {
+            "query_type": "create",
+            "result": "Node/relationship created successfully"
+        }
     else:
-        return execute_natural_query(query.query, query.limit)
-
-@router.get("/visualize")
-async def get_kg_visualization_data():
-    """Get data for knowledge graph visualization"""
+        results = {
+            "query_type": "other",
+            "results": "Query executed successfully"
+        }
+    
     return {
-        "nodes": SAMPLE_KG_DATA["nodes"],
-        "relationships": SAMPLE_KG_DATA["relationships"]
+        "query": query.query,
+        "query_type": query.query_type,
+        "results": results,
+        "timestamp": datetime.now().isoformat()
     }
 
-@router.get("/node/{node_id}")
-async def get_kg_node(node_id: str):
-    """Get a specific knowledge graph node"""
-    for node in SAMPLE_KG_DATA["nodes"]:
-        if node["id"] == node_id:
-            return node
-    raise HTTPException(status_code=404, detail="Node not found")
+@router.post("/nodes")
+async def create_node(node_data: NodeData):
+    """Create a new node in the knowledge graph"""
+    # In production, this would use Neo4j
+    node_id = str(uuid.uuid4())
+    
+    new_node = {
+        "id": node_id,
+        "labels": node_data.labels,
+        "properties": node_data.properties
+    }
+    
+    SAMPLE_NODES.append(new_node)
+    
+    return {
+        "message": "Node created successfully",
+        "node_id": node_id,
+        "node": new_node
+    }
+
+@router.post("/relationships")
+async def create_relationship(relationship_data: RelationshipData):
+    """Create a new relationship in the knowledge graph"""
+    # In production, this would use Neo4j
+    relationship_id = str(uuid.uuid4())
+    
+    new_relationship = {
+        "id": relationship_id,
+        "start_node_id": relationship_data.start_node_id,
+        "end_node_id": relationship_data.end_node_id,
+        "type": relationship_data.relationship_type,
+        "properties": relationship_data.properties or {}
+    }
+    
+    SAMPLE_RELATIONSHIPS.append(new_relationship)
+    
+    return {
+        "message": "Relationship created successfully",
+        "relationship_id": relationship_id,
+        "relationship": new_relationship
+    }
 
 @router.get("/search")
-async def search_kg_nodes(query: str, node_type: Optional[str] = None):
-    """Search for nodes in the knowledge graph"""
+async def search_kg(query: str, search_type: str = "nodes"):
+    """Search the knowledge graph"""
     results = []
-    for node in SAMPLE_KG_DATA["nodes"]:
-        if node_type and node_type not in node["labels"]:
-            continue
-        
-        # Simple text search in properties
-        for key, value in node["properties"].items():
-            if query.lower() in str(value).lower():
+    query_lower = query.lower()
+    
+    if search_type == "nodes":
+        for node in SAMPLE_NODES:
+            if (query_lower in node["properties"].get("name", "").lower() or
+                any(query_lower in str(value).lower() for value in node["properties"].values())):
                 results.append(node)
-                break
+    elif search_type == "relationships":
+        for rel in SAMPLE_RELATIONSHIPS:
+            if query_lower in rel["type"].lower():
+                results.append(rel)
     
     return {"results": results}
 
 @router.get("/path")
-async def find_path(start_node: str, end_node: str, max_depth: int = 3):
+async def find_path(start_id: str, end_id: str, max_length: int = 5):
     """Find path between two nodes"""
-    # Simple path finding implementation
-    paths = find_paths_between_nodes(start_node, end_node, max_depth)
-    return {"paths": paths}
+    # In production, this would use Neo4j pathfinding algorithms
+    
+    # Sample path finding
+    path = {
+        "start_node": next((node for node in SAMPLE_NODES if node["id"] == start_id), None),
+        "end_node": next((node for node in SAMPLE_NODES if node["id"] == end_id), None),
+        "path": [
+            {"node": SAMPLE_NODES[0]},
+            {"relationship": SAMPLE_RELATIONSHIPS[0]},
+            {"node": SAMPLE_NODES[1]}
+        ],
+        "length": 2
+    }
+    
+    return {"path": path}
 
 @router.get("/recommendations")
-async def get_recommendations(node_id: str, recommendation_type: str = "similar"):
-    """Get recommendations based on a node"""
-    # Simple recommendation logic
-    recommendations = generate_recommendations(node_id, recommendation_type)
-    return {"recommendations": recommendations}
+async def get_recommendations(node_id: str, relationship_type: Optional[str] = None):
+    """Get recommendations based on node connections"""
+    # In production, this would use graph algorithms for recommendations
+    
+    recommendations = {
+        "node_id": node_id,
+        "recommendations": [
+            {
+                "node": SAMPLE_NODES[1],
+                "score": 0.85,
+                "reason": "Frequently connected with similar substances"
+            },
+            {
+                "node": SAMPLE_NODES[2],
+                "score": 0.72,
+                "reason": "Common testing protocol for this substance type"
+            }
+        ]
+    }
+    
+    return recommendations
 
-# Helper functions for query execution
-def execute_cypher_query(query: str, limit: int):
-    """Execute Cypher query (simplified implementation)"""
-    # In production, this would connect to Neo4j
-    if "MATCH" in query.upper():
-        if "HazardousSubstance" in query:
-            substances = [node for node in SAMPLE_KG_DATA["nodes"] if "HazardousSubstance" in node["labels"]]
-            return {"results": substances[:limit]}
-        elif "Container" in query:
-            containers = [node for node in SAMPLE_KG_DATA["nodes"] if "Container" in node["labels"]]
-            return {"results": containers[:limit]}
-        else:
-            return {"results": SAMPLE_KG_DATA["nodes"][:limit]}
-    else:
-        return {"results": [], "error": "Invalid Cypher query"}
+@router.get("/visualize")
+async def get_visualization_data(limit: int = 50):
+    """Get data for knowledge graph visualization"""
+    # Prepare data for visualization (nodes and edges)
+    nodes = []
+    edges = []
+    
+    for node in SAMPLE_NODES[:limit]:
+        nodes.append({
+            "id": node["id"],
+            "label": node["properties"].get("name", node["id"]),
+            "type": node["labels"][0] if node["labels"] else "Unknown",
+            "properties": node["properties"]
+        })
+    
+    for rel in SAMPLE_RELATIONSHIPS[:limit]:
+        edges.append({
+            "id": rel["id"],
+            "source": rel["start_node_id"],
+            "target": rel["end_node_id"],
+            "type": rel["type"],
+            "properties": rel["properties"]
+        })
+    
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "node_types": list(set([node["type"] for node in nodes])),
+        "edge_types": list(set([edge["type"] for edge in edges]))
+    }
 
-def execute_sparql_query(query: str, limit: int):
-    """Execute SPARQL query (simplified implementation)"""
-    # In production, this would connect to a SPARQL endpoint
-    return {"results": [], "message": "SPARQL queries not yet implemented"}
+@router.get("/export")
+async def export_kg(format: str = "json"):
+    """Export knowledge graph data"""
+    # In production, this would export from Neo4j
+    
+    allowed_formats = ["json", "csv", "cypher"]
+    if format not in allowed_formats:
+        raise HTTPException(status_code=400, detail=f"Unsupported format. Allowed: {allowed_formats}")
+    
+    if format == "json":
+        export_data = {
+            "nodes": SAMPLE_NODES,
+            "relationships": SAMPLE_RELATIONSHIPS,
+            "export_date": datetime.now().isoformat()
+        }
+    elif format == "csv":
+        export_data = {
+            "nodes_csv": "id,labels,properties\n",
+            "relationships_csv": "id,start_node,end_node,type,properties\n",
+            "export_date": datetime.now().isoformat()
+        }
+    else:  # cypher
+        export_data = {
+            "cypher_script": "// Knowledge Graph Export\n",
+            "export_date": datetime.now().isoformat()
+        }
+    
+    return {
+        "format": format,
+        "data": export_data,
+        "filename": f"knowledge_graph_export_{datetime.now().strftime('%Y%m%d')}.{format}"
+    }
 
-def execute_natural_query(query: str, limit: int):
-    """Execute natural language query (simplified implementation)"""
-    # Simple keyword-based search
-    results = []
-    query_lower = query.lower()
+@router.delete("/nodes/{node_id}")
+async def delete_node(node_id: str):
+    """Delete a node from the knowledge graph"""
+    node = next((node for node in SAMPLE_NODES if node["id"] == node_id), None)
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
     
-    for node in SAMPLE_KG_DATA["nodes"]:
-        for key, value in node["properties"].items():
-            if query_lower in str(value).lower():
-                results.append(node)
-                break
+    # In production, this would delete from Neo4j
+    SAMPLE_NODES.remove(node)
     
-    return {"results": results[:limit]}
+    # Also remove related relationships
+    SAMPLE_RELATIONSHIPS[:] = [
+        rel for rel in SAMPLE_RELATIONSHIPS 
+        if rel["start_node_id"] != node_id and rel["end_node_id"] != node_id
+    ]
+    
+    return {"message": "Node deleted successfully", "node_id": node_id}
 
-def find_paths_between_nodes(start_node: str, end_node: str, max_depth: int):
-    """Find paths between two nodes (simplified implementation)"""
-    # Simple path finding - in production, use graph algorithms
-    paths = []
+@router.delete("/relationships/{relationship_id}")
+async def delete_relationship(relationship_id: str):
+    """Delete a relationship from the knowledge graph"""
+    relationship = next((rel for rel in SAMPLE_RELATIONSHIPS if rel["id"] == relationship_id), None)
+    if not relationship:
+        raise HTTPException(status_code=404, detail="Relationship not found")
     
-    # Find direct relationships
-    for rel in SAMPLE_KG_DATA["relationships"]:
-        if rel["start_node"] == start_node and rel["end_node"] == end_node:
-            paths.append([start_node, end_node])
-        elif rel["start_node"] == end_node and rel["end_node"] == start_node:
-            paths.append([start_node, end_node])
+    # In production, this would delete from Neo4j
+    SAMPLE_RELATIONSHIPS.remove(relationship)
     
-    return paths
-
-def generate_recommendations(node_id: str, recommendation_type: str):
-    """Generate recommendations (simplified implementation)"""
-    recommendations = []
-    
-    # Find similar nodes based on labels
-    target_node = None
-    for node in SAMPLE_KG_DATA["nodes"]:
-        if node["id"] == node_id:
-            target_node = node
-            break
-    
-    if target_node:
-        for node in SAMPLE_KG_DATA["nodes"]:
-            if node["id"] != node_id and node["labels"] == target_node["labels"]:
-                recommendations.append(node)
-    
-    return recommendations[:5]  # Return top 5 recommendations
+    return {"message": "Relationship deleted successfully", "relationship_id": relationship_id}
