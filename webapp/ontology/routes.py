@@ -122,6 +122,215 @@ async def list_ontologies():
     """List all ontologies"""
     return {"ontologies": SAMPLE_ONTOLOGIES}
 
+@router.get("/stats")
+async def get_ontology_stats():
+    """Get ontology statistics"""
+    return {
+        "total_ontologies": len(SAMPLE_ONTOLOGIES),
+        "total_validations": len(SAMPLE_VALIDATIONS),
+        "formats_supported": 7,
+        "active_ontologies": len([o for o in SAMPLE_ONTOLOGIES if o["status"] == "active"])
+    }
+
+@router.get("/classes")
+async def get_ontology_classes():
+    """Get ontology classes"""
+    # Sample classes from the loaded ontologies
+    classes = [
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#HazardousSubstance",
+            "label": "Hazardous Substance",
+            "description": "A substance that poses a risk to health, safety, or the environment",
+            "type": "owl:Class"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#Container",
+            "label": "Container",
+            "description": "A vessel used for storing hazardous substances",
+            "type": "owl:Class"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#SafetyTest",
+            "label": "Safety Test",
+            "description": "A test performed to ensure safety compliance",
+            "type": "owl:Class"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#SafetyProcedure",
+            "label": "Safety Procedure",
+            "description": "A procedure for handling hazardous substances safely",
+            "type": "owl:Class"
+        }
+    ]
+    return {"classes": classes, "total_classes": len(classes)}
+
+@router.get("/properties")
+async def get_ontology_properties():
+    """Get ontology properties"""
+    # Sample properties from the loaded ontologies
+    properties = [
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#chemicalFormula",
+            "label": "Chemical Formula",
+            "description": "The molecular formula of a substance",
+            "type": "owl:DatatypeProperty",
+            "domain": "HazardousSubstance",
+            "range": "xsd:string"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#molecularWeight",
+            "label": "Molecular Weight",
+            "description": "The molecular weight of a substance",
+            "type": "owl:DatatypeProperty",
+            "domain": "HazardousSubstance",
+            "range": "xsd:float"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#hazardClass",
+            "label": "Hazard Class",
+            "description": "The classification of hazard for a substance",
+            "type": "owl:DatatypeProperty",
+            "domain": "HazardousSubstance",
+            "range": "xsd:string"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#containerMaterial",
+            "label": "Container Material",
+            "description": "The material used for the container",
+            "type": "owl:DatatypeProperty",
+            "domain": "Container",
+            "range": "xsd:string"
+        }
+    ]
+    return {"properties": properties, "total_properties": len(properties)}
+
+@router.get("/relationships")
+async def get_ontology_relationships():
+    """Get ontology relationships"""
+    # Sample relationships from the loaded ontologies
+    relationships = [
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#storedIn",
+            "label": "Stored In",
+            "description": "Relationship between a substance and its container",
+            "type": "owl:ObjectProperty",
+            "domain": "HazardousSubstance",
+            "range": "Container"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#testedBy",
+            "label": "Tested By",
+            "description": "Relationship between a substance and its safety test",
+            "type": "owl:ObjectProperty",
+            "domain": "HazardousSubstance",
+            "range": "SafetyTest"
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#requiresProcedure",
+            "label": "Requires Procedure",
+            "description": "Relationship between a substance and its safety procedure",
+            "type": "owl:ObjectProperty",
+            "domain": "HazardousSubstance",
+            "range": "SafetyProcedure"
+        }
+    ]
+    return {"relationships": relationships, "total_relationships": len(relationships)}
+
+@router.get("/instances")
+async def get_ontology_instances(class_uri: Optional[str] = None):
+    """Get ontology instances"""
+    # Sample instances from the loaded ontologies
+    instances = [
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#SulfuricAcid",
+            "label": "Sulfuric Acid",
+            "class": "HazardousSubstance",
+            "properties": {
+                "chemicalFormula": "H2SO4",
+                "molecularWeight": 98.08,
+                "hazardClass": "corrosive"
+            }
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#PolyethyleneContainer",
+            "label": "Polyethylene Container",
+            "class": "Container",
+            "properties": {
+                "containerMaterial": "polyethylene",
+                "capacity": 100,
+                "pressureRating": 2.0
+            }
+        },
+        {
+            "uri": "http://hazardsafe-kg.org/ontology#CorrosionTest",
+            "label": "Corrosion Resistance Test",
+            "class": "SafetyTest",
+            "properties": {
+                "testType": "corrosion",
+                "duration": 24,
+                "temperature": 25
+            }
+        }
+    ]
+    
+    if class_uri:
+        instances = [i for i in instances if i["class"] in class_uri]
+    
+    return {"instances": instances, "total_instances": len(instances)}
+
+@router.get("/formats")
+async def get_supported_formats():
+    """Get list of supported ontology formats"""
+    return {
+        "formats": [
+            {"name": "Turtle", "extension": "ttl", "description": "Terse RDF Triple Language"},
+            {"name": "OWL/XML", "extension": "owl", "description": "Web Ontology Language XML"},
+            {"name": "RDF/XML", "extension": "rdf", "description": "Resource Description Framework XML"},
+            {"name": "JSON-LD", "extension": "json-ld", "description": "JSON for Linked Data"},
+            {"name": "N-Triples", "extension": "nt", "description": "Simple line-based RDF format"},
+            {"name": "Notation3", "extension": "n3", "description": "Compact RDF notation"},
+            {"name": "TriG", "extension": "trig", "description": "Terse RDF Triple Language for Named Graphs"}
+        ]
+    }
+
+@router.get("/validations")
+async def get_validation_history(ontology_id: Optional[str] = None):
+    """Get validation history"""
+    validations = SAMPLE_VALIDATIONS
+    
+    if ontology_id:
+        validations = [v for v in validations if v["ontology_id"] == ontology_id]
+    
+    return {"validations": validations}
+
+@router.get("/validate")
+async def get_validation_status():
+    """Get current validation status"""
+    # Return the most recent validation result or perform a quick validation
+    if SAMPLE_VALIDATIONS:
+        latest_validation = SAMPLE_VALIDATIONS[-1]
+        return {
+            "valid": latest_validation["status"] == "passed",
+            "status": latest_validation["status"],
+            "timestamp": latest_validation["timestamp"],
+            "results": latest_validation["results"],
+            "details": latest_validation["details"]
+        }
+    else:
+        # No validation history, return default status
+        return {
+            "valid": True,
+            "status": "not_validated",
+            "timestamp": datetime.now().isoformat(),
+            "results": {
+                "total_checks": 0,
+                "passed": 0,
+                "failed": 0,
+                "warnings": 0
+            },
+            "details": []
+        }
+
 @router.get("/{ontology_id}")
 async def get_ontology(ontology_id: str):
     """Get specific ontology details"""
@@ -307,31 +516,6 @@ async def visualize_ontology(ontology_id: str):
         "ontology_id": ontology_id,
         "visualization": visualization_data
     }
-
-@router.get("/formats")
-async def get_supported_formats():
-    """Get list of supported ontology formats"""
-    return {
-        "formats": [
-            {"name": "Turtle", "extension": "ttl", "description": "Terse RDF Triple Language"},
-            {"name": "OWL/XML", "extension": "owl", "description": "Web Ontology Language XML"},
-            {"name": "RDF/XML", "extension": "rdf", "description": "Resource Description Framework XML"},
-            {"name": "JSON-LD", "extension": "json-ld", "description": "JSON for Linked Data"},
-            {"name": "N-Triples", "extension": "nt", "description": "Simple line-based RDF format"},
-            {"name": "Notation3", "extension": "n3", "description": "Compact RDF notation"},
-            {"name": "TriG", "extension": "trig", "description": "Terse RDF Triple Language for Named Graphs"}
-        ]
-    }
-
-@router.get("/validations")
-async def get_validation_history(ontology_id: Optional[str] = None):
-    """Get validation history"""
-    validations = SAMPLE_VALIDATIONS
-    
-    if ontology_id:
-        validations = [v for v in validations if v["ontology_id"] == ontology_id]
-    
-    return {"validations": validations}
 
 @router.delete("/{ontology_id}")
 async def delete_ontology(ontology_id: str):
