@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazardSafe-KG System Architecture Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn.active {
+            background: #e74c3c;
+        }
+        
+        .description {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .description h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .description ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .description li {
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 4px solid #3498db;
+        }
+        
+        .tech-card h4 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .tech-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tech-card li {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .legend {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HazardSafe-KG</h1>
+            <p>Complete System Architecture Flowchart</p>
+            <p>AI-Powered Knowledge Management for Hazardous Substances</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>System Overview</h2>
+                <div class="description">
+                    <h3>🏗️ Three Core Components Working Together</h3>
+                    <ul>
+                        <li><strong>Ontology:</strong> Defines knowledge structure and validation rules</li>
+                        <li><strong>RAG:</strong> Processes documents and enables intelligent querying</li>
+                        <li><strong>Knowledge Graph:</strong> Stores relationships and enables reasoning</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Complete System Flowchart</h2>
+                <div class="controls">
+                    <button class="btn active" onclick="showFlowchart('main')">Main Flow</button>
+                    <button class="btn" onclick="showFlowchart('detailed')">Detailed Flow</button>
+                    <button class="btn" onclick="showFlowchart('data')">Data Flow</button>
+                    <button class="btn" onclick="showFlowchart('ai')">AI Components</button>
+                </div>
+                
+                <div class="flowchart-container">
+                    <div id="main-flowchart" class="mermaid">
+                        graph TD
+                            %% Input Sources
+                            A[📄 PDF Documents] --> B[📋 Expert Ontology Files]
+                            C[📊 CSV Data] --> B
+                            D[🔧 Manual Input] --> B
+                            
+                            %% RAG Processing
+                            A --> E[RAG: Document Processor]
+                            E --> F[AI: Text Extraction]
+                            F --> G[AI: Entity Recognition]
+                            G --> H[AI: Vector Embeddings]
+                            H --> I[Vector Store]
+                            
+                            %% Ontology Processing
+                            B --> J[Ontology Manager]
+                            J --> K[SHACL Validation]
+                            J --> L[Format Conversion]
+                            
+                            %% Knowledge Graph
+                            G --> M[Knowledge Graph: Neo4j]
+                            K --> M
+                            I --> M
+                            
+                            %% Query Processing
+                            N[👤 User Query] --> O[Query Processor]
+                            O --> P[Semantic Search]
+                            O --> Q[Graph Query]
+                            P --> I
+                            Q --> M
+                            
+                            %% Answer Generation
+                            P --> R[AI: Answer Generation]
+                            Q --> R
+                            R --> S[📤 Response to User]
+                            
+                            %% Styling
+                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef ragStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef ontologyStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class A,C,D inputStyle
+                            class E,F,G,H,I ragStyle
+                            class J,K,L ontologyStyle
+                            class M,Q kgStyle
+                            class F,G,H,P,R aiStyle
+                            class S outputStyle
+                    </div>
+                    
+                    <div id="detailed-flowchart" class="mermaid" style="display: none;">
+                        graph TD
+                            %% Detailed Input Processing
+                            A1[📄 PDF Safety Data Sheets] --> B1[PDF Text Extraction]
+                            A2[📄 PDF Engineering Docs] --> B1
+                            A3[📄 PDF Regulatory Docs] --> B1
+                            A4[📄 Word Documents] --> B2[Word Text Extraction]
+                            A5[📄 JSON Files] --> B3[JSON Processing]
+                            
+                            %% AI Processing Pipeline
+                            B1 --> C1[AI: Layout Analysis]
+                            B2 --> C1
+                            B3 --> C1
+                            C1 --> D1[AI: Entity Recognition]
+                            D1 --> E1[Chemical Formulas: H2SO4, NaOH]
+                            D1 --> E2[Measurements: 100°C, 2.5 bar]
+                            D1 --> E3[Standards: OSHA, EPA, ASME]
+                            D1 --> E4[Safety Terms: corrosive, toxic]
+                            
+                            %% Vector Processing
+                            C1 --> F1[AI: Text Chunking]
+                            F1 --> G1[AI: Vector Embeddings]
+                            G1 --> H1[Vector Database]
+                            
+                            %% Ontology Integration
+                            I1[📋 TTL Ontology Files] --> J1[Ontology Parser]
+                            I2[📋 OWL Ontology Files] --> J1
+                            I3[📋 SHACL Shapes] --> J1
+                            J1 --> K1[SHACL Validation Engine]
+                            
+                            %% Knowledge Graph Population
+                            E1 --> L1[Knowledge Graph: Neo4j]
+                            E2 --> L1
+                            E3 --> L1
+                            E4 --> L1
+                            K1 --> L1
+                            
+                            %% Query Processing
+                            M1[👤 Natural Language Query] --> N1[AI: Query Understanding]
+                            N1 --> O1[Intent Classification]
+                            O1 --> P1[Semantic Search]
+                            O1 --> P2[Graph Query]
+                            P1 --> H1
+                            P2 --> L1
+                            
+                            %% Answer Generation
+                            H1 --> Q1[Retrieved Documents]
+                            L1 --> Q2[Graph Results]
+                            Q1 --> R1[AI: Answer Synthesis]
+                            Q2 --> R1
+                            R1 --> S1[📤 Comprehensive Answer]
+                            
+                            %% Styling
+                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef vectorStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef ontologyStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class A1,A2,A3,A4,A5,I1,I2,I3 inputStyle
+                            class B1,B2,B3,C1,D1,F1,G1,N1,R1 aiStyle
+                            class H1,P1,Q1 vectorStyle
+                            class J1,K1 ontologyStyle
+                            class L1,P2,Q2 kgStyle
+                            class S1 outputStyle
+                    </div>
+                    
+                    <div id="data-flowchart" class="mermaid" style="display: none;">
+                        graph LR
+                            %% Data Sources
+                            A[📄 PDF Documents] --> B[Document Processor]
+                            C[📋 Ontology Files] --> D[Ontology Manager]
+                            E[📊 CSV Data] --> F[Data Ingestion]
+                            
+                            %% Processing
+                            B --> G[Extracted Text & Metadata]
+                            D --> H[Validation Rules]
+                            F --> I[Structured Data]
+                            
+                            %% AI Processing
+                            G --> J[AI: Entity Recognition]
+                            J --> K[Chemical Entities]
+                            J --> L[Safety Entities]
+                            J --> M[Engineering Entities]
+                            
+                            %% Storage
+                            K --> N[Knowledge Graph: Neo4j]
+                            L --> N
+                            M --> N
+                            I --> N
+                            H --> O[Validation Engine]
+                            O --> N
+                            
+                            %% Vector Storage
+                            G --> P[AI: Vector Embeddings]
+                            P --> Q[Vector Database]
+                            
+                            %% Query Flow
+                            R[👤 User Query] --> S[Query Processor]
+                            S --> T[Semantic Search]
+                            S --> U[Graph Query]
+                            T --> Q
+                            U --> N
+                            
+                            %% Response
+                            Q --> V[Retrieved Documents]
+                            N --> W[Graph Results]
+                            V --> X[AI: Answer Generation]
+                            W --> X
+                            X --> Y[📤 Response]
+                            
+                            %% Styling
+                            classDef sourceStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef processStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class A,C,E sourceStyle
+                            class B,D,F,G,H,I processStyle
+                            class J,K,L,M,P,S,T,U,X aiStyle
+                            class N,O,Q,V,W storageStyle
+                            class Y outputStyle
+                    </div>
+                    
+                    <div id="ai-flowchart" class="mermaid" style="display: none;">
+                        graph TD
+                            %% AI Document Processing
+                            A[📄 PDF Upload] --> B[AI: Document Analysis]
+                            B --> C[AI: Text Extraction]
+                            C --> D[AI: Layout Recognition]
+                            D --> E[AI: Table Extraction]
+                            D --> F[AI: Image Processing]
+                            
+                            %% NLP Pipeline
+                            C --> G[AI: Natural Language Processing]
+                            G --> H[AI: Tokenization]
+                            H --> I[AI: Entity Recognition]
+                            I --> J[Chemical Formulas: H2SO4]
+                            I --> K[Measurements: 100°C]
+                            I --> L[Standards: OSHA, EPA]
+                            I --> M[Safety Terms: corrosive]
+                            
+                            %% Semantic Processing
+                            G --> N[AI: Vector Embeddings]
+                            N --> O[AI: Semantic Similarity]
+                            O --> P[Vector Database]
+                            
+                            %% Knowledge Extraction
+                            J --> Q[AI: Knowledge Extraction]
+                            K --> Q
+                            L --> Q
+                            M --> Q
+                            Q --> R[Knowledge Graph: Neo4j]
+                            
+                            %% Query Intelligence
+                            S[👤 Natural Language Query] --> T[AI: Query Understanding]
+                            T --> U[AI: Intent Classification]
+                            U --> V[AI: Semantic Search]
+                            U --> W[AI: Graph Query Generation]
+                            V --> P
+                            W --> R
+                            
+                            %% Answer Generation
+                            P --> X[Retrieved Context]
+                            R --> Y[Graph Knowledge]
+                            X --> Z[AI: Answer Synthesis]
+                            Y --> Z
+                            Z --> AA[📤 Intelligent Response]
+                            
+                            %% Styling
+                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef nlpStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class A inputStyle
+                            class B,C,D,E,F,G,H,I,N,O,T,U,V,W,Z aiStyle
+                            class J,K,L,M nlpStyle
+                            class R,X,Y kgStyle
+                            class AA outputStyle
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Component Legend</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e1f5fe;"></div>
+                        <span><strong>Input Sources:</strong> PDFs, Ontology files, CSV data</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0;"></div>
+                        <span><strong>RAG Processing:</strong> Document extraction, vector storage</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5;"></div>
+                        <span><strong>Ontology:</strong> Schema definition, validation rules</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e8f5e8;"></div>
+                        <span><strong>Knowledge Graph:</strong> Neo4j database, relationships</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffebee;"></div>
+                        <span><strong>AI Components:</strong> NLP, embeddings, reasoning</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fce4ec;"></div>
+                        <span><strong>Output:</strong> User responses, insights</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Technology Stack</h2>
+                <div class="tech-stack">
+                    <div class="tech-card">
+                        <h4>🏗️ Backend Framework</h4>
+                        <ul>
+                            <li>FastAPI - Web framework</li>
+                            <li>Uvicorn - ASGI server</li>
+                            <li>Pydantic - Data validation</li>
+                            <li>Jinja2 - Template engine</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <h4>🧠 Knowledge Graph</h4>
+                        <ul>
+                            <li>Neo4j - Graph database</li>
+                            <li>Cypher - Query language</li>
+                            <li>Graph algorithms</li>
+                            <li>Relationship mapping</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <h4>📋 Ontology Management</h4>
+                        <ul>
+                            <li>RDFLib - RDF processing</li>
+                            <li>PySHACL - Validation</li>
+                            <li>OWLReady2 - OWL support</li>
+                            <li>Multiple formats (TTL, OWL, JSON-LD)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <h4>🤖 AI & NLP</h4>
+                        <ul>
+                            <li>NLTK - Natural language processing</li>
+                            <li>spaCy - Advanced NLP</li>
+                            <li>Sentence Transformers - Embeddings</li>
+                            <li>OpenAI - LLM integration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <h4>📄 Document Processing</h4>
+                        <ul>
+                            <li>PyPDF2 & pdfplumber - PDF extraction</li>
+                            <li>python-docx - Word documents</li>
+                            <li>pytesseract - OCR capabilities</li>
+                            <li>OpenCV - Image processing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <h4>🔍 Vector Search</h4>
+                        <ul>
+                            <li>Pinecone - Cloud vector DB</li>
+                            <li>Weaviate - Vector database</li>
+                            <li>ChromaDB - Local vector store</li>
+                            <li>Semantic similarity search</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Key Features & Capabilities</h2>
+                <div class="description">
+                    <h3>🎯 Core Capabilities</h3>
+                    <ul>
+                        <li><strong>Document Intelligence:</strong> AI-powered extraction from PDFs, Word docs, and other formats</li>
+                        <li><strong>Semantic Search:</strong> Find relevant information using natural language queries</li>
+                        <li><strong>Knowledge Graph:</strong> Store and query complex relationships between entities</li>
+                        <li><strong>Ontology Validation:</strong> Ensure data quality and compliance with domain rules</li>
+                        <li><strong>AI-Powered Insights:</strong> Generate intelligent responses and discover patterns</li>
+                        <li><strong>Multi-Format Support:</strong> Handle various document and ontology formats</li>
+                    </ul>
+                    
+                    <h3>🔗 Integration Points</h3>
+                    <ul>
+                        <li><strong>Ontology → Knowledge Graph:</strong> Schema definition and validation rules</li>
+                        <li><strong>RAG → Knowledge Graph:</strong> Extracted entities and relationships</li>
+                        <li><strong>AI → All Components:</strong> Intelligent processing and reasoning</li>
+                        <li><strong>Vector Store → Query Engine:</strong> Semantic search capabilities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+        
+        // Flowchart switching functionality
+        function showFlowchart(type) {
+            // Hide all flowcharts
+            document.querySelectorAll('.mermaid').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected flowchart
+            document.getElementById(type + '-flowchart').style.display = 'block';
+            
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Re-render the visible flowchart
+            mermaid.init();
+        }
+        
+        // Initialize with main flowchart
+        document.addEventListener('DOMContentLoaded', function() {
+            showFlowchart('main');
+        });
+    </script>
+</body>
+</html> 
