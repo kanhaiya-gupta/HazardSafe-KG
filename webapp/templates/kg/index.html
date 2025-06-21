@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rag">RAG System</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1><i class="fas fa-project-diagram text-info me-3"></i>Knowledge Graph Explorer</h1>
+                <p class="lead">Explore and query the safety knowledge graph</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-circle fa-2x text-primary mb-2"></i>
+                        <h4 id="node-count">0</h4>
+                        <p class="text-muted">Nodes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-link fa-2x text-success mb-2"></i>
+                        <h4 id="relationship-count">0</h4>
+                        <p class="text-muted">Relationships</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-tags fa-2x text-info mb-2"></i>
+                        <h4 id="node-types">0</h4>
+                        <p class="text-muted">Node Types</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-arrows-alt-h fa-2x text-warning mb-2"></i>
+                        <h4 id="relationship-types">0</h4>
+                        <p class="text-muted">Relationship Types</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row mt-4">
+            <!-- Query Panel -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-search me-2"></i>Query Knowledge Graph</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="queryType" class="form-label">Query Type</label>
+                            <select class="form-control" id="queryType">
+                                <option value="cypher">Cypher (Neo4j)</option>
+                                <option value="sparql">SPARQL</option>
+                                <option value="natural">Natural Language</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="queryInput" class="form-label">Query</label>
+                            <textarea class="form-control" id="queryInput" rows="4" placeholder="Enter your query here..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="queryLimit" class="form-label">Limit Results</label>
+                            <input type="number" class="form-control" id="queryLimit" value="100" min="1" max="1000">
+                        </div>
+                        <button class="btn btn-primary w-100" onclick="executeQuery()">
+                            <i class="fas fa-play me-2"></i>Execute Query
+                        </button>
+                        
+                        <hr>
+                        
+                        <h6>Quick Queries</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:HazardousSubstance) RETURN n LIMIT 10')">
+                                All Hazardous Substances
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:Container) RETURN n LIMIT 10')">
+                                All Containers
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:SafetyTest) RETURN n LIMIT 10')">
+                                All Safety Tests
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) RETURN s, r, c')">
+                                Substances and Containers
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Panel -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-search me-2"></i>Search Nodes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="searchQuery" class="form-label">Search Term</label>
+                            <input type="text" class="form-control" id="searchQuery" placeholder="Enter search term...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="searchNodeType" class="form-label">Node Type (Optional)</label>
+                            <select class="form-control" id="searchNodeType">
+                                <option value="">All Types</option>
+                                <option value="HazardousSubstance">Hazardous Substance</option>
+                                <option value="Container">Container</option>
+                                <option value="SafetyTest">Safety Test</option>
+                                <option value="RiskAssessment">Risk Assessment</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success w-100" onclick="searchNodes()">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Path Finding -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-route me-2"></i>Path Finding</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="startNode" class="form-label">Start Node ID</label>
+                            <input type="text" class="form-control" id="startNode" placeholder="e.g., substance_001">
+                        </div>
+                        <div class="mb-3">
+                            <label for="endNode" class="form-label">End Node ID</label>
+                            <input type="text" class="form-control" id="endNode" placeholder="e.g., container_001">
+                        </div>
+                        <div class="mb-3">
+                            <label for="maxDepth" class="form-label">Max Depth</label>
+                            <input type="number" class="form-control" id="maxDepth" value="3" min="1" max="10">
+                        </div>
+                        <button class="btn btn-warning w-100" onclick="findPath()">
+                            <i class="fas fa-route me-2"></i>Find Path
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Panel -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-chart-network me-2"></i>Knowledge Graph Visualization</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="resetView()">
+                                <i class="fas fa-home"></i> Reset View
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportGraph()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="graph-container" style="height: 600px; border: 1px solid #ddd; border-radius: 5px;">
+                            <!-- D3.js visualization will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list me-2"></i>Query Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="query-results">
+                            <p class="text-muted">Execute a query to see results here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Node Details Modal -->
+    <div class="modal fade" id="nodeDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Node Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="nodeDetailsContent">
+                    <!-- Node details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="getRecommendations()">Get Recommendations</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/kg.js') }}"></script>
+</body>
+</html>
