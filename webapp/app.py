@@ -10,6 +10,10 @@ import logging
 from pathlib import Path
 import uvicorn
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import routers
 from webapp.ontology.routes import router as ontology_router
@@ -82,6 +86,10 @@ async def startup_event():
         logging.info("Ontology manager initialized")
         
         # Initialize Neo4j database
+        # For AuraDB, you'll need to set these environment variables:
+        # NEO4J_URI=neo4j+s://your-instance-id.databases.neo4j.io:7687
+        # NEO4J_USER=neo4j
+        # NEO4J_PASSWORD=HazardSafe123
         await init_database()
         logging.info("Neo4j database initialized")
         
