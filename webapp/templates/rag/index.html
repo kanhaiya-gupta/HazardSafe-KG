@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/rag">RAG System</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1><i class="fas fa-search text-success me-3"></i>RAG System</h1>
+                <p class="lead">AI-powered document analysis and safety information retrieval</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
+                        <h4 id="document-count">0</h4>
+                        <p class="text-muted">Documents</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-question-circle fa-2x text-success mb-2"></i>
+                        <h4 id="query-count">0</h4>
+                        <p class="text-muted">Queries</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-tags fa-2x text-info mb-2"></i>
+                        <h4 id="document-types">0</h4>
+                        <p class="text-muted">Document Types</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-brain fa-2x text-warning mb-2"></i>
+                        <h4 id="total-tags">0</h4>
+                        <p class="text-muted">Total Tags</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row mt-4">
+            <!-- Query Panel -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-question-circle me-2"></i>Ask Questions</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="queryForm">
+                            <div class="mb-3">
+                                <label for="questionInput" class="form-label">Your Question</label>
+                                <textarea class="form-control" id="questionInput" rows="4" placeholder="Ask about safety information, container compatibility, or regulatory requirements..."></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="contextType" class="form-label">Context Type</label>
+                                    <select class="form-control" id="contextType">
+                                        <option value="all">All Documents</option>
+                                        <option value="safety_data_sheet">Safety Data Sheets</option>
+                                        <option value="technical_specification">Technical Specifications</option>
+                                        <option value="test_protocol">Test Protocols</option>
+                                        <option value="regulatory">Regulatory Documents</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="maxResults" class="form-label">Max Results</label>
+                                    <input type="number" class="form-control" id="maxResults" value="5" min="1" max="20">
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="includeSources" checked>
+                                <label class="form-check-label" for="includeSources">
+                                    Include source citations
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-search me-2"></i>Ask Question
+                            </button>
+                        </form>
+
+                        <hr>
+
+                        <h6>Quick Questions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What containers are suitable for storing sulfuric acid?')">
+                                Container compatibility for sulfuric acid
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What safety measures are required for chemical storage?')">
+                                Chemical storage safety measures
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('How to test container corrosion resistance?')">
+                                Corrosion resistance testing
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What are the regulatory requirements for hazardous chemical storage?')">
+                                Regulatory requirements
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Validation -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-shield-alt me-2"></i>Safety Validation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="validationForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="substanceName" class="form-label">Substance Name</label>
+                                    <input type="text" class="form-control" id="substanceName" placeholder="e.g., Sulfuric Acid">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="containerType" class="form-label">Container Type</label>
+                                    <input type="text" class="form-control" id="containerType" placeholder="e.g., Polyethylene">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <label for="temperature" class="form-label">Temperature (°C)</label>
+                                    <input type="number" class="form-control" id="temperature" placeholder="25">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pressure" class="form-label">Pressure (bar)</label>
+                                    <input type="number" class="form-control" id="pressure" placeholder="1.0">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100 mt-3">
+                                <i class="fas fa-check-circle me-2"></i>Validate Safety
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-lightbulb me-2"></i>AI Response</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="clearResults()">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportResults()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="query-results">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-robot fa-3x mb-3"></i>
+                                <p>Ask a question to get AI-powered safety insights</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Upload -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-upload me-2"></i>Upload Document</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="documentTitle" class="form-label">Document Title</label>
+                                <input type="text" class="form-control" id="documentTitle" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="documentDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="documentDescription" rows="2" required></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="documentType" class="form-label">Document Type</label>
+                                    <select class="form-control" id="documentType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="safety_data_sheet">Safety Data Sheet</option>
+                                        <option value="technical_specification">Technical Specification</option>
+                                        <option value="test_protocol">Test Protocol</option>
+                                        <option value="regulatory">Regulatory Document</option>
+                                        <option value="risk_assessment">Risk Assessment</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="documentTags" class="form-label">Tags (comma-separated)</label>
+                                    <input type="text" class="form-control" id="documentTags" placeholder="sulfuric_acid, corrosive, storage">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="documentFile" class="form-label">Document File</label>
+                                <input type="file" class="form-control" id="documentFile" accept=".pdf,.docx,.txt" required>
+                                <div class="form-text">Supported formats: PDF, DOCX, TXT</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-upload me-2"></i>Upload Document
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents and History -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-file-alt me-2"></i>Documents</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="documents-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Tags</th>
+                                        <th>Upload Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documents-tbody">
+                                    <!-- Documents will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history me-2"></i>Query History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="query-history">
+                            <!-- Query history will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Details Modal -->
+    <div class="modal fade" id="documentDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Document Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="documentDetailsContent">
+                    <!-- Document details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="downloadDocument()">Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/rag.js') }}"></script>
+</body>
+</html>
