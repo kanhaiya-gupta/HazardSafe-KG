@@ -6,6 +6,8 @@ A comprehensive software platform for structured analysis and processing of safe
 
 ## 🏗️ Architecture Overview
 
+The HazardSafe-KG platform features a modular architecture with integrated components for comprehensive safety analysis. The system architecture is available as an interactive flowchart within the web application at `/system-flowchart`.
+
 ```
 HazardSafe-KG/
 ├── webapp/                 # FastAPI GUI hub
@@ -15,6 +17,7 @@ HazardSafe-KG/
 │   ├── rag/              # RAG system module
 │   ├── static/           # CSS, JS, and assets
 │   └── templates/        # HTML templates
+│       └── architecture/ # System architecture flowchart
 ├── ontology/             # Ontology source files
 ├── kg/                   # Knowledge Graph storage
 ├── ingestion/            # Document ingestion pipeline
@@ -162,6 +165,15 @@ A: "Polyethylene containers are suitable for storing sulfuric acid. These contai
 Q: "What safety measures are required for chemical storage?"
 A: "Safety measures include proper ventilation, PPE (personal protective equipment), and spill containment procedures. Storage areas must have proper ventilation and emergency response equipment."
 ```
+
+## Features
+
+- **Ontology Management**: Create, edit, and manage semantic ontologies for hazardous substances
+- **Knowledge Graph**: Neo4j-based graph database for storing and querying safety relationships
+- **RAG System**: AI-powered document processing and retrieval-augmented generation
+- **Validation Engine**: SHACL-based validation rules for data quality assurance
+- **System Architecture**: Interactive flowchart showing system components and data flow
+- **Web Interface**: Modern, responsive UI for all platform features
 
 ## 🚀 Getting Started
 

@@ -193,5 +193,14 @@ async def internal_error_handler(request: Request, exc: HTTPException):
         status_code=500
     )
 
+@app.get("/system-flowchart")
+async def system_flowchart(request: Request):
+    """Serve the system architecture flowchart"""
+    return templates.TemplateResponse("architecture/index.html", {"request": request})
+
+@app.get("/kg")
+async def kg(request: Request):
+    return templates.TemplateResponse("kg/index.html", {"request": request})
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
