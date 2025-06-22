@@ -7,6 +7,207 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .rag-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .rag-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .rag-header .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .stats-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .stats-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            margin: 0 auto 10px;
+            background: #3498db;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .feature-card .card-header {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+        }
+        
+        .feature-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .quick-question-btn {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 3px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .quick-question-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+            min-height: 50px;
+        }
+        
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #ecf0f1;
+        }
+        
+        .ai-response-area {
+            min-height: 250px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .document-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .document-table .table {
+            margin: 0;
+        }
+        
+        .document-table .table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: none;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .document-table .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        .history-item {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border-left: 3px solid #3498db;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            padding: 10px 12px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+        
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+        
+        .container {
+            max-width: 1400px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -40,59 +241,68 @@
         </div>
     </nav>
 
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <div class="col-12">
-                <h1><i class="fas fa-search text-success me-3"></i>RAG System</h1>
-                <p class="lead">AI-powered document analysis and safety information retrieval</p>
-            </div>
+    <!-- Header Section -->
+    <div class="rag-header">
+        <div class="container">
+            <h1><i class="fas fa-search me-2"></i>RAG System</h1>
+            <p class="lead">AI-powered document analysis and safety information retrieval</p>
         </div>
+    </div>
 
+    <div class="container">
         <!-- Statistics Cards -->
-        <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
-                        <h4 id="document-count">0</h4>
-                        <p class="text-muted">Documents</p>
+        <div class="row mb-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4 class="text-primary mb-1" id="document-count">0</h4>
+                        <p class="text-muted mb-0 small">Documents</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-question-circle fa-2x text-success mb-2"></i>
-                        <h4 id="query-count">0</h4>
-                        <p class="text-muted">Queries</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h4 class="text-success mb-1" id="query-count">0</h4>
+                        <p class="text-muted mb-0 small">Queries</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-tags fa-2x text-info mb-2"></i>
-                        <h4 id="document-types">0</h4>
-                        <p class="text-muted">Document Types</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h4 class="text-info mb-1" id="document-types">0</h4>
+                        <p class="text-muted mb-0 small">Document Types</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-brain fa-2x text-warning mb-2"></i>
-                        <h4 id="total-tags">0</h4>
-                        <p class="text-muted">Total Tags</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="text-warning mb-1" id="total-tags">0</h4>
+                        <p class="text-muted mb-0 small">Total Tags</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="row mt-4">
-            <!-- Query Panel -->
-            <div class="col-md-6">
-                <div class="card">
+        <div class="row">
+            <!-- Left Panel: Query + History -->
+            <div class="col-lg-6">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-question-circle me-2"></i>Ask Questions</h5>
                     </div>
@@ -100,12 +310,12 @@
                         <form id="queryForm">
                             <div class="mb-3">
                                 <label for="questionInput" class="form-label">Your Question</label>
-                                <textarea class="form-control" id="questionInput" rows="4" placeholder="Ask about safety information, container compatibility, or regulatory requirements..."></textarea>
+                                <textarea class="form-control" id="questionInput" rows="3" placeholder="Ask about safety information, container compatibility, or regulatory requirements..."></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="contextType" class="form-label">Context Type</label>
-                                    <select class="form-control" id="contextType">
+                                    <select class="form-select" id="contextType">
                                         <option value="all">All Documents</option>
                                         <option value="safety_data_sheet">Safety Data Sheets</option>
                                         <option value="technical_specification">Technical Specifications</option>
@@ -120,62 +330,77 @@
                             </div>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="includeSources" checked>
-                                <label class="form-check-label" for="includeSources">
+                                <label class="form-check-label small" for="includeSources">
                                     Include source citations
                                 </label>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-primary btn-custom w-100">
                                 <i class="fas fa-search me-2"></i>Ask Question
                             </button>
                         </form>
 
-                        <hr>
+                        <hr class="my-3">
 
-                        <h6>Quick Questions</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What containers are suitable for storing sulfuric acid?')">
-                                Container compatibility for sulfuric acid
+                        <h6 class="fw-bold mb-2">Quick Questions</h6>
+                        <div class="text-center">
+                            <button class="quick-question-btn" onclick="loadQuickQuestion('What containers are suitable for storing sulfuric acid?')">
+                                Container compatibility
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What safety measures are required for chemical storage?')">
-                                Chemical storage safety measures
+                            <button class="quick-question-btn" onclick="loadQuickQuestion('What safety measures are required for chemical storage?')">
+                                Safety measures
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('How to test container corrosion resistance?')">
-                                Corrosion resistance testing
+                            <button class="quick-question-btn" onclick="loadQuickQuestion('How to test container corrosion resistance?')">
+                                Corrosion testing
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuestion('What are the regulatory requirements for hazardous chemical storage?')">
+                            <button class="quick-question-btn" onclick="loadQuickQuestion('What are the regulatory requirements for hazardous chemical storage?')">
                                 Regulatory requirements
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Query History -->
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history me-2"></i>Query History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="query-history">
+                            <!-- Query history will be loaded here -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Results Panel -->
-            <div class="col-md-6">
-                <div class="card">
+            <!-- Right Panel: Results + Upload -->
+            <div class="col-lg-6">
+                <div class="feature-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5><i class="fas fa-lightbulb me-2"></i>AI Response</h5>
                         <div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="clearResults()">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="clearResults()">
                                 <i class="fas fa-trash"></i> Clear
                             </button>
-                            <button class="btn btn-sm btn-outline-success" onclick="exportResults()">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="exportResults()">
                                 <i class="fas fa-download"></i> Export
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="query-results">
-                            <div class="text-center text-muted py-5">
-                                <i class="fas fa-robot fa-3x mb-3"></i>
-                                <p>Ask a question to get AI-powered safety insights</p>
+                            <div class="ai-response-area">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-robot fa-3x mb-2" style="color: #3498db;"></i>
+                                    <h6>Ready to Answer</h6>
+                                    <p class="small mb-0">Ask a question to get AI-powered safety insights</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Document Upload -->
-                <div class="card mt-3">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-upload me-2"></i>Upload Document</h5>
                     </div>
@@ -192,7 +417,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="documentType" class="form-label">Document Type</label>
-                                    <select class="form-control" id="documentType" required>
+                                    <select class="form-select" id="documentType" required>
                                         <option value="">Select type...</option>
                                         <option value="safety_data_sheet">Safety Data Sheet</option>
                                         <option value="technical_specification">Technical Specification</option>
@@ -202,16 +427,20 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="documentTags" class="form-label">Tags (comma-separated)</label>
+                                    <label for="documentTags" class="form-label">Tags</label>
                                     <input type="text" class="form-control" id="documentTags" placeholder="sulfuric_acid, corrosive, storage">
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="documentFile" class="form-label">Document File</label>
-                                <input type="file" class="form-control" id="documentFile" accept=".pdf,.docx,.txt" required>
-                                <div class="form-text">Supported formats: PDF, DOCX, TXT</div>
+                                <div class="upload-area" onclick="document.getElementById('documentFile').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-1x text-muted mb-1"></i>
+                                    <p class="mb-0 small">Click to browse or drag and drop</p>
+                                    <p class="text-muted small mb-0">Supported: PDF, DOCX, TXT</p>
+                                    <input type="file" id="documentFile" accept=".pdf,.docx,.txt" style="display: none;" required>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-primary btn-custom w-100">
                                 <i class="fas fa-upload me-2"></i>Upload Document
                             </button>
                         </form>
@@ -220,16 +449,16 @@
             </div>
         </div>
 
-        <!-- Documents and History -->
-        <div class="row mt-4">
-            <div class="col-md-8">
-                <div class="card">
+        <!-- Documents Table -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-file-alt me-2"></i>Documents</h5>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="documents-table">
+                    <div class="card-body p-0">
+                        <div class="document-table">
+                            <table class="table table-hover mb-0" id="documents-table">
                                 <thead>
                                     <tr>
                                         <th>Title</th>
@@ -243,19 +472,6 @@
                                     <!-- Documents will be loaded here -->
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-history me-2"></i>Query History</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="query-history">
-                            <!-- Query history will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -282,8 +498,13 @@
         </div>
     </div>
 
+    <footer class="bg-dark text-light mt-4 py-3">
+        <div class="container text-center">
+            <p class="mb-0 small">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
     <script src="{{ url_for('static', path='/js/rag.js') }}"></script>
 </body>
 </html>
