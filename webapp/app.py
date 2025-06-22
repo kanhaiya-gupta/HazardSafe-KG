@@ -20,6 +20,7 @@ from webapp.ontology.routes import router as ontology_router
 from webapp.kg.routes import router as kg_router
 from webapp.rag.routes import router as rag_router
 from webapp.validation.routes import router as validation_router
+from webapp.quality.routes import router as quality_router
 
 # Import backend modules
 from ontology.manager import init_ontology_manager
@@ -76,6 +77,7 @@ app.include_router(ontology_router)
 app.include_router(kg_router)
 app.include_router(rag_router)
 app.include_router(validation_router)
+app.include_router(quality_router)
 
 @app.on_event("startup")
 async def startup_event():

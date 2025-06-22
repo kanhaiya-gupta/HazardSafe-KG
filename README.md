@@ -25,6 +25,8 @@ HazardSafe-KG/
 │   ├── ontology/          # Ontology management module
 │   ├── kg/               # Knowledge Graph module
 │   ├── rag/              # RAG system module
+│   ├── validation/         # Validation rules module
+│   ├── quality/          # Quality assessment module
 │   ├── static/           # CSS, JS, and assets
 │   └── templates/        # HTML templates
 │       └── architecture/ # System architecture flowchart
@@ -182,6 +184,7 @@ A: "Safety measures include proper ventilation, PPE (personal protective equipme
 - **Knowledge Graph**: Neo4j-based graph database for storing and querying safety relationships
 - **RAG System**: AI-powered document processing and retrieval-augmented generation
 - **Validation Engine**: SHACL-based validation rules for data quality assurance
+- **Quality Assessment**: Comprehensive data quality analysis with metrics, reports, and recommendations
 - **System Architecture**: Interactive flowchart showing system components and data flow
 - **Web Interface**: Modern, responsive UI for all platform features
 
@@ -246,30 +249,47 @@ HazardSafe-KG/
 │   │   └── routes.py       # Knowledge Graph API routes
 │   ├── rag/
 │   │   └── routes.py       # RAG API routes
+│   ├── validation/
+│   │   └── routes.py       # Validation API routes
+│   ├── quality/
+│   │   └── routes.py       # Quality assessment API routes
 │   ├── static/
 │   │   ├── css/
 │   │   │   └── main.css    # Main styles
-│   │   └── js/
-│   │       ├── main.js     # Common utilities
-│   │       ├── ontology.js # Ontology management
-│   │       └── kg.js       # Knowledge Graph visualization
+│   │   ├── js/
+│   │   │   ├── main.js     # Common utilities
+│   │   │   ├── ontology.js # Ontology management
+│   │   │   └── kg.js       # Knowledge Graph visualization
+│   │   └── reports/
+│   │       └── quality/    # Generated quality reports
 │   └── templates/
 │       ├── index.html      # Main dashboard
 │       ├── ontology/
 │       │   └── index.html  # Ontology management UI
 │       ├── kg/
 │       │   └── index.html  # Knowledge Graph UI
-│       └── rag/
-│           └── index.html  # RAG system UI
+│       ├── rag/
+│       │   └── index.html  # RAG system UI
+│       ├── validation/
+│       │   └── index.html  # Validation UI
+│       └── quality/
+│           ├── index.html  # Quality assessment UI
+│           └── dashboard.html # Quality dashboard
 ├── ontology/
 │   └── src/                # Ontology source files
 ├── kg/
 │   └── neo4j/              # Neo4j configuration
+├── quality/
+│   ├── metrics.py          # Quality metrics calculation
+│   ├── reports.py          # Report generation
+│   ├── utils.py            # Quality utilities
+│   └── tests/              # Quality tests
 ├── ingestion/
 │   └── haz_ingest.py       # Document ingestion
 ├── validation/
 │   └── rules.py            # Safety validation rules
-├── data/                   # Data storage
+├── data/
+│   └── quality/            # Quality configuration and data
 ├── tests/                  # Test suite
 ├── main.py                 # Application entry point
 └── README.md              # This file
