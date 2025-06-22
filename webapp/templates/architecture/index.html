@@ -342,7 +342,56 @@
     </div>
 
     <div class="container">
+        <!-- Statistics Cards -->
+        <div class="row mb-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <h4 class="text-primary mb-1">4</h4>
+                        <p class="text-muted mb-0 small">Core Modules</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h4 class="text-success mb-1">3</h4>
+                        <p class="text-muted mb-0 small">Database Types</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="text-info mb-1">5</h4>
+                        <p class="text-muted mb-0 small">AI Components</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4 class="text-warning mb-1">100%</h4>
+                        <p class="text-muted mb-0 small">Modular Design</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="content">
+            <!-- System Overview -->
             <div class="section">
                 <h2>System Overview</h2>
                 <div class="description">
@@ -354,7 +403,45 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Architecture Components -->
+            <div class="section">
+                <h2>Architecture Components</h2>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-server me-2"></i>Backend Services</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li><strong>FastAPI:</strong> High-performance web framework</li>
+                                    <li><strong>Neo4j:</strong> Graph database for knowledge storage</li>
+                                    <li><strong>Vector Database:</strong> Semantic search and embeddings</li>
+                                    <li><strong>LLM APIs:</strong> OpenAI/Anthropic integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-desktop me-2"></i>Frontend Interface</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li><strong>Bootstrap:</strong> Responsive UI framework</li>
+                                    <li><strong>D3.js:</strong> Interactive graph visualization</li>
+                                    <li><strong>JavaScript:</strong> Dynamic interactions</li>
+                                    <li><strong>HTML/CSS:</strong> Modern web standards</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
+            <!-- Complete System Flowchart -->
             <div class="section">
                 <h2>Complete System Flowchart</h2>
                 <div class="controls">
@@ -739,6 +826,104 @@
                         <li><strong>D3.js/Cytoscape.js:</strong> Interactive knowledge graph visualization</li>
                         <li><strong>Bootstrap:</strong> Responsive UI components and styling</li>
                         <li><strong>Chart.js:</strong> Data visualization and analytics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Data Flow & Security -->
+            <div class="section">
+                <h2>Data Flow & Security</h2>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-shield-alt me-2"></i>Security Features</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li><strong>Input Validation:</strong> SHACL-based data validation</li>
+                                    <li><strong>API Security:</strong> Rate limiting and authentication</li>
+                                    <li><strong>Data Encryption:</strong> Sensitive data protection</li>
+                                    <li><strong>Audit Logging:</strong> Complete activity tracking</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-exchange-alt me-2"></i>Data Flow</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li><strong>Document Ingestion:</strong> PDF → Text → Entities</li>
+                                    <li><strong>Knowledge Processing:</strong> Entities → Graph → Relationships</li>
+                                    <li><strong>Query Processing:</strong> NL → Intent → Results</li>
+                                    <li><strong>Response Generation:</strong> Sources → Synthesis → Answer</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deployment & Scalability -->
+            <div class="section">
+                <h2>Deployment & Scalability</h2>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-cloud me-2"></i>Cloud Ready</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">Containerized deployment with Docker and Kubernetes support for horizontal scaling and high availability.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-tachometer-alt me-2"></i>Performance</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">Optimized for high-throughput processing with caching, indexing, and load balancing capabilities.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="feature-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-sync me-2"></i>Monitoring</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">Comprehensive monitoring with metrics, logging, and alerting for production environments.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration Capabilities -->
+            <div class="section">
+                <h2>Integration Capabilities</h2>
+                <div class="description">
+                    <h3>External Systems Integration</h3>
+                    <ul>
+                        <li><strong>ERP Systems:</strong> SAP, Oracle, Microsoft Dynamics integration</li>
+                        <li><strong>Safety Databases:</strong> Chemical safety databases and regulatory systems</li>
+                        <li><strong>Document Management:</strong> SharePoint, Documentum, Alfresco</li>
+                        <li><strong>API Ecosystem:</strong> RESTful APIs for third-party integrations</li>
+                        <li><strong>Real-time Feeds:</strong> Live data from sensors and monitoring systems</li>
+                    </ul>
+                    
+                    <h3>Standards Compliance</h3>
+                    <ul>
+                        <li><strong>ISO 14001:</strong> Environmental management standards</li>
+                        <li><strong>OSHA Guidelines:</strong> Occupational safety and health</li>
+                        <li><strong>REACH Compliance:</strong> Chemical safety regulations</li>
+                        <li><strong>GHS Classification:</strong> Global harmonized system</li>
+                        <li><strong>Industry 4.0:</strong> Smart manufacturing standards</li>
                     </ul>
                 </div>
             </div>
