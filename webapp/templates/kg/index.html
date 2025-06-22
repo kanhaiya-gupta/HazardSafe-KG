@@ -206,66 +206,75 @@
         </div>
     </nav>
 
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <div class="col-12">
-                <h1><i class="fas fa-project-diagram text-info me-3"></i>Knowledge Graph Explorer</h1>
-                <p class="lead">Explore and query the safety knowledge graph</p>
-            </div>
+    <!-- Header Section -->
+    <div class="kg-header">
+        <div class="container">
+            <h1><i class="fas fa-project-diagram me-2"></i>Knowledge Graph Explorer</h1>
+            <p class="lead">Explore and query the safety knowledge graph</p>
         </div>
+    </div>
 
+    <div class="container">
         <!-- Statistics Cards -->
-        <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-circle fa-2x text-primary mb-2"></i>
-                        <h4 id="node-count">0</h4>
-                        <p class="text-muted">Nodes</p>
+        <div class="row mb-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <h4 class="text-primary mb-1" id="node-count">0</h4>
+                        <p class="text-muted mb-0 small">Nodes</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-link fa-2x text-success mb-2"></i>
-                        <h4 id="relationship-count">0</h4>
-                        <p class="text-muted">Relationships</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h4 class="text-success mb-1" id="relationship-count">0</h4>
+                        <p class="text-muted mb-0 small">Relationships</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-tags fa-2x text-info mb-2"></i>
-                        <h4 id="node-types">0</h4>
-                        <p class="text-muted">Node Types</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h4 class="text-info mb-1" id="node-types">0</h4>
+                        <p class="text-muted mb-0 small">Node Types</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-arrows-alt-h fa-2x text-warning mb-2"></i>
-                        <h4 id="relationship-types">0</h4>
-                        <p class="text-muted">Relationship Types</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="card-body text-center">
+                        <div class="stats-icon">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                        <h4 class="text-warning mb-1" id="relationship-types">0</h4>
+                        <p class="text-muted mb-0 small">Relationship Types</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="row mt-4">
+        <div class="row">
             <!-- Query Panel -->
             <div class="col-md-4">
-                <div class="card">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-search me-2"></i>Query Knowledge Graph</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="queryType" class="form-label">Query Type</label>
-                            <select class="form-control" id="queryType">
+                            <select class="form-select" id="queryType">
                                 <option value="cypher">Cypher (Neo4j)</option>
                                 <option value="sparql">SPARQL</option>
                                 <option value="natural">Natural Language</option>
@@ -279,7 +288,7 @@
                             <label for="queryLimit" class="form-label">Limit Results</label>
                             <input type="number" class="form-control" id="queryLimit" value="100" min="1" max="1000">
                         </div>
-                        <button class="btn btn-primary w-100" onclick="executeQuery()">
+                        <button class="btn btn-primary btn-custom w-100" onclick="executeQuery()">
                             <i class="fas fa-play me-2"></i>Execute Query
                         </button>
                         
@@ -287,16 +296,16 @@
                         
                         <h6>Quick Queries</h6>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:HazardousSubstance) RETURN n LIMIT 10')">
+                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:HazardousSubstance) RETURN n LIMIT 10')">
                                 All Hazardous Substances
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:Container) RETURN n LIMIT 10')">
+                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:Container) RETURN n LIMIT 10')">
                                 All Containers
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (n:SafetyTest) RETURN n LIMIT 10')">
+                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:SafetyTest) RETURN n LIMIT 10')">
                                 All Safety Tests
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="loadQuickQuery('MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) RETURN s, r, c')">
+                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) RETURN s, r, c')">
                                 Substances and Containers
                             </button>
                         </div>
@@ -304,7 +313,7 @@
                 </div>
 
                 <!-- Search Panel -->
-                <div class="card mt-3">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-search me-2"></i>Search Nodes</h5>
                     </div>
@@ -315,7 +324,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="searchNodeType" class="form-label">Node Type (Optional)</label>
-                            <select class="form-control" id="searchNodeType">
+                            <select class="form-select" id="searchNodeType">
                                 <option value="">All Types</option>
                                 <option value="HazardousSubstance">Hazardous Substance</option>
                                 <option value="Container">Container</option>
@@ -323,14 +332,14 @@
                                 <option value="RiskAssessment">Risk Assessment</option>
                             </select>
                         </div>
-                        <button class="btn btn-success w-100" onclick="searchNodes()">
+                        <button class="btn btn-success btn-custom w-100" onclick="searchNodes()">
                             <i class="fas fa-search me-2"></i>Search
                         </button>
                     </div>
                 </div>
 
                 <!-- Path Finding -->
-                <div class="card mt-3">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-route me-2"></i>Path Finding</h5>
                     </div>
@@ -347,7 +356,7 @@
                             <label for="maxDepth" class="form-label">Max Depth</label>
                             <input type="number" class="form-control" id="maxDepth" value="3" min="1" max="10">
                         </div>
-                        <button class="btn btn-warning w-100" onclick="findPath()">
+                        <button class="btn btn-warning btn-custom w-100" onclick="findPath()">
                             <i class="fas fa-route me-2"></i>Find Path
                         </button>
                     </div>
@@ -356,7 +365,7 @@
 
             <!-- Visualization Panel -->
             <div class="col-md-8">
-                <div class="card">
+                <div class="feature-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5><i class="fas fa-chart-network me-2"></i>Knowledge Graph Visualization</h5>
                         <div>
@@ -378,9 +387,9 @@
         </div>
 
         <!-- Results Panel -->
-        <div class="row mt-4">
+        <div class="row mt-3">
             <div class="col-12">
-                <div class="card">
+                <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-list me-2"></i>Query Results</h5>
                     </div>
@@ -412,6 +421,12 @@
             </div>
         </div>
     </div>
+
+    <footer class="bg-dark text-light mt-4 py-3">
+        <div class="container text-center">
+            <p class="mb-0 small">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', path='/js/main.js') }}"></script>
