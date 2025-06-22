@@ -15,7 +15,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -89,9 +89,9 @@
         .flowchart-container {
             background: #f8f9fa;
             border-radius: 10px;
-            padding: 30px;
+            padding: 40px;
             margin: 20px 0;
-            min-height: 400px;
+            min-height: 700px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -99,9 +99,21 @@
         
         .mermaid {
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1400px;
+        }
+        
+        .mermaid svg {
+            width: 100% !important;
+            height: auto !important;
+            max-width: none !important;
+        }
+        
+        .mermaid svg g {
+            /* Remove the problematic scaling */
         }
         
         .description {
@@ -168,6 +180,10 @@
                 padding: 10px 20px;
                 font-size: 14px;
             }
+        }
+        
+        #example-flowchart svg {
+            min-height: 600px !important;
         }
     </style>
 </head>
@@ -380,32 +396,35 @@
                     
                     <div class="mermaid" id="example-flowchart" style="display: none;">
                         graph TD
-                            %% Chemical Nodes
+                            %% Chemical Nodes - Top Row
                             H2SO4[H2SO4<br/>Sulfuric Acid<br/>Corrosive Liquid]
                             NaOH[NaOH<br/>Sodium Hydroxide<br/>Corrosive Solid]
                             HCl[HCl<br/>Hydrochloric Acid<br/>Corrosive Liquid]
                             Toluene[Toluene<br/>C7H8<br/>Flammable Liquid]
                             Acetone[Acetone<br/>C3H6O<br/>Flammable Liquid]
                             
-                            %% Hazard Class Nodes
+                            %% Hazard Class Nodes - Second Row
                             Corrosive[Corrosive Hazard<br/>GHS05<br/>Skin/Eye Damage]
                             Flammable[Flammable Hazard<br/>GHS02<br/>Fire Risk]
                             
-                            %% Storage Location Nodes
+                            %% Storage Location Nodes - Third Row
                             LabStorage[Laboratory Storage<br/>Building A, Room 101<br/>Chemical Cabinet]
                             WarehouseStorage[Warehouse Storage<br/>Building B, Warehouse 1<br/>Bulk Storage]
                             
-                            %% PPE Nodes
+                            %% PPE Nodes - Fourth Row
                             Gloves[Chemical Resistant Gloves<br/>Nitrile Material<br/>Hand Protection]
                             Goggles[Safety Goggles<br/>Polycarbonate<br/>Eye Protection]
                             
-                            %% Procedure Nodes
+                            %% Procedure Nodes - Fifth Row
                             SpillResponse[Spill Response Procedure<br/>Emergency Protocol<br/>8 Steps]
                             WasteDisposal[Waste Disposal Procedure<br/>Operational Protocol<br/>6 Steps]
                             
-                            %% Regulation Nodes
+                            %% Regulation Nodes - Bottom Row
                             OSHA[OSHA 1910.1200<br/>Hazard Communication<br/>SDS Requirements]
                             EPA[EPA TSCA<br/>Toxic Substances<br/>Chemical Regulation]
+                            
+                            %% Layout - Arrange nodes in rows
+                            H2SO4 --- NaOH --- HCl --- Toluene --- Acetone
                             
                             %% Relationships - Hazard Classes
                             H2SO4 -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
@@ -587,8 +606,13 @@
             flowchart: {
                 useMaxWidth: true,
                 htmlLabels: true,
-                curve: 'basis'
-            }
+                curve: 'basis',
+                nodeSpacing: 100,
+                rankSpacing: 120,
+                diagramPadding: 30
+            },
+            fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+            fontSize: 18
         });
         
         // Store original content of each flowchart
