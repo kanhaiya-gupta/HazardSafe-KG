@@ -3,10 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HazardSafe-KG - Safety Analysis Platform</title>
+    <title>HazardSafe-KG - AI-Powered Safety Analysis Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-section .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .stats-section {
+            background: #f8f9fa;
+            padding: 60px 0;
+            margin: 60px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .btn-custom {
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            font-size: 1.2rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -37,142 +156,124 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-12">
-                <div class="jumbotron bg-light p-5 rounded">
-                    <h1 class="display-4">
-                        <i class="fas fa-shield-alt text-primary me-3"></i>
-                        Welcome to HazardSafe-KG
-                    </h1>
-                    <p class="lead">
-                        Unified platform for structured analysis and processing of safety-relevant technical documents 
-                        in the field of hazardous substances.
-                    </p>
-                    <hr class="my-4">
-                    <p>
-                        This platform integrates ontology management, knowledge graph generation, 
-                        retrieval-augmented generation, and validation systems for comprehensive safety analysis.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-brain fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Ontology & Knowledge Graph</h5>
-                        <p class="card-text">
-                            Model key concepts like substances, containers, tests, and risks using semantic technologies.
-                        </p>
-                        <a href="/ontology" class="btn btn-primary">
-                            <i class="fas fa-arrow-right me-2"></i>Manage Ontology
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-search fa-3x text-success mb-3"></i>
-                        <h5 class="card-title">RAG System</h5>
-                        <p class="card-text">
-                            Extract and validate safety information from documents using AI-powered retrieval.
-                        </p>
-                        <a href="/rag" class="btn btn-success">
-                            <i class="fas fa-arrow-right me-2"></i>Use RAG
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-project-diagram fa-3x text-info mb-3"></i>
-                        <h5 class="card-title">Knowledge Graph</h5>
-                        <p class="card-text">
-                            Visualize and query the knowledge graph for safety insights and relationships.
-                        </p>
-                        <a href="/kg" class="btn btn-info">
-                            <i class="fas fa-arrow-right me-2"></i>Explore KG
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-sitemap fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">System Architecture</h5>
-                        <p class="card-text">
-                            Explore the complete system architecture and data flow diagrams.
-                        </p>
-                        <a href="/system-flowchart" class="btn btn-warning">
-                            <i class="fas fa-arrow-right me-2"></i>View Architecture
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-chart-line me-2"></i>Platform Statistics</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-md-3">
-                                <div class="stat-item">
-                                    <h3 class="text-primary" id="ontology-count">0</h3>
-                                    <p>Ontology Classes</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-item">
-                                    <h3 class="text-success" id="kg-nodes">0</h3>
-                                    <p>KG Nodes</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-item">
-                                    <h3 class="text-info" id="kg-relationships">0</h3>
-                                    <p>KG Relationships</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-item">
-                                    <h3 class="text-warning" id="documents">0</h3>
-                                    <p>Documents Processed</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-section">
-            <h1>HazardSafe-KG</h1>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1><i class="fas fa-shield-alt me-3"></i>HazardSafe-KG</h1>
             <p class="subtitle">AI-Powered Knowledge Management for Hazardous Substances</p>
-            <div class="hero-buttons">
-                <a href="/ontology" class="btn btn-primary">Ontology Management</a>
-                <a href="/kg" class="btn btn-primary">Knowledge Graph</a>
-                <a href="/rag" class="btn btn-primary">RAG System</a>
-                <a href="/system-flowchart" class="btn btn-secondary">System Architecture</a>
+            <p class="lead mb-4">Unified platform for structured analysis and processing of safety-relevant technical documents</p>
+            <a href="/system-flowchart" class="btn btn-light btn-custom me-3">
+                <i class="fas fa-sitemap me-2"></i>View Architecture
+            </a>
+            <a href="/ontology" class="btn btn-outline-light btn-custom">
+                <i class="fas fa-rocket me-2"></i>Get Started
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container">
+        <div class="section-title">
+            <h2>Platform Features</h2>
+            <p>Comprehensive safety analysis through integrated AI and knowledge management</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Ontology Management</h3>
+                    <p>Create and manage semantic ontologies for hazardous substances using OWL, RDF, and SHACL technologies.</p>
+                    <a href="/ontology" class="btn btn-primary btn-custom">
+                        <i class="fas fa-arrow-right me-2"></i>Manage
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Knowledge Graph</h3>
+                    <p>Interactive exploration and querying of safety data using Neo4j with advanced visualization capabilities.</p>
+                    <a href="/kg" class="btn btn-info btn-custom">
+                        <i class="fas fa-arrow-right me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>RAG System</h3>
+                    <p>AI-powered document analysis and question answering using vector search and language models.</p>
+                    <a href="/rag" class="btn btn-success btn-custom">
+                        <i class="fas fa-arrow-right me-2"></i>Query
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <h3>Validation Engine</h3>
+                    <p>SHACL-based validation rules for data quality assurance and safety compliance verification.</p>
+                    <a href="/system-flowchart" class="btn btn-warning btn-custom">
+                        <i class="fas fa-arrow-right me-2"></i>Learn More
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <footer class="bg-dark text-light mt-5 py-4">
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Platform Statistics</h2>
+                <p>Real-time insights into your safety knowledge base</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number text-primary" id="ontology-count">0</div>
+                        <div class="stat-label">Ontology Classes</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number text-success" id="kg-nodes">0</div>
+                        <div class="stat-label">Knowledge Graph Nodes</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number text-info" id="kg-relationships">0</div>
+                        <div class="stat-label">Graph Relationships</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number text-warning" id="documents">0</div>
+                        <div class="stat-label">Documents Processed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-            <p>&copy; 2024 HazardSafe-KG. Safety analysis platform for hazardous substances.</p>
+            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
         </div>
     </footer>
 
