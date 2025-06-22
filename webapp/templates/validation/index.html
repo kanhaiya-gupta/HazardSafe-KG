@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Engine - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .validation-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        .validation-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .result-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .result-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .result-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+        .rule-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rag">RAG System</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/system-flowchart">Architecture</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/validation">Validation</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="validation-header">
+        <div class="container">
+            <h1><i class="fas fa-shield-check me-3"></i>Validation Engine</h1>
+            <p class="lead">SHACL-based validation rules for data quality assurance and safety compliance verification</p>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Statistics Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="validation-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-rules"></i>
+                        </div>
+                        <h5>Validation Rules</h5>
+                        <h3 class="text-primary" id="rules-count">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="validation-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h5>Data Types</h5>
+                        <h3 class="text-success" id="data-types-count">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="validation-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h5>Total Rules</h5>
+                        <h3 class="text-info" id="total-rules-count">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="validation-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5>Status</h5>
+                        <h3 class="text-warning" id="status">Active</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- CSV Validation -->
+            <div class="col-lg-6">
+                <div class="validation-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-file-csv me-2"></i>CSV Data Validation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="csv-validation-form">
+                            <div class="mb-3">
+                                <label for="data-type" class="form-label">Data Type</label>
+                                <select class="form-select" id="data-type" required>
+                                    <option value="">Select data type...</option>
+                                    <option value="substances">Hazardous Substances</option>
+                                    <option value="containers">Containers</option>
+                                    <option value="tests">Safety Tests</option>
+                                    <option value="assessments">Risk Assessments</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Upload CSV File</label>
+                                <div class="upload-area" id="upload-area">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <p class="mb-2">Drag and drop CSV file here or click to browse</p>
+                                    <input type="file" id="csv-file" accept=".csv" style="display: none;">
+                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('csv-file').click()">
+                                        Choose File
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-check me-2"></i>Validate CSV
+                            </button>
+                        </form>
+                        <div id="csv-validation-result"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Data Validation -->
+            <div class="col-lg-6">
+                <div class="validation-card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-database me-2"></i>Data Object Validation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="data-validation-form">
+                            <div class="mb-3">
+                                <label for="data-type-obj" class="form-label">Data Type</label>
+                                <select class="form-select" id="data-type-obj" required>
+                                    <option value="">Select data type...</option>
+                                    <option value="substances">Hazardous Substances</option>
+                                    <option value="containers">Containers</option>
+                                    <option value="tests">Safety Tests</option>
+                                    <option value="assessments">Risk Assessments</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="data-json" class="form-label">Data (JSON Format)</label>
+                                <textarea class="form-control" id="data-json" rows="6" placeholder='{"name": "Sulfuric Acid", "hazard_class": "corrosive", "molecular_weight": 98.08}'></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Validate Data
+                            </button>
+                        </form>
+                        <div id="data-validation-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Compatibility Check -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="validation-card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-link me-2"></i>Substance-Container Compatibility Check</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Substance Data</h6>
+                                <textarea class="form-control" id="substance-data" rows="4" placeholder='{"name": "Sulfuric Acid", "hazard_class": "corrosive", "chemical_formula": "H2SO4"}'></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Container Data</h6>
+                                <textarea class="form-control" id="container-data" rows="4" placeholder='{"name": "Polyethylene Container", "material": "plastic", "capacity": 1000}'></textarea>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-info" onclick="checkCompatibility()">
+                                <i class="fas fa-link me-2"></i>Check Compatibility
+                            </button>
+                        </div>
+                        <div id="compatibility-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Chemical Formula Validation -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="validation-card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5><i class="fas fa-flask me-2"></i>Chemical Formula Validation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="chemical-formula" placeholder="Enter chemical formula (e.g., H2SO4, C6H12O6)">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-warning w-100" onclick="validateFormula()">
+                                    <i class="fas fa-check me-2"></i>Validate Formula
+                                </button>
+                            </div>
+                        </div>
+                        <div id="formula-validation-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Validation Rules -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="validation-card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class="fas fa-book me-2"></i>Validation Rules</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <select class="form-select" id="rules-selector" onchange="loadRules()">
+                                <option value="">Select data type to view rules...</option>
+                                <option value="substances">Hazardous Substances</option>
+                                <option value="containers">Containers</option>
+                                <option value="tests">Safety Tests</option>
+                                <option value="assessments">Risk Assessments</option>
+                            </select>
+                        </div>
+                        <div id="rules-display"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-dark text-light mt-5 py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', path='/js/validation.js') }}"></script>
+</body>
+</html> 

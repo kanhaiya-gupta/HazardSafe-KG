@@ -19,6 +19,7 @@ load_dotenv()
 from webapp.ontology.routes import router as ontology_router
 from webapp.kg.routes import router as kg_router
 from webapp.rag.routes import router as rag_router
+from webapp.validation.routes import router as validation_router
 
 # Import backend modules
 from ontology.src.manager import init_ontology_manager
@@ -74,6 +75,7 @@ templates = Jinja2Templates(directory="webapp/templates")
 app.include_router(ontology_router)
 app.include_router(kg_router)
 app.include_router(rag_router)
+app.include_router(validation_router)
 
 @app.on_event("startup")
 async def startup_event():
