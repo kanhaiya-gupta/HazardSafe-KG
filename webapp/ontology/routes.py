@@ -12,7 +12,7 @@ from pathlib import Path
 import logging
 import tempfile
 import os
-from ontology.src.manager import ontology_manager
+from ontology.manager import ontology_manager
 import uuid
 from datetime import datetime
 

@@ -125,7 +125,7 @@
         }
         
         .ai-response-area {
-            min-height: 250px;
+            min-height: 350px;
             background: #f8f9fa;
             border-radius: 8px;
             padding: 20px;
@@ -332,6 +332,41 @@
                                     <input type="number" class="form-control" id="maxResults" value="5" min="1" max="20">
                                 </div>
                             </div>
+                            
+                            <!-- Model Configuration Section -->
+                            <div class="mb-3">
+                                <h6 class="fw-bold mb-2 text-primary">
+                                    <i class="fas fa-cogs me-2"></i>Model Configuration
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="llmModel" class="form-label">LLM Model</label>
+                                        <select class="form-select" id="llmModel">
+                                            <option value="gpt-4">GPT-4</option>
+                                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+                                            <option value="claude-3">Claude-3</option>
+                                            <option value="local-llm">Local LLM</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="embeddingModel" class="form-label">Embedding Model</label>
+                                        <select class="form-select" id="embeddingModel">
+                                            <option value="text-embedding-ada-002" selected>OpenAI Ada-002</option>
+                                            <option value="all-MiniLM-L6-v2">Sentence Transformers</option>
+                                            <option value="local-embeddings">Local Embeddings</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="retrieverType" class="form-label">Retriever Type</label>
+                                        <select class="form-select" id="retrieverType">
+                                            <option value="dense" selected>Dense Retrieval</option>
+                                            <option value="sparse">Sparse Retrieval</option>
+                                            <option value="hybrid">Hybrid Retrieval</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="includeSources" checked>
                                 <label class="form-check-label small" for="includeSources">

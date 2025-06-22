@@ -17,6 +17,9 @@ class RAGQuery(BaseModel):
     context_type: str = "all"  # all, safety, technical, regulatory
     max_results: int = 5
     include_sources: bool = True
+    llm_model: str = "gpt-3.5-turbo"  # gpt-4, gpt-3.5-turbo, claude-3, local-llm
+    embedding_model: str = "text-embedding-ada-002"  # text-embedding-ada-002, all-MiniLM-L6-v2, local-embeddings
+    retriever_type: str = "dense"  # dense, sparse, hybrid
 
 class DocumentUpload(BaseModel):
     title: str
@@ -125,14 +128,22 @@ async def get_documents(document_type: Optional[str] = None, tag: Optional[str] 
 async def query_rag(query: RAGQuery):
     """Query the RAG system"""
     # In production, this would use actual RAG pipeline with vector search
-    results = perform_rag_query(query.question, query.context_type, query.max_results)
+    results = perform_rag_query(
+        query.question, 
+        query.context_type, 
+        query.max_results,
+        query.llm_model,
+        query.embedding_model,
+        query.retriever_type
+    )
     
     response = {
         "answer": results["answer"],
         "confidence": results["confidence"],
         "sources": results["sources"] if query.include_sources else [],
         "query_id": str(uuid.uuid4()),
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+        "model_info": results.get("model_info", {})
     }
     
     return response
@@ -218,13 +229,17 @@ async def get_query_suggestions(query: str):
     return {"suggestions": suggestions[:5]}
 
 # Helper functions for RAG operations
-def perform_rag_query(question: str, context_type: str, max_results: int):
-    """Perform RAG query (placeholder implementation)"""
+def perform_rag_query(question: str, context_type: str, max_results: int, llm_model: str = "gpt-3.5-turbo", embedding_model: str = "text-embedding-ada-002", retriever_type: str = "dense"):
+    """Perform RAG query with model configuration"""
     # In production, this would:
-    # 1. Generate embeddings for the question
-    # 2. Search vector database for similar documents
+    # 1. Generate embeddings for the question using embedding_model
+    # 2. Search vector database using retriever_type (dense/sparse/hybrid)
     # 3. Retrieve relevant context
-    # 4. Generate answer using LLM
+    # 4. Generate answer using llm_model
+    
+    print(f"Using LLM Model: {llm_model}")
+    print(f"Using Embedding Model: {embedding_model}")
+    print(f"Using Retriever Type: {retriever_type}")
     
     # Simple keyword-based search for now
     relevant_docs = []
@@ -241,7 +256,7 @@ def perform_rag_query(question: str, context_type: str, max_results: int):
                 break
     
     if relevant_docs:
-        answer = generate_answer_from_documents(question, relevant_docs)
+        answer = generate_answer_from_documents(question, relevant_docs, llm_model)
         sources = [doc["id"] for doc in relevant_docs]
         confidence = 0.85  # Placeholder confidence score
     else:
@@ -252,10 +267,15 @@ def perform_rag_query(question: str, context_type: str, max_results: int):
     return {
         "answer": answer,
         "confidence": confidence,
-        "sources": sources
+        "sources": sources,
+        "model_info": {
+            "llm_model": llm_model,
+            "embedding_model": embedding_model,
+            "retriever_type": retriever_type
+        }
     }
 
-def generate_answer_from_documents(question: str, documents: List[Dict]):
+def generate_answer_from_documents(question: str, documents: List[Dict], llm_model: str = "gpt-3.5-turbo"):
     """Generate answer from relevant documents (placeholder)"""
     # In production, this would use an LLM to generate the answer
     # For now, return a simple summary

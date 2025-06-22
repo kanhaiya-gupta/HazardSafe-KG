@@ -128,6 +128,11 @@ async function submitQuery() {
     const contextType = document.getElementById('contextType').value;
     const maxResults = parseInt(document.getElementById('maxResults').value);
     const includeSources = document.getElementById('includeSources').checked;
+    
+    // Get model configuration
+    const llmModel = document.getElementById('llmModel').value;
+    const embeddingModel = document.getElementById('embeddingModel').value;
+    const retrieverType = document.getElementById('retrieverType').value;
 
     if (!question.trim()) {
         HazardSafeKG.showNotification('Please enter a question', 'warning');
@@ -146,7 +151,10 @@ async function submitQuery() {
                 question: question,
                 context_type: contextType,
                 max_results: maxResults,
-                include_sources: includeSources
+                include_sources: includeSources,
+                llm_model: llmModel,
+                embedding_model: embeddingModel,
+                retriever_type: retrieverType
             })
         });
 
