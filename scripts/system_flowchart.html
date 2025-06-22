@@ -63,6 +63,19 @@
             padding: 20px;
             margin: 20px 0;
             border: 1px solid #e9ecef;
+            min-height: 600px;
+        }
+        
+        .mermaid {
+            width: 100%;
+            min-height: 500px;
+            display: block !important;
+        }
+        
+        .mermaid svg {
+            width: 100%;
+            height: auto;
+            max-width: none;
         }
         
         .legend {
@@ -209,248 +222,186 @@
             <div class="section">
                 <h2>Complete System Flowchart</h2>
                 <div class="controls">
-                    <button class="btn active" onclick="showFlowchart('main')">Main Flow</button>
-                    <button class="btn" onclick="showFlowchart('detailed')">Detailed Flow</button>
-                    <button class="btn" onclick="showFlowchart('data')">Data Flow</button>
-                    <button class="btn" onclick="showFlowchart('ai')">AI Components</button>
+                    <button class="btn active" onclick="showFlowchart('main', event)">Main Flow</button>
+                    <button class="btn" onclick="showFlowchart('detailed', event)">Detailed Flow</button>
+                    <button class="btn" onclick="showFlowchart('data', event)">Data Flow</button>
+                    <button class="btn" onclick="showFlowchart('ai', event)">AI Components</button>
                 </div>
                 
                 <div class="flowchart-container">
-                    <div id="main-flowchart" class="mermaid">
+                    <div class="mermaid" id="main-flowchart">
                         graph TD
-                            %% Input Sources
-                            A[📄 PDF Documents] --> B[📋 Expert Ontology Files]
-                            C[📊 CSV Data] --> B
-                            D[🔧 Manual Input] --> B
+                            A[PDF Documents] --> B[Document Processor]
+                            B --> C[Extracted Data]
+                            C --> D[Ontology Validation]
+                            D --> E[Knowledge Graph]
+                            E --> F[Query Interface]
+                            F --> G[Results]
                             
-                            %% RAG Processing
-                            A --> E[RAG: Document Processor]
-                            E --> F[AI: Text Extraction]
-                            F --> G[AI: Entity Recognition]
-                            G --> H[AI: Vector Embeddings]
-                            H --> I[Vector Store]
-                            
-                            %% Ontology Processing
-                            B --> J[Ontology Manager]
-                            J --> K[SHACL Validation]
-                            J --> L[Format Conversion]
-                            
-                            %% Knowledge Graph
-                            G --> M[Knowledge Graph: Neo4j]
-                            K --> M
-                            I --> M
-                            
-                            %% Query Processing
-                            N[👤 User Query] --> O[Query Processor]
-                            O --> P[Semantic Search]
-                            O --> Q[Graph Query]
-                            P --> I
-                            Q --> M
-                            
-                            %% Answer Generation
-                            P --> R[AI: Answer Generation]
-                            Q --> R
-                            R --> S[📤 Response to User]
-                            
-                            %% Styling
-                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-                            classDef ragStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
-                            classDef ontologyStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
-                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-                            
-                            class A,C,D inputStyle
-                            class E,F,G,H,I ragStyle
-                            class J,K,L ontologyStyle
-                            class M,Q kgStyle
-                            class F,G,H,P,R aiStyle
-                            class S outputStyle
+                            H[Ontology Schema] --> D
+                            I[AI Analysis] --> E
+                            J[Vector Store] --> F
                     </div>
                     
                     <div id="detailed-flowchart" class="mermaid" style="display: none;">
                         graph TD
-                            %% Detailed Input Processing
-                            A1[📄 PDF Safety Data Sheets] --> B1[PDF Text Extraction]
-                            A2[📄 PDF Engineering Docs] --> B1
-                            A3[📄 PDF Regulatory Docs] --> B1
-                            A4[📄 Word Documents] --> B2[Word Text Extraction]
-                            A5[📄 JSON Files] --> B3[JSON Processing]
+                            A1[PDF Safety Data Sheets] --> B1[Document Processor]
+                            A2[PDF Engineering Docs] --> B1
                             
-                            %% AI Processing Pipeline
-                            B1 --> C1[AI: Layout Analysis]
-                            B2 --> C1
-                            B3 --> C1
-                            C1 --> D1[AI: Entity Recognition]
-                            D1 --> E1[Chemical Formulas: H2SO4, NaOH]
-                            D1 --> E2[Measurements: 100°C, 2.5 bar]
-                            D1 --> E3[Standards: OSHA, EPA, ASME]
-                            D1 --> E4[Safety Terms: corrosive, toxic]
+                            B1 --> C1[AI Text Extraction]
+                            C1 --> D1[Content Classification]
+                            D1 --> E1[Safety Documents]
+                            D1 --> F1[Engineering Documents]
                             
-                            %% Vector Processing
-                            C1 --> F1[AI: Text Chunking]
-                            F1 --> G1[AI: Vector Embeddings]
-                            G1 --> H1[Vector Database]
+                            E1 --> G1[Entity Recognition]
+                            F1 --> G1
+                            G1 --> H1[Chemical Entities]
+                            G1 --> I1[Physical Properties]
+                            G1 --> J1[Safety Standards]
                             
-                            %% Ontology Integration
-                            I1[📋 TTL Ontology Files] --> J1[Ontology Parser]
-                            I2[📋 OWL Ontology Files] --> J1
-                            I3[📋 SHACL Shapes] --> J1
-                            J1 --> K1[SHACL Validation Engine]
+                            G1 --> K1[Text Chunking]
+                            K1 --> L1[Vector Embeddings]
+                            L1 --> M1[Vector Database]
                             
-                            %% Knowledge Graph Population
-                            E1 --> L1[Knowledge Graph: Neo4j]
-                            E2 --> L1
-                            E3 --> L1
-                            E4 --> L1
-                            K1 --> L1
+                            N1[TTL Ontology Files] --> O1[Ontology Manager]
+                            O1 --> P1[SHACL Validation]
+                            P1 --> Q1[Data Quality Check]
                             
-                            %% Query Processing
-                            M1[👤 Natural Language Query] --> N1[AI: Query Understanding]
-                            N1 --> O1[Intent Classification]
-                            O1 --> P1[Semantic Search]
-                            O1 --> P2[Graph Query]
-                            P1 --> H1
-                            P2 --> L1
+                            H1 --> R1[Knowledge Graph Neo4j]
+                            I1 --> R1
+                            J1 --> R1
+                            Q1 --> R1
+                            M1 --> R1
                             
-                            %% Answer Generation
-                            H1 --> Q1[Retrieved Documents]
-                            L1 --> Q2[Graph Results]
-                            Q1 --> R1[AI: Answer Synthesis]
-                            Q2 --> R1
-                            R1 --> S1[📤 Comprehensive Answer]
+                            S1[Natural Language Query] --> T1[Query Understanding]
+                            T1 --> U1[Intent Classification]
+                            U1 --> V1[Semantic Search]
+                            U1 --> W1[Graph Query]
+                            V1 --> M1
+                            W1 --> R1
                             
-                            %% Styling
-                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
-                            classDef vectorStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
-                            classDef ontologyStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-                            
-                            class A1,A2,A3,A4,A5,I1,I2,I3 inputStyle
-                            class B1,B2,B3,C1,D1,F1,G1,N1,R1 aiStyle
-                            class H1,P1,Q1 vectorStyle
-                            class J1,K1 ontologyStyle
-                            class L1,P2,Q2 kgStyle
-                            class S1 outputStyle
+                            V1 --> X1[Retrieved Documents]
+                            W1 --> Y1[Graph Results]
+                            X1 --> Z1[Answer Synthesis]
+                            Y1 --> Z1
+                            Z1 --> AA1[Comprehensive Answer]
                     </div>
                     
                     <div id="data-flowchart" class="mermaid" style="display: none;">
-                        graph LR
-                            %% Data Sources
-                            A[📄 PDF Documents] --> B[Document Processor]
-                            C[📋 Ontology Files] --> D[Ontology Manager]
-                            E[📊 CSV Data] --> F[Data Ingestion]
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            C[CSV Data] --> D[Data Ingestion]
+                            E[Word Documents] --> B
+                            F[Excel Files] --> D
+                            G[JSON Files] --> D
                             
-                            %% Processing
-                            B --> G[Extracted Text & Metadata]
-                            D --> H[Validation Rules]
-                            F --> I[Structured Data]
+                            B --> H[AI Text Extraction]
+                            H --> I[Content Classification]
+                            I --> J[Safety Documents]
+                            I --> K[Engineering Documents]
+                            I --> L[Regulatory Documents]
                             
-                            %% AI Processing
-                            G --> J[AI: Entity Recognition]
-                            J --> K[Chemical Entities]
-                            J --> L[Safety Entities]
-                            J --> M[Engineering Entities]
+                            D --> M[Data Validation]
+                            M --> N[Structured Data]
+                            N --> O[Data Quality Check]
                             
-                            %% Storage
-                            K --> N[Knowledge Graph: Neo4j]
-                            L --> N
-                            M --> N
-                            I --> N
-                            H --> O[Validation Engine]
-                            O --> N
+                            J --> P[Entity Recognition]
+                            K --> P
+                            L --> P
+                            O --> P
+                            P --> Q[Chemical Entities]
+                            P --> R[Safety Entities]
+                            P --> S[Engineering Entities]
                             
-                            %% Vector Storage
-                            G --> P[AI: Vector Embeddings]
-                            P --> Q[Vector Database]
+                            H --> T[Text Chunking]
+                            T --> U[Vector Embeddings]
+                            U --> V[Vector Database]
                             
-                            %% Query Flow
-                            R[👤 User Query] --> S[Query Processor]
-                            S --> T[Semantic Search]
-                            S --> U[Graph Query]
-                            T --> Q
-                            U --> N
+                            W[Ontology Files] --> X[Ontology Manager]
+                            X --> Y[SHACL Validation]
+                            Y --> Z[Schema Validation]
                             
-                            %% Response
-                            Q --> V[Retrieved Documents]
-                            N --> W[Graph Results]
-                            V --> X[AI: Answer Generation]
-                            W --> X
-                            X --> Y[📤 Response]
+                            Q --> AA[Knowledge Graph Neo4j]
+                            R --> AA
+                            S --> AA
+                            Z --> AA
+                            V --> AA
                             
-                            %% Styling
-                            classDef sourceStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-                            classDef processStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
-                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
-                            classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            BB[User Query] --> CC[Query Processor]
+                            CC --> DD[Query Classification]
+                            DD --> EE[Semantic Search]
+                            DD --> FF[Graph Query]
+                            EE --> V
+                            FF --> AA
                             
-                            class A,C,E sourceStyle
-                            class B,D,F,G,H,I processStyle
-                            class J,K,L,M,P,S,T,U,X aiStyle
-                            class N,O,Q,V,W storageStyle
-                            class Y outputStyle
+                            EE --> GG[Retrieved Documents]
+                            FF --> HH[Graph Results]
+                            GG --> II[Answer Generation]
+                            HH --> II
+                            II --> JJ[Structured Response]
                     </div>
                     
                     <div id="ai-flowchart" class="mermaid" style="display: none;">
                         graph TD
-                            %% AI Document Processing
-                            A[📄 PDF Upload] --> B[AI: Document Analysis]
-                            B --> C[AI: Text Extraction]
-                            C --> D[AI: Layout Recognition]
-                            D --> E[AI: Table Extraction]
-                            D --> F[AI: Image Processing]
+                            A[PDF Upload] --> B[AI Document Analysis]
+                            C[Word Documents] --> B
+                            D[Image Files] --> B
                             
-                            %% NLP Pipeline
-                            C --> G[AI: Natural Language Processing]
-                            G --> H[AI: Tokenization]
-                            H --> I[AI: Entity Recognition]
-                            I --> J[Chemical Formulas: H2SO4]
-                            I --> K[Measurements: 100°C]
-                            I --> L[Standards: OSHA, EPA]
-                            I --> M[Safety Terms: corrosive]
+                            B --> E[AI Text Extraction]
+                            B --> F[AI Layout Recognition]
+                            B --> G[AI Image Processing]
                             
-                            %% Semantic Processing
-                            G --> N[AI: Vector Embeddings]
-                            N --> O[AI: Semantic Similarity]
-                            O --> P[Vector Database]
+                            G --> H[AI OCR Text Recognition]
+                            G --> I[AI Chemical Structure Recognition]
+                            G --> J[AI Safety Symbol Detection]
                             
-                            %% Knowledge Extraction
-                            J --> Q[AI: Knowledge Extraction]
-                            K --> Q
-                            L --> Q
-                            M --> Q
-                            Q --> R[Knowledge Graph: Neo4j]
+                            E --> K[AI Natural Language Processing]
+                            K --> L[AI Tokenization]
+                            L --> M[AI Part-of-Speech Tagging]
+                            M --> N[AI Named Entity Recognition]
+                            N --> O[AI Dependency Parsing]
+                            O --> P[AI Semantic Role Labeling]
                             
-                            %% Query Intelligence
-                            S[👤 Natural Language Query] --> T[AI: Query Understanding]
-                            T --> U[AI: Intent Classification]
-                            U --> V[AI: Semantic Search]
-                            U --> W[AI: Graph Query Generation]
-                            V --> P
-                            W --> R
+                            N --> Q[Chemical Formulas]
+                            N --> R[Physical Measurements]
+                            N --> S[Safety Standards]
+                            N --> T[Engineering Terms]
+                            N --> U[Hazard Classes]
                             
-                            %% Answer Generation
-                            P --> X[Retrieved Context]
-                            R --> Y[Graph Knowledge]
-                            X --> Z[AI: Answer Synthesis]
-                            Y --> Z
-                            Z --> AA[📤 Intelligent Response]
+                            P --> V[AI Vector Embeddings]
+                            V --> W[AI Semantic Similarity]
+                            W --> X[AI Context Understanding]
+                            X --> Y[Vector Database]
                             
-                            %% Styling
-                            classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-                            classDef aiStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
-                            classDef nlpStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
-                            classDef kgStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-                            classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            Q --> Z[AI Chemical Knowledge Extraction]
+                            R --> AA[AI Property Knowledge Extraction]
+                            S --> BB[AI Regulatory Knowledge Extraction]
+                            T --> CC[AI Engineering Knowledge Extraction]
+                            U --> DD[AI Safety Knowledge Extraction]
                             
-                            class A inputStyle
-                            class B,C,D,E,F,G,H,I,N,O,T,U,V,W,Z aiStyle
-                            class J,K,L,M nlpStyle
-                            class R,X,Y kgStyle
-                            class AA outputStyle
+                            Z --> EE[Knowledge Graph Neo4j]
+                            AA --> EE
+                            BB --> EE
+                            CC --> EE
+                            DD --> EE
+                            
+                            FF[Natural Language Query] --> GG[AI Query Understanding]
+                            GG --> HH[AI Intent Classification]
+                            HH --> II[AI Entity Extraction from Query]
+                            II --> JJ[AI Query Type Classification]
+                            JJ --> KK[Semantic Search Query]
+                            JJ --> LL[Graph Query Generation]
+                            
+                            KK --> Y
+                            LL --> EE
+                            
+                            Y --> MM[Retrieved Context]
+                            EE --> NN[Graph Knowledge]
+                            MM --> OO[AI Answer Synthesis]
+                            NN --> OO
+                            OO --> PP[AI Response Validation]
+                            PP --> QQ[AI Source Attribution]
+                            QQ --> RR[Intelligent Response]
                     </div>
                 </div>
             </div>
@@ -578,7 +529,7 @@
     <script>
         // Initialize Mermaid
         mermaid.initialize({
-            startOnLoad: true,
+            startOnLoad: false, // Disable auto-loading
             theme: 'default',
             flowchart: {
                 useMaxWidth: true,
@@ -587,29 +538,100 @@
             }
         });
         
+        // Store original content of each flowchart
+        const flowchartContents = {};
+        
         // Flowchart switching functionality
-        function showFlowchart(type) {
-            // Hide all flowcharts
-            document.querySelectorAll('.mermaid').forEach(el => {
+        function showFlowchart(type, event) {
+            console.log('Switching to flowchart:', type);
+            
+            // Store original content if not already stored
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                const id = el.id;
+                if (!flowchartContents[id]) {
+                    flowchartContents[id] = el.innerHTML;
+                }
+            });
+            
+            // Hide all flowcharts and clear their content
+            allFlowcharts.forEach(el => {
                 el.style.display = 'none';
+                // Clear all content except the original text
+                const svg = el.querySelector('svg');
+                if (svg) {
+                    svg.remove();
+                }
+                el.removeAttribute('data-processed');
             });
             
             // Show selected flowchart
-            document.getElementById(type + '-flowchart').style.display = 'block';
+            const targetFlowchart = document.getElementById(type + '-flowchart');
+            console.log('Target flowchart element:', targetFlowchart);
+            
+            if (targetFlowchart) {
+                targetFlowchart.style.display = 'block';
+                
+                // Restore original content
+                targetFlowchart.innerHTML = flowchartContents[targetFlowchart.id];
+                
+                // Wait a moment for display to update, then render
+                setTimeout(() => {
+                    try {
+                        mermaid.init(undefined, targetFlowchart);
+                        console.log('Mermaid initialized for:', type);
+                    } catch (error) {
+                        console.error('Mermaid error for', type, ':', error);
+                    }
+                }, 300);
+            } else {
+                console.error('Flowchart element not found:', type + '-flowchart');
+            }
             
             // Update button states
             document.querySelectorAll('.btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
             
-            // Re-render the visible flowchart
-            mermaid.init();
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
         }
         
         // Initialize with main flowchart
         document.addEventListener('DOMContentLoaded', function() {
-            showFlowchart('main');
+            console.log('DOM loaded, initializing...');
+            
+            // Store original content of all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                flowchartContents[el.id] = el.innerHTML;
+                el.style.display = 'none';
+            });
+            
+            // Set initial state - show only main flowchart
+            const mainFlowchart = document.getElementById('main-flowchart');
+            if (mainFlowchart) {
+                mainFlowchart.style.display = 'block';
+                console.log('Main flowchart displayed');
+            }
+            
+            // Set first button as active
+            const firstButton = document.querySelector('.btn');
+            if (firstButton) {
+                firstButton.classList.add('active');
+            }
+            
+            // Initialize mermaid for main flowchart only
+            setTimeout(() => {
+                try {
+                    mermaid.init(undefined, mainFlowchart);
+                    console.log('Initial mermaid initialization complete');
+                } catch (error) {
+                    console.error('Initial mermaid error:', error);
+                }
+            }, 300);
         });
     </script>
 </body>
