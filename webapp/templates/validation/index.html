@@ -7,76 +7,226 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .validation-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: none;
-            margin-bottom: 20px;
+        body {
+            background-color: #f8f9fa;
         }
+        
         .validation-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
+            padding: 25px 0;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
         }
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+        
+        .validation-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .validation-header .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .stats-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .stats-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: white;
-            margin-bottom: 15px;
+            margin: 0 auto 10px;
+            background: #3498db;
         }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-card .card-header {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+        }
+        
+        .feature-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .feature-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-card form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-card form .mb-3:last-of-type {
+            margin-bottom: 0 !important;
+        }
+        
+        .feature-card form .btn-custom {
+            margin-top: auto;
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Ensure consistent height between textarea and upload area */
+        .form-control[rows="5"] {
+            min-height: 120px;
+        }
+        
+        /* Make sure both cards have equal heights */
+        .row .col-lg-6 .feature-card {
+            height: 100%;
+        }
+        
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #ecf0f1;
+        }
+        
+        .upload-area-small {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 3px;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+            min-height: 30px;
+        }
+        
         .result-success {
             background: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             margin: 10px 0;
+            font-size: 0.9rem;
         }
+        
         .result-error {
             background: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             margin: 10px 0;
+            font-size: 0.9rem;
         }
+        
         .result-warning {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
             color: #856404;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             margin: 10px 0;
+            font-size: 0.9rem;
         }
-        .upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .upload-area:hover {
-            border-color: #667eea;
-            background: #f8f9fa;
-        }
-        .upload-area.dragover {
-            border-color: #667eea;
-            background: #e3f2fd;
-        }
+        
         .rule-item {
             background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 3px solid #3498db;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            padding: 10px 12px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+        
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+        
+        .container {
+            max-width: 1400px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -111,65 +261,70 @@
             </div>
         </div>
     </nav>
+
+    <!-- Header Section -->
     <div class="validation-header">
         <div class="container">
-            <h1><i class="fas fa-shield-check me-3"></i>Validation Engine</h1>
+            <h1><i class="fas fa-shield-check me-2"></i>Validation Engine</h1>
             <p class="lead">SHACL-based validation rules for data quality assurance and safety compliance verification</p>
         </div>
     </div>
+
     <div class="container">
-        <!-- Statistics Row -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="validation-card">
+        <!-- Statistics Cards -->
+        <div class="row mb-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
                     <div class="card-body text-center">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="stats-icon">
                             <i class="fas fa-rules"></i>
                         </div>
-                        <h5>Validation Rules</h5>
-                        <h3 class="text-primary" id="rules-count">0</h3>
+                        <h4 class="text-primary mb-1" id="rules-count">0</h4>
+                        <p class="text-muted mb-0 small">Validation Rules</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="validation-card">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
                     <div class="card-body text-center">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="stats-icon">
                             <i class="fas fa-database"></i>
                         </div>
-                        <h5>Data Types</h5>
-                        <h3 class="text-success" id="data-types-count">0</h3>
+                        <h4 class="text-success mb-1" id="data-types-count">0</h4>
+                        <p class="text-muted mb-0 small">Data Types</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="validation-card">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
                     <div class="card-body text-center">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="stats-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h5>Total Rules</h5>
-                        <h3 class="text-info" id="total-rules-count">0</h3>
+                        <h4 class="text-info mb-1" id="total-rules-count">0</h4>
+                        <p class="text-muted mb-0 small">Total Rules</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="validation-card">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
                     <div class="card-body text-center">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <div class="stats-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h5>Status</h5>
-                        <h3 class="text-warning" id="status">Active</h3>
+                        <h4 class="text-warning mb-1" id="status">Active</h4>
+                        <p class="text-muted mb-0 small">Status</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Main Validation Sections -->
         <div class="row">
             <!-- CSV Validation -->
             <div class="col-lg-6">
-                <div class="validation-card">
-                    <div class="card-header bg-primary text-white">
+                <div class="feature-card">
+                    <div class="card-header">
                         <h5><i class="fas fa-file-csv me-2"></i>CSV Data Validation</h5>
                     </div>
                     <div class="card-body">
@@ -187,15 +342,15 @@
                             <div class="mb-3">
                                 <label class="form-label">Upload CSV File</label>
                                 <div class="upload-area" id="upload-area">
-                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                    <p class="mb-2">Drag and drop CSV file here or click to browse</p>
+                                    <i class="fas fa-cloud-upload-alt fa-1x text-muted mb-1"></i>
+                                    <p class="mb-0 small">Click to browse CSV file</p>
                                     <input type="file" id="csv-file" accept=".csv" style="display: none;">
-                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('csv-file').click()">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mt-1" onclick="document.getElementById('csv-file').click()">
                                         Choose File
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-primary btn-custom w-100">
                                 <i class="fas fa-check me-2"></i>Validate CSV
                             </button>
                         </form>
@@ -203,10 +358,11 @@
                     </div>
                 </div>
             </div>
+
             <!-- Data Validation -->
             <div class="col-lg-6">
-                <div class="validation-card">
-                    <div class="card-header bg-success text-white">
+                <div class="feature-card">
+                    <div class="card-header">
                         <h5><i class="fas fa-database me-2"></i>Data Object Validation</h5>
                     </div>
                     <div class="card-body">
@@ -223,9 +379,9 @@
                             </div>
                             <div class="mb-3">
                                 <label for="data-json" class="form-label">Data (JSON Format)</label>
-                                <textarea class="form-control" id="data-json" rows="6" placeholder='{"name": "Sulfuric Acid", "hazard_class": "corrosive", "molecular_weight": 98.08}'></textarea>
+                                <textarea class="form-control" id="data-json" rows="5" placeholder='{"name": "Sulfuric Acid", "hazard_class": "corrosive", "molecular_weight": 98.08}'></textarea>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-primary btn-custom w-100">
                                 <i class="fas fa-check me-2"></i>Validate Data
                             </button>
                         </form>
@@ -234,26 +390,27 @@
                 </div>
             </div>
         </div>
+
         <!-- Compatibility Check -->
-        <div class="row mt-4">
+        <div class="row mt-3">
             <div class="col-12">
-                <div class="validation-card">
-                    <div class="card-header bg-info text-white">
+                <div class="feature-card">
+                    <div class="card-header">
                         <h5><i class="fas fa-link me-2"></i>Substance-Container Compatibility Check</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h6>Substance Data</h6>
+                                <label class="form-label">Substance Data</label>
                                 <textarea class="form-control" id="substance-data" rows="4" placeholder='{"name": "Sulfuric Acid", "hazard_class": "corrosive", "chemical_formula": "H2SO4"}'></textarea>
                             </div>
                             <div class="col-md-6">
-                                <h6>Container Data</h6>
+                                <label class="form-label">Container Data</label>
                                 <textarea class="form-control" id="container-data" rows="4" placeholder='{"name": "Polyethylene Container", "material": "plastic", "capacity": 1000}'></textarea>
                             </div>
                         </div>
                         <div class="text-center mt-3">
-                            <button type="button" class="btn btn-info" onclick="checkCompatibility()">
+                            <button type="button" class="btn btn-primary btn-custom" onclick="checkCompatibility()">
                                 <i class="fas fa-link me-2"></i>Check Compatibility
                             </button>
                         </div>
@@ -262,20 +419,23 @@
                 </div>
             </div>
         </div>
+
         <!-- Chemical Formula Validation -->
-        <div class="row mt-4">
+        <div class="row mt-3">
             <div class="col-12">
-                <div class="validation-card">
-                    <div class="card-header bg-warning text-dark">
+                <div class="feature-card">
+                    <div class="card-header">
                         <h5><i class="fas fa-flask me-2"></i>Chemical Formula Validation</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-8">
+                                <label for="chemical-formula" class="form-label">Chemical Formula</label>
                                 <input type="text" class="form-control" id="chemical-formula" placeholder="Enter chemical formula (e.g., H2SO4, C6H12O6)">
                             </div>
                             <div class="col-md-4">
-                                <button type="button" class="btn btn-warning w-100" onclick="validateFormula()">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-primary btn-custom w-100" onclick="validateFormula()">
                                     <i class="fas fa-check me-2"></i>Validate Formula
                                 </button>
                             </div>
@@ -285,15 +445,17 @@
                 </div>
             </div>
         </div>
+
         <!-- Validation Rules -->
-        <div class="row mt-4">
+        <div class="row mt-3">
             <div class="col-12">
-                <div class="validation-card">
-                    <div class="card-header bg-secondary text-white">
+                <div class="feature-card">
+                    <div class="card-header">
                         <h5><i class="fas fa-book me-2"></i>Validation Rules</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
+                            <label for="rules-selector" class="form-label">Select Data Type</label>
                             <select class="form-select" id="rules-selector" onchange="loadRules()">
                                 <option value="">Select data type to view rules...</option>
                                 <option value="substances">Hazardous Substances</option>
@@ -308,11 +470,13 @@
             </div>
         </div>
     </div>
-    <footer class="bg-dark text-light mt-5 py-4">
+
+    <footer class="bg-dark text-light mt-4 py-3">
         <div class="container text-center">
-            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+            <p class="mb-0 small">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', path='/js/validation.js') }}"></script>
 </body>
