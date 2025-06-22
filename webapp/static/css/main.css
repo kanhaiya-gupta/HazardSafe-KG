@@ -75,20 +75,38 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 2px !important;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #f1f1f1 !important;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
+    background: #ff6b35 !important;
+    border-radius: 1px !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0056b3;
+    background: #e55a2b !important;
+}
+
+/* Firefox scrollbar - only for body */
+body {
+    scrollbar-width: thin !important;
+    scrollbar-color: #ff6b35 #f1f1f1 !important;
+}
+
+/* Ensure all scrollable elements have consistent scrollbar */
+* {
+    scrollbar-width: thin !important;
+    scrollbar-color: #ff6b35 #f1f1f1 !important;
+}
+
+/* Specific elements that might have scrollbars */
+.feature-card, .card-body, .container, .row, .col, .table-responsive, .query-result, .node-info {
+    scrollbar-width: thin !important;
+    scrollbar-color: #ff6b35 #f1f1f1 !important;
 }
 
 /* Loading animation */
