@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HazardSafe-KG System Architecture Flowchart</title>
+    <title>HazardSafe-KG System Architecture</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+            padding: 20px;
         }
         
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 30px;
             text-align: center;
+            color: white;
+            margin-bottom: 30px;
         }
         
         .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: 300;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .header p {
-            margin: 10px 0 0 0;
             font-size: 1.2em;
+            margin: 5px 0;
             opacity: 0.9;
         }
         
         .content {
+            background: white;
+            border-radius: 15px;
             padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
         .section {
@@ -57,53 +56,6 @@
             margin-bottom: 20px;
         }
         
-        .flowchart-container {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #e9ecef;
-            min-height: 600px;
-        }
-        
-        .mermaid {
-            width: 100%;
-            min-height: 500px;
-            display: block !important;
-        }
-        
-        .mermaid svg {
-            width: 100%;
-            height: auto;
-            max-width: none;
-        }
-        
-        .legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-        }
-        
         .controls {
             text-align: center;
             margin: 20px 0;
@@ -113,20 +65,43 @@
             background: #3498db;
             color: white;
             border: none;
-            padding: 10px 20px;
-            margin: 0 5px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            margin: 0 8px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         }
         
         .btn:hover {
             background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
         }
         
         .btn.active {
             background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .description {
@@ -148,39 +123,31 @@
         }
         
         .description li {
-            margin: 5px 0;
+            margin: 8px 0;
             line-height: 1.6;
         }
         
-        .tech-stack {
+        .legend {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 15px;
             margin: 20px 0;
         }
         
-        .tech-card {
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-top: 4px solid #3498db;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .tech-card h4 {
-            color: #2c3e50;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        
-        .tech-card ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        
-        .tech-card li {
-            margin: 5px 0;
-            color: #555;
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
         }
         
         @media (max-width: 768px) {
@@ -194,6 +161,12 @@
             
             .legend {
                 grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                margin: 5px;
+                padding: 10px 20px;
+                font-size: 14px;
             }
         }
     </style>
@@ -210,7 +183,7 @@
             <div class="section">
                 <h2>System Overview</h2>
                 <div class="description">
-                    <h3>🏗️ Three Core Components Working Together</h3>
+                    <h3>Three Core Components Working Together</h3>
                     <ul>
                         <li><strong>Ontology:</strong> Defines knowledge structure and validation rules</li>
                         <li><strong>RAG:</strong> Processes documents and enables intelligent querying</li>
@@ -226,6 +199,7 @@
                     <button class="btn" onclick="showFlowchart('detailed', event)">Detailed Flow</button>
                     <button class="btn" onclick="showFlowchart('data', event)">Data Flow</button>
                     <button class="btn" onclick="showFlowchart('ai', event)">AI Components</button>
+                    <button class="btn" onclick="showFlowchart('example', event)">Example KG</button>
                 </div>
                 
                 <div class="flowchart-container">
@@ -243,7 +217,7 @@
                             J[Vector Store] --> F
                     </div>
                     
-                    <div id="detailed-flowchart" class="mermaid" style="display: none;">
+                    <div class="mermaid" id="detailed-flowchart" style="display: none;">
                         graph TD
                             A1[PDF Safety Data Sheets] --> B1[Document Processor]
                             A2[PDF Engineering Docs] --> B1
@@ -287,7 +261,7 @@
                             Z1 --> AA1[Comprehensive Answer]
                     </div>
                     
-                    <div id="data-flowchart" class="mermaid" style="display: none;">
+                    <div class="mermaid" id="data-flowchart" style="display: none;">
                         graph TD
                             A[PDF Documents] --> B[Document Processor]
                             C[CSV Data] --> D[Data Ingestion]
@@ -341,7 +315,7 @@
                             II --> JJ[Structured Response]
                     </div>
                     
-                    <div id="ai-flowchart" class="mermaid" style="display: none;">
+                    <div class="mermaid" id="ai-flowchart" style="display: none;">
                         graph TD
                             A[PDF Upload] --> B[AI Document Analysis]
                             C[Word Documents] --> B
@@ -403,6 +377,142 @@
                             PP --> QQ[AI Source Attribution]
                             QQ --> RR[Intelligent Response]
                     </div>
+                    
+                    <div class="mermaid" id="example-flowchart" style="display: none;">
+                        graph TD
+                            %% Chemical Nodes
+                            H2SO4[H2SO4<br/>Sulfuric Acid<br/>Corrosive Liquid]
+                            NaOH[NaOH<br/>Sodium Hydroxide<br/>Corrosive Solid]
+                            HCl[HCl<br/>Hydrochloric Acid<br/>Corrosive Liquid]
+                            Toluene[Toluene<br/>C7H8<br/>Flammable Liquid]
+                            Acetone[Acetone<br/>C3H6O<br/>Flammable Liquid]
+                            
+                            %% Hazard Class Nodes
+                            Corrosive[Corrosive Hazard<br/>GHS05<br/>Skin/Eye Damage]
+                            Flammable[Flammable Hazard<br/>GHS02<br/>Fire Risk]
+                            
+                            %% Storage Location Nodes
+                            LabStorage[Laboratory Storage<br/>Building A, Room 101<br/>Chemical Cabinet]
+                            WarehouseStorage[Warehouse Storage<br/>Building B, Warehouse 1<br/>Bulk Storage]
+                            
+                            %% PPE Nodes
+                            Gloves[Chemical Resistant Gloves<br/>Nitrile Material<br/>Hand Protection]
+                            Goggles[Safety Goggles<br/>Polycarbonate<br/>Eye Protection]
+                            
+                            %% Procedure Nodes
+                            SpillResponse[Spill Response Procedure<br/>Emergency Protocol<br/>8 Steps]
+                            WasteDisposal[Waste Disposal Procedure<br/>Operational Protocol<br/>6 Steps]
+                            
+                            %% Regulation Nodes
+                            OSHA[OSHA 1910.1200<br/>Hazard Communication<br/>SDS Requirements]
+                            EPA[EPA TSCA<br/>Toxic Substances<br/>Chemical Regulation]
+                            
+                            %% Relationships - Hazard Classes
+                            H2SO4 -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            NaOH -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            HCl -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            Toluene -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            Acetone -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            
+                            %% Relationships - Storage
+                            H2SO4 -->|STORED_IN<br/>5L Glass Bottle| LabStorage
+                            NaOH -->|STORED_IN<br/>2kg Plastic Container| LabStorage
+                            HCl -->|STORED_IN<br/>10L Glass Bottle| LabStorage
+                            Toluene -->|STORED_IN<br/>200L Steel Drum| WarehouseStorage
+                            Acetone -->|STORED_IN<br/>100L Steel Drum| WarehouseStorage
+                            
+                            %% Relationships - PPE Requirements
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Gloves
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Goggles
+                            Flammable -->|REQUIRES_PPE<br/>Recommended| Goggles
+                            
+                            %% Relationships - Procedures
+                            H2SO4 -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            NaOH -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            HCl -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            H2SO4 -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            NaOH -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            HCl -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Toluene -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Acetone -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            
+                            %% Relationships - Regulations
+                            OSHA -->|REGULATES<br/>Compliance Required| H2SO4
+                            OSHA -->|REGULATES<br/>Compliance Required| NaOH
+                            OSHA -->|REGULATES<br/>Compliance Required| HCl
+                            EPA -->|REGULATES<br/>Compliance Required| Toluene
+                            EPA -->|REGULATES<br/>Compliance Required| Acetone
+                            
+                            %% Chemical Compatibility
+                            H2SO4 -.->|INCOMPATIBLE_WITH<br/>Neutralization| NaOH
+                            H2SO4 -.->|COMPATIBLE_WITH<br/>Storage OK| HCl
+                            Toluene -.->|COMPATIBLE_WITH<br/>Storage OK| Acetone
+                            
+                            %% Styling
+                            classDef chemicalStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef hazardStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef ppeStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef procedureStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+                            classDef regulationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class H2SO4,NaOH,HCl,Toluene,Acetone chemicalStyle
+                            class Corrosive,Flammable hazardStyle
+                            class LabStorage,WarehouseStorage storageStyle
+                            class Gloves,Goggles ppeStyle
+                            class SpillResponse,WasteDisposal procedureStyle
+                            class OSHA,EPA regulationStyle
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="example-description" style="display: none;">
+                <h2>Example Knowledge Graph</h2>
+                <div class="description">
+                    <h3>Real-World Hazardous Substance Management</h3>
+                    <p>This example shows how the HazardSafe-KG system represents real hazardous substances and their relationships in a knowledge graph. The diagram demonstrates:</p>
+                    
+                    <h4>📊 Node Types (6 categories):</h4>
+                    <ul>
+                        <li><strong>Chemical Substances:</strong> H2SO4, NaOH, HCl, Toluene, Acetone with detailed properties</li>
+                        <li><strong>Hazard Classes:</strong> Corrosive and Flammable hazards with GHS symbols</li>
+                        <li><strong>Storage Locations:</strong> Laboratory and warehouse storage with specifications</li>
+                        <li><strong>PPE Requirements:</strong> Gloves and goggles with material specifications</li>
+                        <li><strong>Safety Procedures:</strong> Spill response and waste disposal protocols</li>
+                        <li><strong>Regulations:</strong> OSHA and EPA compliance requirements</li>
+                    </ul>
+                    
+                    <h4>🔗 Relationship Types (7 categories):</h4>
+                    <ul>
+                        <li><strong>HAS_HAZARD_CLASS:</strong> Chemicals linked to their hazard classifications</li>
+                        <li><strong>STORED_IN:</strong> Chemicals linked to their storage locations with quantities</li>
+                        <li><strong>REQUIRES_PPE:</strong> Hazard classes linked to required protective equipment</li>
+                        <li><strong>HAS_PROCEDURE:</strong> Chemicals linked to safety procedures</li>
+                        <li><strong>REGULATES:</strong> Regulations linked to applicable chemicals</li>
+                        <li><strong>INCOMPATIBLE_WITH:</strong> Chemicals that cannot be stored together</li>
+                        <li><strong>COMPATIBLE_WITH:</strong> Chemicals that can be safely stored together</li>
+                    </ul>
+                    
+                    <h4>🎯 Key Benefits Demonstrated:</h4>
+                    <ul>
+                        <li><strong>Safety Compliance:</strong> Automatic PPE requirements based on hazard classes</li>
+                        <li><strong>Storage Management:</strong> Track chemical locations, quantities, and containers</li>
+                        <li><strong>Emergency Response:</strong> Quick access to spill response procedures</li>
+                        <li><strong>Regulatory Compliance:</strong> OSHA and EPA requirements automatically linked</li>
+                        <li><strong>Chemical Compatibility:</strong> Prevent incompatible chemical storage</li>
+                        <li><strong>Waste Management:</strong> Proper disposal procedures for each chemical</li>
+                    </ul>
+                    
+                    <h4>🔍 Example Queries This Enables:</h4>
+                    <ul>
+                        <li>"What PPE is required for handling sulfuric acid?"</li>
+                        <li>"Where is toluene stored and in what quantity?"</li>
+                        <li>"What procedures apply to corrosive chemicals?"</li>
+                        <li>"Which chemicals are incompatible with sodium hydroxide?"</li>
+                        <li>"What regulations apply to flammable substances?"</li>
+                    </ul>
+                    
+                    <p><strong>This knowledge graph serves as the central intelligence hub, connecting all safety information and enabling intelligent querying and decision-making for hazardous substance management.</strong></p>
                 </div>
             </div>
             
@@ -438,88 +548,31 @@
             
             <div class="section">
                 <h2>Technology Stack</h2>
-                <div class="tech-stack">
-                    <div class="tech-card">
-                        <h4>🏗️ Backend Framework</h4>
-                        <ul>
-                            <li>FastAPI - Web framework</li>
-                            <li>Uvicorn - ASGI server</li>
-                            <li>Pydantic - Data validation</li>
-                            <li>Jinja2 - Template engine</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <h4>🧠 Knowledge Graph</h4>
-                        <ul>
-                            <li>Neo4j - Graph database</li>
-                            <li>Cypher - Query language</li>
-                            <li>Graph algorithms</li>
-                            <li>Relationship mapping</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <h4>📋 Ontology Management</h4>
-                        <ul>
-                            <li>RDFLib - RDF processing</li>
-                            <li>PySHACL - Validation</li>
-                            <li>OWLReady2 - OWL support</li>
-                            <li>Multiple formats (TTL, OWL, JSON-LD)</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <h4>🤖 AI & NLP</h4>
-                        <ul>
-                            <li>NLTK - Natural language processing</li>
-                            <li>spaCy - Advanced NLP</li>
-                            <li>Sentence Transformers - Embeddings</li>
-                            <li>OpenAI - LLM integration</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <h4>📄 Document Processing</h4>
-                        <ul>
-                            <li>PyPDF2 & pdfplumber - PDF extraction</li>
-                            <li>python-docx - Word documents</li>
-                            <li>pytesseract - OCR capabilities</li>
-                            <li>OpenCV - Image processing</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <h4>🔍 Vector Search</h4>
-                        <ul>
-                            <li>Pinecone - Cloud vector DB</li>
-                            <li>Weaviate - Vector database</li>
-                            <li>ChromaDB - Local vector store</li>
-                            <li>Semantic similarity search</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>Key Features & Capabilities</h2>
                 <div class="description">
-                    <h3>🎯 Core Capabilities</h3>
+                    <h3>Backend Technologies</h3>
                     <ul>
-                        <li><strong>Document Intelligence:</strong> AI-powered extraction from PDFs, Word docs, and other formats</li>
-                        <li><strong>Semantic Search:</strong> Find relevant information using natural language queries</li>
-                        <li><strong>Knowledge Graph:</strong> Store and query complex relationships between entities</li>
-                        <li><strong>Ontology Validation:</strong> Ensure data quality and compliance with domain rules</li>
-                        <li><strong>AI-Powered Insights:</strong> Generate intelligent responses and discover patterns</li>
-                        <li><strong>Multi-Format Support:</strong> Handle various document and ontology formats</li>
+                        <li><strong>FastAPI:</strong> High-performance web framework for building APIs</li>
+                        <li><strong>Neo4j:</strong> Graph database for knowledge graph storage</li>
+                        <li><strong>RDFLib:</strong> Python library for working with RDF and ontology files</li>
+                        <li><strong>Sentence Transformers:</strong> AI-powered text embeddings for semantic search</li>
+                        <li><strong>PyPDF2/PDFMiner:</strong> PDF text extraction and processing</li>
                     </ul>
                     
-                    <h3>🔗 Integration Points</h3>
+                    <h3>AI & Machine Learning</h3>
                     <ul>
-                        <li><strong>Ontology → Knowledge Graph:</strong> Schema definition and validation rules</li>
-                        <li><strong>RAG → Knowledge Graph:</strong> Extracted entities and relationships</li>
-                        <li><strong>AI → All Components:</strong> Intelligent processing and reasoning</li>
-                        <li><strong>Vector Store → Query Engine:</strong> Semantic search capabilities</li>
+                        <li><strong>Natural Language Processing:</strong> Named Entity Recognition, Part-of-Speech tagging</li>
+                        <li><strong>Semantic Embeddings:</strong> Vector representations for similarity search</li>
+                        <li><strong>Document Classification:</strong> AI-powered content categorization</li>
+                        <li><strong>Query Understanding:</strong> Intent classification and entity extraction</li>
+                        <li><strong>Answer Synthesis:</strong> Intelligent response generation from multiple sources</li>
+                    </ul>
+                    
+                    <h3>Frontend & Visualization</h3>
+                    <ul>
+                        <li><strong>Flask:</strong> Web framework for serving the user interface</li>
+                        <li><strong>D3.js/Cytoscape.js:</strong> Interactive knowledge graph visualization</li>
+                        <li><strong>Bootstrap:</strong> Responsive UI components and styling</li>
+                        <li><strong>Chart.js:</strong> Data visualization and analytics</li>
                     </ul>
                 </div>
             </div>
@@ -565,6 +618,12 @@
                 el.removeAttribute('data-processed');
             });
             
+            // Hide example description by default
+            const exampleDescription = document.getElementById('example-description');
+            if (exampleDescription) {
+                exampleDescription.style.display = 'none';
+            }
+            
             // Show selected flowchart
             const targetFlowchart = document.getElementById(type + '-flowchart');
             console.log('Target flowchart element:', targetFlowchart);
@@ -574,6 +633,11 @@
                 
                 // Restore original content
                 targetFlowchart.innerHTML = flowchartContents[targetFlowchart.id];
+                
+                // Show example description if example flowchart is selected
+                if (type === 'example' && exampleDescription) {
+                    exampleDescription.style.display = 'block';
+                }
                 
                 // Wait a moment for display to update, then render
                 setTimeout(() => {
@@ -635,4 +699,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
