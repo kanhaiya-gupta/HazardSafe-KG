@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Assessment - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .quality-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .quality-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .quality-header .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .stats-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .feature-card .card-header {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+        }
+        
+        .feature-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            padding: 10px 12px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+        
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+        
+        .container {
+            max-width: 1400px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .quality-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .quality-grade {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .grade-a { color: #28a745; }
+        .grade-b { color: #17a2b8; }
+        .grade-c { color: #ffc107; }
+        .grade-d { color: #fd7e14; }
+        .grade-f { color: #dc3545; }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .progress {
+            height: 20px;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #007bff;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rag">RAG System</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/validation">Validation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/quality">Quality</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/system-flowchart">Architecture</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="quality-header">
+        <div class="container text-center">
+            <h1>Data Quality Assessment</h1>
+            <p class="lead">Comprehensive data quality analysis and reporting for HazardSafe-KG</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- File Upload Section -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-upload"></i> Upload Dataset</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="qualityForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="datasetFile" class="form-label">Select Dataset File</label>
+                                <input type="file" class="form-control" id="datasetFile" name="file" 
+                                       accept=".csv,.xlsx,.xls,.json" required>
+                                <div class="form-text">Supported formats: CSV, Excel, JSON</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="datasetName" class="form-label">Dataset Name</label>
+                                <input type="text" class="form-control" id="datasetName" name="dataset_name" 
+                                       placeholder="Enter dataset name">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeReference" name="include_reference">
+                                    <label class="form-check-label" for="includeReference">
+                                        Include reference data for accuracy assessment
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-custom" id="assessBtn">
+                                <i class="fas fa-chart-line"></i> Assess Quality
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Metrics Display -->
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-pie"></i> Quality Metrics</h5>
+                    </div>
+                    <div class="card-body" id="qualityMetrics">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <p>Upload a dataset to view quality metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quality Results Section -->
+        <div class="row mt-4" id="qualityResults" style="display: none;">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-clipboard-list"></i> Quality Assessment Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="quality-score" id="overallScore">0%</div>
+                                <h6>Overall Score</h6>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="quality-grade" id="qualityGrade">N/A</div>
+                                <h6>Quality Grade</h6>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-value" id="completenessScore">0%</div>
+                                <h6>Completeness</h6>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-value" id="accuracyScore">0%</div>
+                                <h6>Accuracy</h6>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" id="overallProgress" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Detailed Metrics</h6>
+                                <div id="detailedMetrics"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Recommendations</h6>
+                                <div id="recommendations"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div class="row mt-4" id="reportsSection" style="display: none;">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-file-alt"></i> Generated Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chart-bar fa-2x text-primary mb-2"></i>
+                                        <h6>Quality Report</h6>
+                                        <p class="text-muted">Detailed HTML report with charts and analysis</p>
+                                        <a href="#" class="btn btn-outline-primary btn-sm" id="viewReportBtn">
+                                            <i class="fas fa-eye"></i> View Report
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-tachometer-alt fa-2x text-success mb-2"></i>
+                                        <h6>Quality Dashboard</h6>
+                                        <p class="text-muted">Interactive dashboard with trends</p>
+                                        <a href="#" class="btn btn-outline-success btn-sm" id="viewDashboardBtn">
+                                            <i class="fas fa-chart-line"></i> View Dashboard
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qualityForm = document.getElementById('qualityForm');
+            const assessBtn = document.getElementById('assessBtn');
+            
+            qualityForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(qualityForm);
+                assessBtn.disabled = true;
+                assessBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assessing...';
+                
+                fetch('/quality/assess', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayQualityResults(data);
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during quality assessment');
+                })
+                .finally(() => {
+                    assessBtn.disabled = false;
+                    assessBtn.innerHTML = '<i class="fas fa-chart-line"></i> Assess Quality';
+                });
+            });
+            
+            function displayQualityResults(data) {
+                const results = data.quality_results;
+                
+                // Update overall score
+                document.getElementById('overallScore').textContent = (results.overall_score * 100).toFixed(1) + '%';
+                document.getElementById('overallProgress').style.width = (results.overall_score * 100) + '%';
+                
+                // Update quality grade
+                const gradeElement = document.getElementById('qualityGrade');
+                gradeElement.textContent = results.quality_grade;
+                gradeElement.className = 'quality-grade grade-' + results.quality_grade.toLowerCase();
+                
+                // Update individual metrics
+                if (results.completeness) {
+                    document.getElementById('completenessScore').textContent = 
+                        (results.completeness.overall_completeness * 100).toFixed(1) + '%';
+                }
+                if (results.accuracy) {
+                    document.getElementById('accuracyScore').textContent = 
+                        (results.accuracy.overall_accuracy * 100).toFixed(1) + '%';
+                }
+                
+                // Display detailed metrics
+                displayDetailedMetrics(results);
+                
+                // Display recommendations
+                displayRecommendations(data.quality_profile.recommendations);
+                
+                // Show results section
+                document.getElementById('qualityResults').style.display = 'block';
+                document.getElementById('reportsSection').style.display = 'block';
+                
+                // Update report links
+                if (data.report_path) {
+                    document.getElementById('viewReportBtn').href = data.report_path;
+                }
+                if (data.dashboard_path) {
+                    document.getElementById('viewDashboardBtn').href = data.dashboard_path;
+                }
+            }
+            
+            function displayDetailedMetrics(results) {
+                const container = document.getElementById('detailedMetrics');
+                container.innerHTML = '';
+                
+                const metrics = [
+                    { name: 'Completeness', value: results.completeness?.overall_completeness || 0 },
+                    { name: 'Accuracy', value: results.accuracy?.overall_accuracy || 0 },
+                    { name: 'Consistency', value: results.consistency?.overall_consistency || 0 },
+                    { name: 'Timeliness', value: results.timeliness?.timeliness_score || 0 },
+                    { name: 'Uniqueness', value: results.uniqueness?.overall_uniqueness || 0 }
+                ];
+                
+                metrics.forEach(metric => {
+                    const item = document.createElement('div');
+                    item.className = 'metric-item';
+                    item.innerHTML = `
+                        <span>${metric.name}</span>
+                        <span>${(metric.value * 100).toFixed(1)}%</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            function displayRecommendations(recommendations) {
+                const container = document.getElementById('recommendations');
+                container.innerHTML = '';
+                
+                recommendations.forEach(rec => {
+                    const item = document.createElement('div');
+                    item.className = 'recommendation-item';
+                    item.textContent = rec;
+                    container.appendChild(item);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

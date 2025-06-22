@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Dashboard - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .dashboard-header .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .stats-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .feature-card .card-header {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+        }
+        
+        .feature-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+        
+        .container {
+            max-width: 1400px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .assessment-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #007bff;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+        }
+        
+        .assessment-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+        
+        .report-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .quality-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .grade-a { background-color: #d4edda; color: #155724; }
+        .grade-b { background-color: #d1ecf1; color: #0c5460; }
+        .grade-c { background-color: #fff3cd; color: #856404; }
+        .grade-d { background-color: #f8d7da; color: #721c24; }
+        .grade-f { background-color: #f5c6cb; color: #721c24; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rag">RAG System</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/validation">Validation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/quality">Quality</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/system-flowchart">Architecture</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="container text-center">
+            <h1>Quality Dashboard</h1>
+            <p class="lead">Monitor data quality trends and historical metrics</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quality Overview Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                        <h5>Total Assessments</h5>
+                        <div class="metric-value" id="totalAssessments">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-star fa-2x text-success mb-2"></i>
+                        <h5>Average Score</h5>
+                        <div class="metric-value" id="averageScore">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar fa-2x text-info mb-2"></i>
+                        <h5>Last Assessment</h5>
+                        <div class="metric-value" id="lastAssessment">N/A</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-trending-up fa-2x text-warning mb-2"></i>
+                        <h5>Trend</h5>
+                        <div class="metric-value" id="qualityTrend">Stable</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quality Trends Chart -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-area"></i> Quality Trends Over Time</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="qualityTrendChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Breakdown -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-pie"></i> Metrics Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="metricsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list"></i> Recent Assessments</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentAssessments">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading recent assessments...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Reports -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-file-alt"></i> Available Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="availableReports">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading available reports...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQualityMetrics();
+            loadAvailableReports();
+            
+            function loadQualityMetrics() {
+                fetch('/quality/metrics')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayQualityMetrics(data.metrics_history);
+                        } else {
+                            console.error('Error loading metrics:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+            
+            function displayQualityMetrics(metricsHistory) {
+                if (metricsHistory.length === 0) {
+                    document.getElementById('totalAssessments').textContent = '0';
+                    document.getElementById('averageScore').textContent = '0%';
+                    document.getElementById('lastAssessment').textContent = 'N/A';
+                    document.getElementById('qualityTrend').textContent = 'No Data';
+                    return;
+                }
+                
+                // Update overview cards
+                document.getElementById('totalAssessments').textContent = metricsHistory.length;
+                
+                const averageScore = metricsHistory.reduce((sum, metric) => 
+                    sum + (metric.overall_score || 0), 0) / metricsHistory.length;
+                document.getElementById('averageScore').textContent = (averageScore * 100).toFixed(1) + '%';
+                
+                const lastMetric = metricsHistory[metricsHistory.length - 1];
+                const lastDate = new Date(lastMetric.timestamp).toLocaleDateString();
+                document.getElementById('lastAssessment').textContent = lastDate;
+                
+                // Calculate trend
+                if (metricsHistory.length >= 2) {
+                    const recent = metricsHistory.slice(-3);
+                    const trend = recent[recent.length - 1].overall_score - recent[0].overall_score;
+                    if (trend > 0.05) {
+                        document.getElementById('qualityTrend').textContent = 'Improving';
+                        document.getElementById('qualityTrend').className = 'metric-value text-success';
+                    } else if (trend < -0.05) {
+                        document.getElementById('qualityTrend').textContent = 'Declining';
+                        document.getElementById('qualityTrend').className = 'metric-value text-danger';
+                    } else {
+                        document.getElementById('qualityTrend').textContent = 'Stable';
+                        document.getElementById('qualityTrend').className = 'metric-value text-warning';
+                    }
+                }
+                
+                // Create trends chart
+                createTrendsChart(metricsHistory);
+                
+                // Create metrics breakdown chart
+                createMetricsChart(metricsHistory);
+                
+                // Display recent assessments
+                displayRecentAssessments(metricsHistory.slice(-5));
+            }
+            
+            function createTrendsChart(metricsHistory) {
+                const ctx = document.getElementById('qualityTrendChart').getContext('2d');
+                
+                const labels = metricsHistory.map(metric => 
+                    new Date(metric.timestamp).toLocaleDateString());
+                const scores = metricsHistory.map(metric => metric.overall_score * 100);
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Overall Quality Score (%)',
+                            data: scores,
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function createMetricsChart(metricsHistory) {
+                const ctx = document.getElementById('metricsChart').getContext('2d');
+                
+                const latest = metricsHistory[metricsHistory.length - 1];
+                const metrics = [
+                    { name: 'Completeness', value: latest.completeness?.overall_completeness || 0 },
+                    { name: 'Accuracy', value: latest.accuracy?.overall_accuracy || 0 },
+                    { name: 'Consistency', value: latest.consistency?.overall_consistency || 0 },
+                    { name: 'Timeliness', value: latest.timeliness?.timeliness_score || 0 },
+                    { name: 'Uniqueness', value: latest.uniqueness?.overall_uniqueness || 0 }
+                ];
+                
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: metrics.map(m => m.name),
+                        datasets: [{
+                            label: 'Quality Metrics',
+                            data: metrics.map(m => m.value * 100),
+                            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function displayRecentAssessments(assessments) {
+                const container = document.getElementById('recentAssessments');
+                container.innerHTML = '';
+                
+                assessments.reverse().forEach(assessment => {
+                    const item = document.createElement('div');
+                    item.className = 'assessment-item';
+                    
+                    const date = new Date(assessment.timestamp).toLocaleDateString();
+                    const score = (assessment.overall_score * 100).toFixed(1);
+                    const grade = assessment.quality_grade;
+                    
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${date}</strong>
+                                <br>
+                                <small class="text-muted">Score: ${score}%</small>
+                            </div>
+                            <span class="badge quality-badge grade-${grade.toLowerCase()}">${grade}</span>
+                        </div>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+            }
+            
+            function loadAvailableReports() {
+                fetch('/quality/reports')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayAvailableReports(data.reports);
+                        } else {
+                            console.error('Error loading reports:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+            
+            function displayAvailableReports(reports) {
+                const container = document.getElementById('availableReports');
+                container.innerHTML = '';
+                
+                if (reports.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-file-alt fa-2x mb-2"></i>
+                            <p>No reports available</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                reports.forEach(report => {
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    
+                    const date = new Date(report.created).toLocaleDateString();
+                    const typeIcon = report.type === 'dashboard' ? 'fas fa-tachometer-alt' : 'fas fa-chart-bar';
+                    const typeColor = report.type === 'dashboard' ? 'text-success' : 'text-primary';
+                    
+                    item.innerHTML = `
+                        <div>
+                            <i class="${typeIcon} ${typeColor} me-2"></i>
+                            <strong>${report.name}</strong>
+                            <br>
+                            <small class="text-muted">${date} - ${report.type}</small>
+                        </div>
+                        <a href="${report.path}" class="btn btn-outline-primary btn-sm" target="_blank">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
