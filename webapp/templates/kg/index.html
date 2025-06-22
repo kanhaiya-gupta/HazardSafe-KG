@@ -151,8 +151,15 @@
             background: #f8f9fa;
             border-radius: 8px;
             padding: 20px;
-            min-height: 600px;
+            min-height: 700px;
             border: 1px solid #e9ecef;
+        }
+        
+        #graph-container {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .query-result {
@@ -265,8 +272,33 @@
 
         <!-- Main Content -->
         <div class="row">
-            <!-- Query Panel -->
-            <div class="col-md-4">
+            <!-- Visualization Panel - Full Width -->
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-chart-network me-2"></i>Knowledge Graph Visualization</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="resetView()">
+                                <i class="fas fa-home"></i> Reset View
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportGraph()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="graph-container" style="height: 700px; border: 1px solid #ddd; border-radius: 5px;">
+                            <!-- D3.js visualization will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Query Controls - Below Visualization -->
+        <div class="row mt-3">
+            <!-- Query Knowledge Graph -->
+            <div class="col-lg-6 col-md-12">
                 <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-search me-2"></i>Query Knowledge Graph</h5>
@@ -282,37 +314,30 @@
                         </div>
                         <div class="mb-3">
                             <label for="queryInput" class="form-label">Query</label>
-                            <textarea class="form-control" id="queryInput" rows="4" placeholder="Enter your query here..."></textarea>
+                            <textarea class="form-control" id="queryInput" rows="3" placeholder="Enter your query here..."></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="queryLimit" class="form-label">Limit Results</label>
-                            <input type="number" class="form-control" id="queryLimit" value="100" min="1" max="1000">
-                        </div>
-                        <button class="btn btn-primary btn-custom w-100" onclick="executeQuery()">
-                            <i class="fas fa-play me-2"></i>Execute Query
-                        </button>
-                        
-                        <hr>
-                        
-                        <h6>Quick Queries</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:HazardousSubstance) RETURN n LIMIT 10')">
-                                All Hazardous Substances
-                            </button>
-                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:Container) RETURN n LIMIT 10')">
-                                All Containers
-                            </button>
-                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (n:SafetyTest) RETURN n LIMIT 10')">
-                                All Safety Tests
-                            </button>
-                            <button class="btn quick-query-btn" onclick="loadQuickQuery('MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) RETURN s, r, c')">
-                                Substances and Containers
-                            </button>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="queryLimit" class="form-label">Limit Results</label>
+                                    <input type="number" class="form-control" id="queryLimit" value="100" min="1" max="1000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button class="btn btn-primary btn-custom w-100" onclick="executeQuery()">
+                                        <i class="fas fa-play me-2"></i>Execute Query
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Search Panel -->
+            <!-- Search Nodes -->
+            <div class="col-lg-6 col-md-12">
                 <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-search me-2"></i>Search Nodes</h5>
@@ -337,8 +362,60 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Path Finding -->
+        <!-- Quick Queries and Path Finding -->
+        <div class="row mt-3">
+            <!-- Quick Queries -->
+            <div class="col-lg-8 col-md-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bolt me-2"></i>Quick Queries</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n:HazardousSubstance) RETURN n LIMIT 10')">
+                                    <i class="fas fa-flask me-2"></i>All Hazardous Substances
+                                </button>
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n:Container) RETURN n LIMIT 10')">
+                                    <i class="fas fa-box me-2"></i>All Containers
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n:SafetyTest) RETURN n LIMIT 10')">
+                                    <i class="fas fa-shield-alt me-2"></i>All Safety Tests
+                                </button>
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) RETURN s, r, c')">
+                                    <i class="fas fa-link me-2"></i>Substances and Containers
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n:RiskAssessment) RETURN n LIMIT 10')">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Risk Assessments
+                                </button>
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n)-[r]-() RETURN type(r), count(r) ORDER BY count(r) DESC LIMIT 10')">
+                                    <i class="fas fa-chart-bar me-2"></i>Relationship Types
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH (n) RETURN labels(n), count(n) ORDER BY count(n) DESC LIMIT 10')">
+                                    <i class="fas fa-tags me-2"></i>Node Types
+                                </button>
+                                <button class="btn quick-query-btn w-100 mb-2" onclick="loadQuickQuery('MATCH p=()-[r:INCOMPATIBLE_WITH]->() RETURN p LIMIT 10')">
+                                    <i class="fas fa-ban me-2"></i>Incompatible Substances
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Path Finding -->
+            <div class="col-lg-4 col-md-12">
                 <div class="feature-card">
                     <div class="card-header">
                         <h5><i class="fas fa-route me-2"></i>Path Finding</h5>
@@ -359,28 +436,6 @@
                         <button class="btn btn-warning btn-custom w-100" onclick="findPath()">
                             <i class="fas fa-route me-2"></i>Find Path
                         </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visualization Panel -->
-            <div class="col-md-8">
-                <div class="feature-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5><i class="fas fa-chart-network me-2"></i>Knowledge Graph Visualization</h5>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="resetView()">
-                                <i class="fas fa-home"></i> Reset View
-                            </button>
-                            <button class="btn btn-sm btn-outline-success" onclick="exportGraph()">
-                                <i class="fas fa-download"></i> Export
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="graph-container" style="height: 600px; border: 1px solid #ddd; border-radius: 5px;">
-                            <!-- D3.js visualization will be rendered here -->
-                        </div>
                     </div>
                 </div>
             </div>

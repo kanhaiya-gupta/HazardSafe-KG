@@ -5,10 +5,42 @@ let graphData = {
     relationships: []
 };
 
+// Default sample knowledge graph data
+const defaultGraphData = {
+    nodes: [
+        { id: 'sulfuric_acid', labels: ['HazardousSubstance'], properties: { name: 'Sulfuric Acid', hazard_class: 'corrosive', molecular_weight: 98.08 } },
+        { id: 'toluene', labels: ['HazardousSubstance'], properties: { name: 'Toluene', hazard_class: 'flammable', molecular_weight: 92.14 } },
+        { id: 'sodium_hydroxide', labels: ['HazardousSubstance'], properties: { name: 'Sodium Hydroxide', hazard_class: 'corrosive', molecular_weight: 40.00 } },
+        { id: 'polyethylene_container', labels: ['Container'], properties: { name: 'Polyethylene Container', material: 'plastic', capacity: 1000 } },
+        { id: 'glass_container', labels: ['Container'], properties: { name: 'Glass Container', material: 'glass', capacity: 500 } },
+        { id: 'steel_container', labels: ['Container'], properties: { name: 'Steel Container', material: 'steel', capacity: 2000 } },
+        { id: 'corrosion_test', labels: ['SafetyTest'], properties: { name: 'Corrosion Test', test_type: 'material_compatibility', duration: '24h' } },
+        { id: 'flammability_test', labels: ['SafetyTest'], properties: { name: 'Flammability Test', test_type: 'fire_safety', duration: '2h' } },
+        { id: 'risk_assessment_1', labels: ['RiskAssessment'], properties: { name: 'Storage Risk Assessment', risk_level: 'medium', date: '2024-01-15' } },
+        { id: 'risk_assessment_2', labels: ['RiskAssessment'], properties: { name: 'Handling Risk Assessment', risk_level: 'high', date: '2024-01-20' } }
+    ],
+    relationships: [
+        { source: 'sulfuric_acid', target: 'polyethylene_container', type: 'STORED_IN', properties: { quantity: 500, date: '2024-01-10' } },
+        { source: 'toluene', target: 'glass_container', type: 'STORED_IN', properties: { quantity: 200, date: '2024-01-12' } },
+        { source: 'sodium_hydroxide', target: 'steel_container', type: 'STORED_IN', properties: { quantity: 1000, date: '2024-01-08' } },
+        { source: 'sulfuric_acid', target: 'corrosion_test', type: 'TESTED_BY', properties: { result: 'passed', date: '2024-01-05' } },
+        { source: 'toluene', target: 'flammability_test', type: 'TESTED_BY', properties: { result: 'passed', date: '2024-01-07' } },
+        { source: 'sulfuric_acid', target: 'risk_assessment_1', type: 'ASSESSED_IN', properties: { risk_score: 7, date: '2024-01-15' } },
+        { source: 'toluene', target: 'risk_assessment_2', type: 'ASSESSED_IN', properties: { risk_score: 9, date: '2024-01-20' } },
+        { source: 'sulfuric_acid', target: 'sodium_hydroxide', type: 'INCOMPATIBLE_WITH', properties: { reason: 'chemical_reaction', severity: 'high' } },
+        { source: 'polyethylene_container', target: 'corrosion_test', type: 'VALIDATED_BY', properties: { result: 'compatible', date: '2024-01-03' } },
+        { source: 'glass_container', target: 'flammability_test', type: 'VALIDATED_BY', properties: { result: 'compatible', date: '2024-01-06' } }
+    ]
+};
+
 let simulation;
 let selectedNode = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Show loading state
+    const graphContainer = document.getElementById('graph-container');
+    graphContainer.innerHTML = '<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i><p class="mt-2 text-muted">Loading knowledge graph...</p></div>';
+    
     loadKGData();
     initializeGraph();
 });
@@ -21,7 +53,13 @@ async function loadKGData() {
         ]);
 
         const statsData = await statsResponse.json();
-        const visualizationData = await visualizationResponse.json();
+        let visualizationData = await visualizationResponse.json();
+
+        // If no data is returned, use default sample data
+        if (!visualizationData.nodes || visualizationData.nodes.length === 0) {
+            visualizationData = defaultGraphData;
+            console.log('Using default sample knowledge graph data');
+        }
 
         graphData = visualizationData;
         
@@ -30,10 +68,24 @@ async function loadKGData() {
         
         // Render initial graph
         renderGraph();
+        
+        // Show success message if using default data
+        if (visualizationData === defaultGraphData) {
+            HazardSafeKG.showNotification('Sample knowledge graph loaded successfully. Use the controls below to explore!', 'success');
+        }
 
     } catch (error) {
         console.error('Error loading KG data:', error);
-        HazardSafeKG.showNotification('Error loading knowledge graph data', 'error');
+        // Use default data if API fails
+        graphData = defaultGraphData;
+        updateStatistics({
+            nodes: defaultGraphData.nodes.length,
+            relationships: defaultGraphData.relationships.length,
+            node_types: 4,
+            relationship_types: 5
+        });
+        renderGraph();
+        HazardSafeKG.showNotification('Loaded sample knowledge graph data', 'info');
     }
 }
 
@@ -68,6 +120,12 @@ function initializeGraph() {
     svg.append('g').attr('id', 'graph-group');
 }
 
+// Utility function to truncate text
+function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
 function renderGraph() {
     const container = document.getElementById('graph-container');
     const width = container.clientWidth;
@@ -78,10 +136,10 @@ function renderGraph() {
 
     // Create force simulation
     simulation = d3.forceSimulation(graphData.nodes)
-        .force('link', d3.forceLink(graphData.relationships).id(d => d.id).distance(100))
-        .force('charge', d3.forceManyBody().strength(-300))
+        .force('link', d3.forceLink(graphData.relationships).id(d => d.id).distance(150))
+        .force('charge', d3.forceManyBody().strength(-400))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(30));
+        .force('collision', d3.forceCollide().radius(45));
 
     // Create links
     const links = d3.select('#graph-group')
@@ -103,8 +161,11 @@ function renderGraph() {
         .attr('class', 'link-label')
         .text(d => d.type)
         .style('font-size', '10px')
-        .style('fill', '#666')
-        .style('text-anchor', 'middle');
+        .style('fill', '#333')
+        .style('text-anchor', 'middle')
+        .style('font-weight', '600')
+        .style('text-shadow', '1px 1px 2px rgba(255,255,255,0.8)')
+        .style('pointer-events', 'none');
 
     // Create nodes
     const nodes = d3.select('#graph-group')
@@ -120,23 +181,61 @@ function renderGraph() {
 
     // Add circles to nodes
     nodes.append('circle')
-        .attr('r', 20)
+        .attr('r', 35)
         .style('fill', d => getNodeColor(d.labels[0]))
         .style('stroke', '#fff')
         .style('stroke-width', 2)
         .style('cursor', 'pointer')
         .on('click', function(event, d) {
             showNodeDetails(d);
+        })
+        .on('mouseover', function(event, d) {
+            // Show tooltip with full information
+            const tooltip = d3.select('body').append('div')
+                .attr('class', 'tooltip')
+                .style('position', 'absolute')
+                .style('background', 'rgba(0,0,0,0.8)')
+                .style('color', 'white')
+                .style('padding', '8px 12px')
+                .style('border-radius', '6px')
+                .style('font-size', '12px')
+                .style('pointer-events', 'none')
+                .style('z-index', '1000')
+                .style('max-width', '200px')
+                .style('white-space', 'nowrap');
+            
+            let tooltipText = `<strong>${d.properties.name || d.id}</strong><br>`;
+            tooltipText += `Type: ${d.labels.join(', ')}<br>`;
+            
+            // Add key properties
+            const keyProps = Object.entries(d.properties).slice(0, 3);
+            keyProps.forEach(([key, value]) => {
+                tooltipText += `${key}: ${value}<br>`;
+            });
+            
+            tooltip.html(tooltipText);
+        })
+        .on('mousemove', function(event, d) {
+            // Move tooltip with mouse
+            d3.select('.tooltip')
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px');
+        })
+        .on('mouseout', function() {
+            // Remove tooltip
+            d3.select('.tooltip').remove();
         });
 
-    // Add node labels
+    // Add node labels with better positioning
     nodes.append('text')
-        .text(d => d.properties.name || d.id)
-        .style('font-size', '12px')
+        .text(d => truncateText(d.properties.name || d.id, 12))
+        .style('font-size', '11px')
         .style('text-anchor', 'middle')
         .style('pointer-events', 'none')
         .style('fill', '#fff')
-        .style('font-weight', 'bold');
+        .style('font-weight', 'bold')
+        .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.8)')
+        .attr('dy', '0.35em');
 
     // Update positions on simulation tick
     simulation.on('tick', () => {
@@ -414,8 +513,26 @@ async function getRecommendations() {
 }
 
 function resetView() {
-    if (simulation) {
-        simulation.alpha(1).restart();
+    // Show a confirmation dialog for reset options
+    const resetOptions = confirm('Choose reset option:\n\nOK - Reset graph layout (rearrange nodes)\nCancel - Load default sample data');
+    
+    if (resetOptions) {
+        // Reset graph layout only
+        if (simulation) {
+            simulation.alpha(1).restart();
+        }
+        HazardSafeKG.showNotification('Graph layout reset', 'info');
+    } else {
+        // Load default sample data
+        graphData = defaultGraphData;
+        updateStatistics({
+            nodes: defaultGraphData.nodes.length,
+            relationships: defaultGraphData.relationships.length,
+            node_types: 4,
+            relationship_types: 5
+        });
+        renderGraph();
+        HazardSafeKG.showNotification('Loaded default sample knowledge graph', 'success');
     }
 }
 
