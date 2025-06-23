@@ -25,7 +25,7 @@ from webapp.quality.routes import router as quality_router
 # Import backend modules
 from ontology.manager import init_ontology_manager
 from kg.database import init_database
-from rag.processors.vector_store import init_vector_store
+from nlp_rag.processors.vector_store import init_vector_store
 from validation.rules import validation_engine
 
 # Create FastAPI app
