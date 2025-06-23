@@ -8,11 +8,27 @@ A comprehensive software platform for structured analysis and processing of safe
 
 *Complete platform functionality demonstration including Ontology Management, Knowledge Graph, RAG System, and Validation Engine*
 
-## 🏗️ System Architecture
+## 🏗️ System Architecture & Flowcharts
 
 ![HazardSafe-KG System Architecture](docs/Architecture.gif)
 
 *Interactive system workflows and component interactions showing data flow and AI processing pipelines*
+
+### Main Flow
+![Main Flow](docs/assets/main-flow.jpeg)
+
+### Detailed Flow
+![Detailed Flow](docs/assets/detailed-flow.jpeg)
+
+### Data Flow
+![Data Flow](docs/assets/data-flow.jpeg)
+
+### AI Components
+![AI Components](docs/assets/ai-flow.jpeg)
+
+### Example Knowledge Graph
+![Example KG](docs/assets/example-kg.jpeg)
+
 
 ## 🏗️ Architecture Overview
 
