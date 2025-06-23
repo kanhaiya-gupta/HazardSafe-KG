@@ -11,6 +11,7 @@ from pathlib import Path
 import uvicorn
 import os
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,11 +29,49 @@ from kg.database import init_database
 from nlp_rag.processors.vector_store import init_vector_store
 from validation.rules import validation_engine
 
-# Create FastAPI app
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup and shutdown events."""
+    # Startup
+    logging.info("Starting HazardSafe-KG platform...")
+    
+    try:
+        # Initialize ontology manager
+        await init_ontology_manager()
+        logging.info("Ontology manager initialized")
+        
+        # Initialize Neo4j database
+        # For AuraDB, you'll need to set these environment variables:
+        # NEO4J_URI=neo4j+s://your-instance-id.databases.neo4j.io:7687
+        # NEO4J_USER=neo4j
+        # NEO4J_PASSWORD=HazardSafe123
+        await init_database()
+        logging.info("Neo4j database initialized")
+        
+        # Initialize vector store
+        await init_vector_store()
+        logging.info("Vector store initialized")
+        
+        # Validation engine is already initialized as a global instance
+        logging.info("Validation engine initialized")
+        
+        logging.info("HazardSafe-KG platform started successfully")
+        
+    except Exception as e:
+        logging.error(f"Failed to initialize services: {e}")
+        raise
+    
+    yield
+    
+    # Shutdown
+    logging.info("Shutting down HazardSafe-KG platform...")
+
+# Create FastAPI app with lifespan
 app = FastAPI(
     title="HazardSafe-KG",
     description="Unified platform for hazardous substance knowledge management",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Setup logging
@@ -78,37 +117,6 @@ app.include_router(kg_router, tags=["knowledge-graph"])
 app.include_router(nlp_rag_router, tags=["nlp_rag"])
 app.include_router(validation_router, tags=["validation"])
 app.include_router(quality_router, tags=["quality"])
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize services on startup."""
-    logging.info("Starting HazardSafe-KG platform...")
-    
-    try:
-        # Initialize ontology manager
-        await init_ontology_manager()
-        logging.info("Ontology manager initialized")
-        
-        # Initialize Neo4j database
-        # For AuraDB, you'll need to set these environment variables:
-        # NEO4J_URI=neo4j+s://your-instance-id.databases.neo4j.io:7687
-        # NEO4J_USER=neo4j
-        # NEO4J_PASSWORD=HazardSafe123
-        await init_database()
-        logging.info("Neo4j database initialized")
-        
-        # Initialize vector store
-        await init_vector_store()
-        logging.info("Vector store initialized")
-        
-        # Validation engine is already initialized as a global instance
-        logging.info("Validation engine initialized")
-        
-        logging.info("HazardSafe-KG platform started successfully")
-        
-    except Exception as e:
-        logging.error(f"Failed to initialize services: {e}")
-        raise
 
 @app.get("/")
 async def root(request: Request):
