@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class BaseValidator(ABC):
     """Base class for all validators in HazardSafe-KG."""
     
-    def __init__(self, rules: Dict[str, Any):
+    def __init__(self, rules: Dict[str, Any]):
         """
         Initialize validator with a set of rules.
         

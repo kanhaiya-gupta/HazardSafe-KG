@@ -386,3 +386,99 @@ class ValidationEngine:
 
 # Global validation engine instance
 validation_engine = ValidationEngine()
+
+class ValidationRules:
+    """Static validation rules for common validation tasks."""
+    
+    @staticmethod
+    def is_valid_chemical_name(name: str) -> bool:
+        """
+        Validate chemical name format.
+        
+        Args:
+            name (str): Chemical name to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        if not name or not isinstance(name, str):
+            return False
+        
+        # Basic validation: should not be empty and should contain alphanumeric characters
+        name = name.strip()
+        if len(name) < 1:
+            return False
+        
+        # Should contain at least one letter
+        if not any(c.isalpha() for c in name):
+            return False
+        
+        # Should not contain special characters except common chemical notation
+        allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}.,-_ ')
+        if not all(c in allowed_chars for c in name):
+            return False
+        
+        return True
+    
+    @staticmethod
+    def is_valid_cas_number(cas_number: str) -> bool:
+        """
+        Validate CAS number format (XXX-XX-X).
+        
+        Args:
+            cas_number (str): CAS number to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        if not cas_number or not isinstance(cas_number, str):
+            return False
+        
+        # CAS number format: XXX-XX-X
+        import re
+        pattern = r'^\d{1,7}-\d{2}-\d$'
+        return bool(re.match(pattern, cas_number))
+    
+    @staticmethod
+    def is_valid_hazard_class(hazard_class: str) -> bool:
+        """
+        Validate hazard class.
+        
+        Args:
+            hazard_class (str): Hazard class to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        valid_classes = [
+            'flammable', 'toxic', 'corrosive', 'explosive', 
+            'oxidizing', 'environmental', 'health', 'irritant',
+            'sensitizer', 'carcinogen', 'mutagen', 'reproductive_toxin'
+        ]
+        return hazard_class.lower() in valid_classes
+    
+    @staticmethod
+    def is_valid_molecular_weight(weight: float) -> bool:
+        """
+        Validate molecular weight.
+        
+        Args:
+            weight (float): Molecular weight to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        return isinstance(weight, (int, float)) and 0 < weight < 10000
+    
+    @staticmethod
+    def is_valid_temperature(temp: float) -> bool:
+        """
+        Validate temperature value.
+        
+        Args:
+            temp (float): Temperature to validate
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        return isinstance(temp, (int, float)) and -273 <= temp <= 5000

@@ -1,13 +1,13 @@
 # validation/csv_validator.py
 import csv
-from typing import List, Dict
+from typing import List, Dict, Any
 from .validator import BaseValidator
 from .rules import ValidationRules
 
 class CSVValidator(BaseValidator):
     """Validator for CSV files in HazardSafe-KG."""
     
-    def __init__(self, rules: Dict[str, any]):
+    def __init__(self, rules: Dict[str, Any]):
         super().__init__(rules)
     
     def validate(self, file_path: str) -> bool:
