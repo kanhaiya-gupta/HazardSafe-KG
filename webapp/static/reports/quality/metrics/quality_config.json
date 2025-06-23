@@ -1,0 +1,58 @@
+{
+  "quality_thresholds": {
+    "completeness": {
+      "excellent": 0.95,
+      "good": 0.85,
+      "acceptable": 0.75,
+      "poor": 0.65
+    },
+    "accuracy": {
+      "excellent": 0.98,
+      "good": 0.90,
+      "acceptable": 0.80,
+      "poor": 0.70
+    },
+    "consistency": {
+      "excellent": 0.95,
+      "good": 0.85,
+      "acceptable": 0.75,
+      "poor": 0.65
+    },
+    "timeliness": {
+      "excellent": 0.98,
+      "good": 0.90,
+      "acceptable": 0.80,
+      "poor": 0.70
+    },
+    "uniqueness": {
+      "excellent": 0.95,
+      "good": 0.85,
+      "acceptable": 0.75,
+      "poor": 0.65
+    }
+  },
+  "reporting": {
+    "generate_html": true,
+    "generate_json": true,
+    "include_charts": true,
+    "include_recommendations": true,
+    "output_directory": "webapp/static/reports/quality"
+  },
+  "validation_rules": {
+    "email_format": true,
+    "phone_format": true,
+    "date_validation": true,
+    "numeric_ranges": true,
+    "outlier_detection": true
+  },
+  "outlier_detection": {
+    "method": "iqr",
+    "iqr_multiplier": 1.5,
+    "zscore_threshold": 3.0
+  },
+  "data_types": {
+    "auto_detect": true,
+    "force_types": {},
+    "categorical_threshold": 0.1
+  }
+} 

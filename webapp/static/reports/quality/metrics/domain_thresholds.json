@@ -1,0 +1,37 @@
+{
+  "engineering_data": {
+    "completeness": 0.90,
+    "accuracy": 0.95,
+    "consistency": 0.88,
+    "timeliness": 0.85,
+    "uniqueness": 0.92
+  },
+  "safety_data": {
+    "completeness": 0.95,
+    "accuracy": 0.98,
+    "consistency": 0.92,
+    "timeliness": 0.90,
+    "uniqueness": 0.95
+  },
+  "hazard_data": {
+    "completeness": 0.98,
+    "accuracy": 0.99,
+    "consistency": 0.95,
+    "timeliness": 0.95,
+    "uniqueness": 0.98
+  },
+  "knowledge_graph_data": {
+    "completeness": 0.85,
+    "accuracy": 0.92,
+    "consistency": 0.88,
+    "timeliness": 0.80,
+    "uniqueness": 0.90
+  },
+  "ontology_data": {
+    "completeness": 0.90,
+    "accuracy": 0.95,
+    "consistency": 0.92,
+    "timeliness": 0.85,
+    "uniqueness": 0.93
+  }
+} 
