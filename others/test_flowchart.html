@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn.active {
+            background: #e74c3c;
+        }
+        
+        .flowchart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Flowchart</h1>
+        
+        <div class="controls">
+            <button class="btn active" onclick="showFlowchart('main')">Main Flow</button>
+            <button class="btn" onclick="showFlowchart('detailed')">Detailed Flow</button>
+            <button class="btn" onclick="showFlowchart('data')">Data Flow</button>
+            <button class="btn" onclick="showFlowchart('ai')">AI Components</button>
+        </div>
+        
+        <div class="flowchart-container">
+            <div class="mermaid" id="main-flowchart">
+                graph TD
+                    A[Start] --> B[Process]
+                    B --> C[End]
+            </div>
+            
+            <div class="mermaid" id="detailed-flowchart" style="display: none;">
+                graph TD
+                    A1[Input] --> B1[Process 1]
+                    B1 --> C1[Process 2]
+                    C1 --> D1[Output]
+            </div>
+            
+            <div class="mermaid" id="data-flowchart" style="display: none;">
+                graph TD
+                    A[Data Input] --> B[Data Processing]
+                    B --> C[Data Output]
+            </div>
+            
+            <div class="mermaid" id="ai-flowchart" style="display: none;">
+                graph TD
+                    A[AI Input] --> B[AI Processing]
+                    B --> C[AI Output]
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default'
+        });
+        
+        // Store original content
+        const flowchartContents = {};
+        
+        // Flowchart switching functionality
+        function showFlowchart(type) {
+            console.log('Switching to flowchart:', type);
+            
+            // Hide all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                el.style.display = 'none';
+                // Clear any existing SVG
+                const svg = el.querySelector('svg');
+                if (svg) {
+                    svg.remove();
+                }
+                el.removeAttribute('data-processed');
+            });
+            
+            // Show selected flowchart
+            const targetFlowchart = document.getElementById(type + '-flowchart');
+            if (targetFlowchart) {
+                targetFlowchart.style.display = 'block';
+                
+                // Store original content if not already stored
+                if (!flowchartContents[targetFlowchart.id]) {
+                    flowchartContents[targetFlowchart.id] = targetFlowchart.innerHTML;
+                }
+                
+                // Restore original content
+                targetFlowchart.innerHTML = flowchartContents[targetFlowchart.id];
+                
+                // Render with Mermaid
+                setTimeout(() => {
+                    try {
+                        mermaid.init(undefined, targetFlowchart);
+                        console.log('Mermaid rendered for:', type);
+                    } catch (error) {
+                        console.error('Mermaid error for', type, ':', error);
+                    }
+                }, 100);
+            }
+            
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the clicked button
+            const buttons = document.querySelectorAll('.btn');
+            const buttonIndex = ['main', 'detailed', 'data', 'ai'].indexOf(type);
+            if (buttonIndex >= 0 && buttons[buttonIndex]) {
+                buttons[buttonIndex].classList.add('active');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
+            // Store original content of all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                flowchartContents[el.id] = el.innerHTML;
+                el.style.display = 'none';
+            });
+            
+            // Show main flowchart initially
+            const mainFlowchart = document.getElementById('main-flowchart');
+            if (mainFlowchart) {
+                mainFlowchart.style.display = 'block';
+            }
+            
+            // Initialize mermaid for main flowchart
+            setTimeout(() => {
+                try {
+                    mermaid.init(undefined, mainFlowchart);
+                    console.log('Initial mermaid initialization complete');
+                } catch (error) {
+                    console.error('Initial mermaid error:', error);
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html> 

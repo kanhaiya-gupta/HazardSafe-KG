@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazardSafe-KG System Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 8px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn.active {
+            background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .description {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .description h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .description ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .description li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .legend {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                margin: 5px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HazardSafe-KG</h1>
+            <p>Complete System Architecture Flowchart</p>
+            <p>AI-Powered Knowledge Management for Hazardous Substances</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>System Overview</h2>
+                <div class="description">
+                    <h3>Three Core Components Working Together</h3>
+                    <ul>
+                        <li><strong>Ontology:</strong> Defines knowledge structure and validation rules</li>
+                        <li><strong>RAG:</strong> Processes documents and enables intelligent querying</li>
+                        <li><strong>Knowledge Graph:</strong> Stores relationships and enables reasoning</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Complete System Flowchart</h2>
+                <div class="controls">
+                    <button class="btn active" onclick="showFlowchart('main')">Main Flow</button>
+                    <button class="btn" onclick="showFlowchart('detailed')">Detailed Flow</button>
+                    <button class="btn" onclick="showFlowchart('data')">Data Flow</button>
+                    <button class="btn" onclick="showFlowchart('ai')">AI Components</button>
+                </div>
+                
+                <div class="flowchart-container">
+                    <div class="mermaid" id="main-flowchart">
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            B --> C[Extracted Data]
+                            C --> D[Ontology Validation]
+                            D --> E[Knowledge Graph]
+                            E --> F[Query Interface]
+                            F --> G[Results]
+                            
+                            H[Ontology Schema] --> D
+                            I[AI Analysis] --> E
+                            J[Vector Store] --> F
+                    </div>
+                    
+                    <div class="mermaid" id="detailed-flowchart" style="display: none;">
+                        graph TD
+                            A1[PDF Safety Data Sheets] --> B1[Document Processor]
+                            A2[PDF Engineering Docs] --> B1
+                            
+                            B1 --> C1[AI Text Extraction]
+                            C1 --> D1[Content Classification]
+                            D1 --> E1[Safety Documents]
+                            D1 --> F1[Engineering Documents]
+                            
+                            E1 --> G1[Entity Recognition]
+                            F1 --> G1
+                            G1 --> H1[Chemical Entities]
+                            G1 --> I1[Physical Properties]
+                            G1 --> J1[Safety Standards]
+                            
+                            G1 --> K1[Text Chunking]
+                            K1 --> L1[Vector Embeddings]
+                            L1 --> M1[Vector Database]
+                            
+                            N1[TTL Ontology Files] --> O1[Ontology Manager]
+                            O1 --> P1[SHACL Validation]
+                            P1 --> Q1[Data Quality Check]
+                            
+                            H1 --> R1[Knowledge Graph Neo4j]
+                            I1 --> R1
+                            J1 --> R1
+                            Q1 --> R1
+                            M1 --> R1
+                            
+                            S1[Natural Language Query] --> T1[Query Understanding]
+                            T1 --> U1[Intent Classification]
+                            U1 --> V1[Semantic Search]
+                            U1 --> W1[Graph Query]
+                            V1 --> M1
+                            W1 --> R1
+                            
+                            V1 --> X1[Retrieved Documents]
+                            W1 --> Y1[Graph Results]
+                            X1 --> Z1[Answer Synthesis]
+                            Y1 --> Z1
+                            Z1 --> AA1[Comprehensive Answer]
+                    </div>
+                    
+                    <div class="mermaid" id="data-flowchart" style="display: none;">
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            C[CSV Data] --> D[Data Ingestion]
+                            E[Word Documents] --> B
+                            F[Excel Files] --> D
+                            G[JSON Files] --> D
+                            
+                            B --> H[AI Text Extraction]
+                            H --> I[Content Classification]
+                            I --> J[Safety Documents]
+                            I --> K[Engineering Documents]
+                            I --> L[Regulatory Documents]
+                            
+                            D --> M[Data Validation]
+                            M --> N[Structured Data]
+                            N --> O[Data Quality Check]
+                            
+                            J --> P[Entity Recognition]
+                            K --> P
+                            L --> P
+                            O --> P
+                            P --> Q[Chemical Entities]
+                            P --> R[Safety Entities]
+                            P --> S[Engineering Entities]
+                            
+                            H --> T[Text Chunking]
+                            T --> U[Vector Embeddings]
+                            U --> V[Vector Database]
+                            
+                            W[Ontology Files] --> X[Ontology Manager]
+                            X --> Y[SHACL Validation]
+                            Y --> Z[Schema Validation]
+                            
+                            Q --> AA[Knowledge Graph Neo4j]
+                            R --> AA
+                            S --> AA
+                            Z --> AA
+                            V --> AA
+                            
+                            BB[User Query] --> CC[Query Processor]
+                            CC --> DD[Query Classification]
+                            DD --> EE[Semantic Search]
+                            DD --> FF[Graph Query]
+                            EE --> V
+                            FF --> AA
+                            
+                            EE --> GG[Retrieved Documents]
+                            FF --> HH[Graph Results]
+                            GG --> II[Answer Generation]
+                            HH --> II
+                            II --> JJ[Structured Response]
+                    </div>
+                    
+                    <div class="mermaid" id="ai-flowchart" style="display: none;">
+                        graph TD
+                            A[PDF Upload] --> B[AI Document Analysis]
+                            C[Word Documents] --> B
+                            D[Image Files] --> B
+                            
+                            B --> E[AI Text Extraction]
+                            B --> F[AI Layout Recognition]
+                            B --> G[AI Image Processing]
+                            
+                            G --> H[AI OCR Text Recognition]
+                            G --> I[AI Chemical Structure Recognition]
+                            G --> J[AI Safety Symbol Detection]
+                            
+                            E --> K[AI Natural Language Processing]
+                            K --> L[AI Tokenization]
+                            L --> M[AI Part-of-Speech Tagging]
+                            M --> N[AI Named Entity Recognition]
+                            N --> O[AI Dependency Parsing]
+                            O --> P[AI Semantic Role Labeling]
+                            
+                            N --> Q[Chemical Formulas]
+                            N --> R[Physical Measurements]
+                            N --> S[Safety Standards]
+                            N --> T[Engineering Terms]
+                            N --> U[Hazard Classes]
+                            
+                            P --> V[AI Vector Embeddings]
+                            V --> W[AI Semantic Similarity]
+                            W --> X[AI Context Understanding]
+                            X --> Y[Vector Database]
+                            
+                            Q --> Z[AI Chemical Knowledge Extraction]
+                            R --> AA[AI Property Knowledge Extraction]
+                            S --> BB[AI Regulatory Knowledge Extraction]
+                            T --> CC[AI Engineering Knowledge Extraction]
+                            U --> DD[AI Safety Knowledge Extraction]
+                            
+                            Z --> EE[Knowledge Graph Neo4j]
+                            AA --> EE
+                            BB --> EE
+                            CC --> EE
+                            DD --> EE
+                            
+                            FF[Natural Language Query] --> GG[AI Query Understanding]
+                            GG --> HH[AI Intent Classification]
+                            HH --> II[AI Entity Extraction from Query]
+                            II --> JJ[AI Query Type Classification]
+                            JJ --> KK[Semantic Search Query]
+                            JJ --> LL[Graph Query Generation]
+                            
+                            KK --> Y
+                            LL --> EE
+                            
+                            Y --> MM[Retrieved Context]
+                            EE --> NN[Graph Knowledge]
+                            MM --> OO[AI Answer Synthesis]
+                            NN --> OO
+                            OO --> PP[AI Response Validation]
+                            PP --> QQ[AI Source Attribution]
+                            QQ --> RR[Intelligent Response]
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Component Legend</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e1f5fe;"></div>
+                        <span><strong>Input Sources:</strong> PDFs, Ontology files, CSV data</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0;"></div>
+                        <span><strong>RAG Processing:</strong> Document extraction, vector storage</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5;"></div>
+                        <span><strong>Ontology:</strong> Schema definition, validation rules</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e8f5e8;"></div>
+                        <span><strong>Knowledge Graph:</strong> Neo4j database, relationships</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffebee;"></div>
+                        <span><strong>AI Components:</strong> NLP, embeddings, reasoning</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fce4ec;"></div>
+                        <span><strong>Output:</strong> User responses, insights</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Technology Stack</h2>
+                <div class="description">
+                    <h3>Backend Technologies</h3>
+                    <ul>
+                        <li><strong>FastAPI:</strong> High-performance web framework for building APIs</li>
+                        <li><strong>Neo4j:</strong> Graph database for knowledge graph storage</li>
+                        <li><strong>RDFLib:</strong> Python library for working with RDF and ontology files</li>
+                        <li><strong>Sentence Transformers:</strong> AI-powered text embeddings for semantic search</li>
+                        <li><strong>PyPDF2/PDFMiner:</strong> PDF text extraction and processing</li>
+                    </ul>
+                    
+                    <h3>AI & Machine Learning</h3>
+                    <ul>
+                        <li><strong>Natural Language Processing:</strong> Named Entity Recognition, Part-of-Speech tagging</li>
+                        <li><strong>Semantic Embeddings:</strong> Vector representations for similarity search</li>
+                        <li><strong>Document Classification:</strong> AI-powered content categorization</li>
+                        <li><strong>Query Understanding:</strong> Intent classification and entity extraction</li>
+                        <li><strong>Answer Synthesis:</strong> Intelligent response generation from multiple sources</li>
+                    </ul>
+                    
+                    <h3>Frontend & Visualization</h3>
+                    <ul>
+                        <li><strong>Flask:</strong> Web framework for serving the user interface</li>
+                        <li><strong>D3.js/Cytoscape.js:</strong> Interactive knowledge graph visualization</li>
+                        <li><strong>Bootstrap:</strong> Responsive UI components and styling</li>
+                        <li><strong>Chart.js:</strong> Data visualization and analytics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+        
+        // Store original content
+        const flowchartContents = {};
+        
+        // Flowchart switching functionality
+        function showFlowchart(type) {
+            console.log('Switching to flowchart:', type);
+            
+            // Hide all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                el.style.display = 'none';
+                // Clear any existing SVG
+                const svg = el.querySelector('svg');
+                if (svg) {
+                    svg.remove();
+                }
+                el.removeAttribute('data-processed');
+            });
+            
+            // Show selected flowchart
+            const targetFlowchart = document.getElementById(type + '-flowchart');
+            if (targetFlowchart) {
+                targetFlowchart.style.display = 'block';
+                
+                // Store original content if not already stored
+                if (!flowchartContents[targetFlowchart.id]) {
+                    flowchartContents[targetFlowchart.id] = targetFlowchart.innerHTML;
+                }
+                
+                // Restore original content
+                targetFlowchart.innerHTML = flowchartContents[targetFlowchart.id];
+                
+                // Render with Mermaid
+                setTimeout(() => {
+                    try {
+                        mermaid.init(undefined, targetFlowchart);
+                        console.log('Mermaid rendered for:', type);
+                    } catch (error) {
+                        console.error('Mermaid error for', type, ':', error);
+                    }
+                }, 100);
+            }
+            
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the clicked button
+            const buttons = document.querySelectorAll('.btn');
+            const buttonIndex = ['main', 'detailed', 'data', 'ai'].indexOf(type);
+            if (buttonIndex >= 0 && buttons[buttonIndex]) {
+                buttons[buttonIndex].classList.add('active');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
+            // Store original content of all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                flowchartContents[el.id] = el.innerHTML;
+                el.style.display = 'none';
+            });
+            
+            // Show main flowchart initially
+            const mainFlowchart = document.getElementById('main-flowchart');
+            if (mainFlowchart) {
+                mainFlowchart.style.display = 'block';
+            }
+            
+            // Initialize mermaid for main flowchart
+            setTimeout(() => {
+                try {
+                    mermaid.init(undefined, mainFlowchart);
+                    console.log('Initial mermaid initialization complete');
+                } catch (error) {
+                    console.error('Initial mermaid error:', error);
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html> 

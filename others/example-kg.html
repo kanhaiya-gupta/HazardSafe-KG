@@ -1,0 +1,267 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazardSafe-KG Example Knowledge Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px rgba(0,0,0,0.3);
+        }
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mermaid {
+            background: white;
+            padding: 30px0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1400px;
+        }
+        .mermaid svg {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 500px !important;
+        }
+        .description {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        .description h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .description p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .description ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .description li {
+            margin: 5px 0;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HazardSafe-KG Example Knowledge Graph</h1>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Example Knowledge Graph</h2>
+                <div class="flowchart-container">
+                    <div class="mermaid" id="example-flowchart">
+                        graph TD
+                            %% Chemical Nodes
+                            H2SO4[H2SO4<br/>Sulfuric Acid<br/>Corrosive Liquid]
+                            NaOH[NaOH<br/>Sodium Hydroxide<br/>Corrosive Solid]
+                            HCl[HCl<br/>Hydrochloric Acid<br/>Corrosive Liquid]
+                            Toluene[Toluene<br/>C7H8<br/>Flammable Liquid]
+                            Acetone[Acetone<br/>C3H6O<br/>Flammable Liquid]
+                            %% Hazard Classes
+                            Corrosive[Corrosive Hazard<br/>GHS05<br/>Skin/Eye Damage]
+                            Flammable[Flammable Hazard<br/>GHS02<br/>Fire Risk]
+                            %% Storage Locations
+                            LabStorage[Laboratory Storage<br/>Building A, Room 101<br/>Chemical Cabinet]
+                            WarehouseStorage[Warehouse Storage<br/>Building B, Warehouse 1<br/>Bulk Storage]
+                            %% PPE
+                            Gloves[Chemical Resistant Gloves<br/>Nitrile Material<br/>Hand Protection]
+                            Goggles[Safety Goggles<br/>Polycarbonate<br/>Eye Protection]
+                            %% Procedures
+                            SpillResponse[Spill Response Procedure<br/>Emergency Protocol<br/>8 Steps]
+                            WasteDisposal[Waste Disposal Procedure<br/>Operational Protocol<br/>6 Steps]
+                            %% Regulations
+                            OSHA[OSHA 1910.1200<br/>Hazard Communication<br/>SDS Requirements]
+                            EPA[EPA TSCA<br/>Toxic Substances<br/>Chemical Regulation]
+                            %% Layout
+                            H2SO4 --- NaOH --- HCl --- Toluene --- Acetone
+                            %% Relationships - Hazard Classes
+                            H2SO4 -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            NaOH -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            HCl -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            Toluene -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            Acetone -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            %% Relationships - Storage
+                            H2SO4 -->|STORED_IN<br/>5L Glass Bottle| LabStorage
+                            NaOH -->|STORED_IN<br/>2kg Plastic Container| LabStorage
+                            HCl -->|STORED_IN<br/>10L Glass Bottle| LabStorage
+                            Toluene -->|STORED_IN<br/>200L Steel Drum| WarehouseStorage
+                            Acetone -->|STORED_IN<br/>100L Steel Drum| WarehouseStorage
+                            %% Relationships - PPE
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Gloves
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Goggles
+                            Flammable -->|REQUIRES_PPE<br/>Recommended| Goggles
+                            %% Relationships - Procedures
+                            H2SO4 -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            NaOH -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            HCl -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            H2SO4 -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            NaOH -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            HCl -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Toluene -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Acetone -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            %% Relationships - Regulations
+                            OSHA -->|REGULATES<br/>Compliance Required| H2SO4
+                            OSHA -->|REGULATES<br/>Compliance Required| NaOH
+                            OSHA -->|REGULATES<br/>Compliance Required| HCl
+                            EPA -->|REGULATES<br/>Compliance Required| Toluene
+                            EPA -->|REGULATES<br/>Compliance Required| Acetone
+                            %% Chemical Compatibility
+                            H2SO4 -.->|INCOMPATIBLE_WITH<br/>Neutralization| NaOH
+                            H2SO4 -.->|COMPATIBLE_WITH<br/>Storage OK| HCl
+                            Toluene -.->|COMPATIBLE_WITH<br/>Storage OK| Acetone
+                            %% Styling
+                            classDef chemicalStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef hazardStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef ppeStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef procedureStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+                            classDef regulationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            class H2SO4,NaOH,HCl,Toluene,Acetone chemicalStyle
+                            class Corrosive,Flammable hazardStyle
+                            class LabStorage,WarehouseStorage storageStyle
+                            class Gloves,Goggles ppeStyle
+                            class SpillResponse,WasteDisposal procedureStyle
+                            class OSHA,EPA regulationStyle
+                    </div>
+                </div>
+                <div class="description">
+                    <h3>Example Knowledge Graph Description</h3>
+                    <p>The Example Knowledge Graph illustrates a real-world application of the system’s knowledge graph, demonstrating how hazardous substances and their relationships are structured.</p>
+                    <p><strong>Nodes</strong>:</p>
+                    <ul>
+                        <li><strong>Chemical Substances</strong>: H2SO4, NaOH, HCl, Toluene, Acetone with properties (e.g., corrosiveness, flammability).</li>
+                        <li><strong>Hazard Classes</strong>: Corrosive (GHS05) and Flammable (GHS02).</li>
+                        <li><strong>Storage Locations</strong>: Laboratory Storage (Building A) and Warehouse Storage (Building B).</li>
+                        <li><strong>PPE</strong>: Gloves (Nitrile) and Goggles (Polycarbonate).</li>
+                        <li><strong>Procedures</strong>: Spill Response (8 steps) and Waste Disposal (6 steps).</li>
+                        <li><strong>Regulations</strong>: OSHA 1910.1200 and EPA TSCA.</li>
+                    </ul>
+                    <p><strong>Relationships</strong>:</p>
+                    <ul>
+                        <li><strong>HAS_HAZARD_CLASS</strong>: Links chemicals to hazards (e.g., H2SO4 → Corrosive).</li>
+                        <li><strong>STORED_IN</strong>: Specifies storage (e.g., Toluene → 200L Steel Drum).</li>
+                        <li><strong>REQUIRES_PPE</strong>: Connects hazards to PPE (e.g., Corrosive → Gloves).</li>
+                        <li><strong>HAS_PROCEDURE</strong>: Links chemicals to protocols (e.g., H2SO4 → Spill Response).</li>
+                        <li><strong>REGULATES</strong>: Ties regulations to chemicals (e.g., OSHA → H2SO4).</li>
+                        <li><strong>INCOMPATIBLE/COMPATIBLE_WITH</strong>: Indicates storage compatibility (e.g., H2SO4 incompatible with NaOH).</li>
+                    </ul>
+                    <p><strong>Goal</strong>: This flowchart demonstrates the knowledge graph’s structure, enabling queries for safety compliance, storage management, and regulatory adherence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 40,
+                rankSpacing: 60,
+                diagramPadding: 15
+            },
+            fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+            fontSize: 12
+        });
+    </script>
+</body>
+</html>

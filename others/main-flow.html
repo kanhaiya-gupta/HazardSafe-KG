@@ -1,0 +1,182 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazardSafe-KG Main Flow</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mermaid {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1400px;
+        }
+        .mermaid svg {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 600px !important;
+            margin: 0 auto !important;
+        }
+        .description {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        .description h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .description p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HazardSafe-KG Main Flow</h1>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Main Flowchart</h2>
+                <div class="flowchart-container">
+                    <div class="mermaid" id="main-flowchart">
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            B --> C[Extracted Data]
+                            C --> D[Ontology Validation]
+                            D --> E[Knowledge Graph]
+                            E --> F[Query Interface]
+                            F --> G[Results]
+                            H[Ontology Schema] --> D
+                            I[AI Analysis] --> E
+                            J[Vector Store] --> F
+                    </div>
+                </div>
+                <div class="description">
+                    <h3>Main Flow Description</h3>
+                    <p>The Main Flow provides a high-level overview of the HazardSafe-KG system’s core data processing pipeline, illustrating how information flows from input documents to user query results.</p>
+                    <p><strong>Process</strong>: PDF documents (e.g., safety data sheets, engineering docs) are processed by a Document Processor to extract structured data. This data is validated against an Ontology Schema to ensure compliance with knowledge structures. Validated data is stored in a Knowledge Graph (Neo4j), enriched with AI Analysis. Users query the system via a Query Interface, which retrieves information from the Knowledge Graph and a Vector Store, delivering Results.</p>
+                    <p><strong>Goal</strong>: This flowchart shows the end-to-end workflow, emphasizing the integration of ontology, AI, and graph-based storage for efficient hazardous substance data management.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 40,
+                rankSpacing: 60,
+                diagramPadding: 15
+            },
+            fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+            fontSize: 12
+        });
+    </script>
+</body>
+</html>

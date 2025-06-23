@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HazardSafe-KG System Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 8px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn.active {
+            background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .flowchart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1400px;
+        }
+        
+        .mermaid svg {
+            width: 100% !important;
+            height: auto !important;
+            max-width: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .btn {
+                margin: 5px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+        
+        #example-flowchart svg {
+            min-height: 500px !important;
+        }
+        
+        #main-flowchart svg {
+            max-width: 600px !important;
+            margin: 0 auto !important;
+        }
+        
+        #detailed-flowchart svg,
+        #data-flowchart svg,
+        #ai-flowchart svg {
+            min-width: 1000px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HazardSafe-KG</h1>
+            <p>System Architecture Flowchart</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>System Flowchart</h2>
+                <div class="controls">
+                    <button class="btn active" onclick="showFlowchart('main', event)">Main Flow</button>
+                    <button class="btn" onclick="showFlowchart('detailed', event)">Detailed Flow</button>
+                    <button class="btn" onclick="showFlowchart('data', event)">Data Flow</button>
+                    <button class="btn" onclick="showFlowchart('ai', event)">AI Components</button>
+                    <button class="btn" onclick="showFlowchart('example', event)">Example KG</button>
+                </div>
+                
+                <div class="flowchart-container">
+                    <div class="mermaid" id="main-flowchart">
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            B --> C[Extracted Data]
+                            C --> D[Ontology Validation]
+                            D --> E[Knowledge Graph]
+                            E --> F[Query Interface]
+                            F --> G[Results]
+                            
+                            H[Ontology Schema] --> D
+                            I[AI Analysis] --> E
+                            J[Vector Store] --> F
+                    </div>
+                    
+                    <div class="mermaid" id="detailed-flowchart" style="display: none;">
+                        graph TD
+                            A1[PDF Safety Data Sheets] --> B1[Document Processor]
+                            A2[PDF Engineering Docs] --> B1
+                            
+                            B1 --> C1[AI Text Extraction]
+                            C1 --> D1[Content Classification]
+                            D1 --> E1[Safety Documents]
+                            D1 --> F1[Engineering Documents]
+                            
+                            E1 --> G1[Entity Recognition]
+                            F1 --> G1
+                            G1 --> H1[Chemical Entities]
+                            G1 --> I1[Physical Properties]
+                            G1 --> J1[Safety Standards]
+                            
+                            G1 --> K1[Text Chunking]
+                            K1 --> L1[Vector Embeddings]
+                            L1 --> M1[Vector Database]
+                            
+                            N1[TTL Ontology Files] --> O1[Ontology Manager]
+                            O1 --> P1[SHACL Validation]
+                            P1 --> Q1[Data Quality Check]
+                            
+                            H1 --> R1[Knowledge Graph Neo4j]
+                            I1 --> R1
+                            J1 --> R1
+                            Q1 --> R1
+                            M1 --> R1
+                            
+                            S1[Natural Language Query] --> T1[Query Understanding]
+                            T1 --> U1[Intent Classification]
+                            U1 --> V1[Semantic Search]
+                            U1 --> W1[Graph Query]
+                            V1 --> M1
+                            W1 --> R1
+                            
+                            V1 --> X1[Retrieved Documents]
+                            W1 --> Y1[Graph Results]
+                            X1 --> Z1[Answer Synthesis]
+                            Y1 --> Z1
+                            Z1 --> AA1[Comprehensive Answer]
+                    </div>
+                    
+                    <div class="mermaid" id="data-flowchart" style="display: none;">
+                        graph TD
+                            A[PDF Documents] --> B[Document Processor]
+                            C[CSV Data] --> D[Data Ingestion]
+                            E[Word Documents] --> B
+                            F[Excel Files] --> D
+                            G[JSON Files] --> D
+                            
+                            B --> H[AI Text Extraction]
+                            H --> I[Content Classification]
+                            I --> J[Safety Documents]
+                            I --> K[Engineering Documents]
+                            I --> L[Regulatory Documents]
+                            
+                            D --> M[Data Validation]
+                            M --> N[Structured Data]
+                            N --> O[Data Quality Check]
+                            
+                            J --> P[Entity Recognition]
+                            K --> P
+                            L --> P
+                            O --> P
+                            P --> Q[Chemical Entities]
+                            P --> R[Safety Entities]
+                            P --> S[Engineering Entities]
+                            
+                            H --> T[Text Chunking]
+                            T --> U[Vector Embeddings]
+                            U --> V[Vector Database]
+                            
+                            W[Ontology Files] --> X[Ontology Manager]
+                            X --> Y[SHACL Validation]
+                            Y --> Z[Schema Validation]
+                            
+                            Q --> AA[Knowledge Graph Neo4j]
+                            R --> AA
+                            S --> AA
+                            Z --> AA
+                            V --> AA
+                            
+                            BB[User Query] --> CC[Query Processor]
+                            CC --> DD[Query Classification]
+                            DD --> EE[Semantic Search]
+                            DD --> FF[Graph Query]
+                            EE --> V
+                            FF --> AA
+                            
+                            EE --> GG[Retrieved Documents]
+                            FF --> HH[Graph Results]
+                            GG --> II[Answer Generation]
+                            HH --> II
+                            II --> JJ[Structured Response]
+                    </div>
+                    
+                    <div class="mermaid" id="ai-flowchart" style="display: none;">
+                        graph TD
+                            A[PDF Upload] --> B[AI Document Analysis]
+                            C[Word Documents] --> B
+                            D[Image Files] --> B
+                            
+                            B --> E[AI Text Extraction]
+                            B --> F[AI Layout Recognition]
+                            B --> G[AI Image Processing]
+                            
+                            G --> H[AI OCR Text Recognition]
+                            G --> I[AI Chemical Structure Recognition]
+                            G --> J[AI Safety Symbol Detection]
+                            
+                            E --> K[AI Natural Language Processing]
+                            K --> L[AI Tokenization]
+                            L --> M[AI Part-of-Speech Tagging]
+                            M --> N[AI Named Entity Recognition]
+                            N --> O[AI Dependency Parsing]
+                            O --> P[AI Semantic Role Labeling]
+                            
+                            N --> Q[Chemical Formulas]
+                            N --> R[Physical Measurements]
+                            N --> S[Safety Standards]
+                            N --> T[Engineering Terms]
+                            N --> U[Hazard Classes]
+                            
+                            P --> V[AI Vector Embeddings]
+                            V --> W[AI Semantic Similarity]
+                            W --> X[AI Context Understanding]
+                            X --> Y[Vector Database]
+                            
+                            Q --> Z[AI Chemical Knowledge Extraction]
+                            R --> AA[AI Property Knowledge Extraction]
+                            S --> BB[AI Regulatory Knowledge Extraction]
+                            T --> CC[AI Engineering Knowledge Extraction]
+                            U --> DD[AI Safety Knowledge Extraction]
+                            
+                            Z --> EE[Knowledge Graph Neo4j]
+                            AA --> EE
+                            BB --> EE
+                            CC --> EE
+                            DD --> EE
+                            
+                            FF[Natural Language Query] --> GG[AI Query Understanding]
+                            GG --> HH[AI Intent Classification]
+                            HH --> II[AI Entity Extraction from Query]
+                            II --> JJ[AI Query Type Classification]
+                            JJ --> KK[Semantic Search Query]
+                            JJ --> LL[Graph Query Generation]
+                            
+                            KK --> Y
+                            LL --> EE
+                            
+                            Y --> MM[Retrieved Context]
+                            EE --> NN[Graph Knowledge]
+                            MM --> OO[AI Answer Synthesis]
+                            NN --> OO
+                            OO --> PP[AI Response Validation]
+                            PP --> QQ[AI Source Attribution]
+                            QQ --> RR[Intelligent Response]
+                    </div>
+                    
+                    <div class="mermaid" id="example-flowchart" style="display: none;">
+                        graph TD
+                            %% Chemical Nodes - Top Row
+                            H2SO4[H2SO4<br/>Sulfuric Acid<br/>Corrosive Liquid]
+                            NaOH[NaOH<br/>Sodium Hydroxide<br/>Corrosive Solid]
+                            HCl[HCl<br/>Hydrochloric Acid<br/>Corrosive Liquid]
+                            Toluene[Toluene<br/>C7H8<br/>Flammable Liquid]
+                            Acetone[Acetone<br/>C3H6O<br/>Flammable Liquid]
+                            
+                            %% Hazard Class Nodes - Second Row
+                            Corrosive[Corrosive Hazard<br/>GHS05<br/>Skin/Eye Damage]
+                            Flammable[Flammable Hazard<br/>GHS02<br/>Fire Risk]
+                            
+                            %% Storage Location Nodes - Third Row
+                            LabStorage[Laboratory Storage<br/>Building A, Room 101<br/>Chemical Cabinet]
+                            WarehouseStorage[Warehouse Storage<br/>Building B, Warehouse 1<br/>Bulk Storage]
+                            
+                            %% PPE Nodes - Fourth Row
+                            Gloves[Chemical Resistant Gloves<br/>Nitrile Material<br/>Hand Protection]
+                            Goggles[Safety Goggles<br/>Polycarbonate<br/>Eye Protection]
+                            
+                            %% Procedure Nodes - Fifth Row
+                            SpillResponse[Spill Response Procedure<br/>Emergency Protocol<br/>8 Steps]
+                            WasteDisposal[Waste Disposal Procedure<br/>Operational Protocol<br/>6 Steps]
+                            
+                            %% Regulation Nodes - Bottom Row
+                            OSHA[OSHA 1910.1200<br/>Hazard Communication<br/>SDS Requirements]
+                            EPA[EPA TSCA<br/>Toxic Substances<br/>Chemical Regulation]
+                            
+                            %% Layout - Arrange nodes in rows
+                            H2SO4 --- NaOH --- HCl --- Toluene --- Acetone
+                            
+                            %% Relationships - Hazard Classes
+                            H2SO4 -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            NaOH -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            HCl -->|HAS_HAZARD_CLASS<br/>High Severity| Corrosive
+                            Toluene -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            Acetone -->|HAS_HAZARD_CLASS<br/>Medium Severity| Flammable
+                            
+                            %% Relationships - Storage
+                            H2SO4 -->|STORED_IN<br/>5L Glass Bottle| LabStorage
+                            NaOH -->|STORED_IN<br/>2kg Plastic Container| LabStorage
+                            HCl -->|STORED_IN<br/>10L Glass Bottle| LabStorage
+                            Toluene -->|STORED_IN<br/>200L Steel Drum| WarehouseStorage
+                            Acetone -->|STORED_IN<br/>100L Steel Drum| WarehouseStorage
+                            
+                            %% Relationships - PPE Requirements
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Gloves
+                            Corrosive -->|REQUIRES_PPE<br/>Mandatory| Goggles
+                            Flammable -->|REQUIRES_PPE<br/>Recommended| Goggles
+                            
+                            %% Relationships - Procedures
+                            H2SO4 -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            NaOH -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            HCl -->|HAS_PROCEDURE<br/>Emergency| SpillResponse
+                            H2SO4 -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            NaOH -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            HCl -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Toluene -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            Acetone -->|HAS_PROCEDURE<br/>Operational| WasteDisposal
+                            
+                            %% Relationships - Regulations
+                            OSHA -->|REGULATES<br/>Compliance Required| H2SO4
+                            OSHA -->|REGULATES<br/>Compliance Required| NaOH
+                            OSHA -->|REGULATES<br/>Compliance Required| HCl
+                            EPA -->|REGULATES<br/>Compliance Required| Toluene
+                            EPA -->|REGULATES<br/>Compliance Required| Acetone
+                            
+                            %% Chemical Compatibility
+                            H2SO4 -.->|INCOMPATIBLE_WITH<br/>Neutralization| NaOH
+                            H2SO4 -.->|COMPATIBLE_WITH<br/>Storage OK| HCl
+                            Toluene -.->|COMPATIBLE_WITH<br/>Storage OK| Acetone
+                            
+                            %% Styling
+                            classDef chemicalStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+                            classDef hazardStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+                            classDef storageStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+                            classDef ppeStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+                            classDef procedureStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+                            classDef regulationStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+                            
+                            class H2SO4,NaOH,HCl,Toluene,Acetone chemicalStyle
+                            class Corrosive,Flammable hazardStyle
+                            class LabStorage,WarehouseStorage storageStyle
+                            class Gloves,Goggles ppeStyle
+                            class SpillResponse,WasteDisposal procedureStyle
+                            class OSHA,EPA regulationStyle
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 40,
+                rankSpacing: 60,
+                diagramPadding: 15
+            },
+            fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+            fontSize: 12
+        });
+
+        // Store original content of each flowchart
+        const flowchartContents = {};
+
+        // Flowchart switching functionality
+        function showFlowchart(type, event) {
+            // Store original content if not already stored
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                const id = el.id;
+                if (!flowchartContents[id]) {
+                    flowchartContents[id] = el.innerHTML;
+                }
+            });
+
+            // Hide all flowcharts and clear their content
+            allFlowcharts.forEach(el => {
+                el.style.display = 'none';
+                const svg = el.querySelector('svg');
+                if (svg) {
+                    svg.remove();
+                }
+                el.removeAttribute('data-processed');
+            });
+
+            // Show selected flowchart
+            const targetFlowchart = document.getElementById(type + '-flowchart');
+            if (targetFlowchart) {
+                targetFlowchart.style.display = 'block';
+                
+                // Restore original content
+                targetFlowchart.innerHTML = flowchartContents[targetFlowchart.id];
+                
+                // Wait for display update, then render
+                setTimeout(() => {
+                    try {
+                        mermaid.init(undefined, targetFlowchart);
+                    } catch (error) {
+                        console.error('Mermaid error for', type, ':', error);
+                    }
+                }, 100);
+            } else {
+                console.error('Flowchart element not found:', type + '-flowchart');
+            }
+
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        // Initialize with main flowchart
+        document.addEventListener('DOMContentLoaded', () => {
+            // Store original content of all flowcharts
+            const allFlowcharts = document.querySelectorAll('.mermaid');
+            allFlowcharts.forEach(el => {
+                flowchartContents[el.id] = el.innerHTML;
+                el.style.display = 'none';
+            });
+
+            // Show main flowchart
+            const mainFlowchart = document.getElementById('main-flowchart');
+            if (mainFlowchart) {
+                mainFlowchart.style.display = 'block';
+                setTimeout(() => {
+                    try {
+                        mermaid.init(undefined, mainFlowchart);
+                    } catch (error) {
+                        console.error('Initial mermaid error:', error);
+                    }
+                }, 100);
+            }
+
+            // Set first button as active
+            const firstButton = document.querySelector('.btn');
+            if (firstButton) {
+                firstButton.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
