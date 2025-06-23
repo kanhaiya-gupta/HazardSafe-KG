@@ -34,7 +34,7 @@ class TestAPIEndpoints:
     
     def test_rag_endpoint(self, client):
         """Test RAG endpoint."""
-        response = client.get("/rag")
+        response = client.get("/nlp_rag")
         assert response.status_code == 200
         assert "RAG" in response.text
     
@@ -92,7 +92,7 @@ class TestAPIEndpoints:
         test_content = "This is a test document about hazardous substances."
         
         response = client.post(
-            "/api/rag/upload",
+            "/api/nlp_rag/upload",
             files={"file": ("test.txt", test_content, "text/plain")}
         )
         assert response.status_code == 200
@@ -105,7 +105,7 @@ class TestAPIEndpoints:
             "query": "What is methanol?",
             "top_k": 5
         }
-        response = client.post("/api/rag/query", json=query_data)
+        response = client.post("/api/nlp_rag/query", json=query_data)
         assert response.status_code == 200
         data = response.json()
         assert "results" in data
@@ -167,6 +167,6 @@ class TestAPIEndpoints:
         assert "nodes" in data or "error" in data
         
         # Test RAG API
-        response = client.get("/api/rag/documents")
+        response = client.get("/api/nlp_rag/documents")
         data = response.json()
         assert "documents" in data or "error" in data 

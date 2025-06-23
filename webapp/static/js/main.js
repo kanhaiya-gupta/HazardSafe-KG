@@ -40,7 +40,7 @@ async function loadPlatformStats() {
         const [ontologyStats, kgStats, ragStats] = await Promise.all([
             fetch('/ontology/stats').then(r => r.json()).catch(() => ({ classes: 0 })),
             fetch('/kg/stats').then(r => r.json()).catch(() => ({ nodes: 0, relationships: 0 })),
-            fetch('/rag/stats').then(r => r.json()).catch(() => ({ documents: 0 }))
+            fetch('/nlp_rag/stats').then(r => r.json()).catch(() => ({ documents: 0 }))
         ]);
         
         // Update statistics display

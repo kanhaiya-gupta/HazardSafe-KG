@@ -8,8 +8,8 @@ from pathlib import Path
 import uuid
 from datetime import datetime
 
-router = APIRouter(prefix="/rag", tags=["rag"])
-templates = Jinja2Templates(directory="webapp/templates")
+router = APIRouter(prefix="/nlp_rag", tags=["nlp_rag"])
+templates = Jinja2Templates(directory="webapp/templates/nlp_rag")
 
 # Pydantic models for RAG operations
 class RAGQuery(BaseModel):
@@ -129,7 +129,7 @@ SAMPLE_QUERIES = [
 @router.get("/", response_class=HTMLResponse)
 async def rag_dashboard(request: Request):
     """RAG system dashboard"""
-    return templates.TemplateResponse("rag/index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @router.get("/stats")
 async def get_rag_stats():

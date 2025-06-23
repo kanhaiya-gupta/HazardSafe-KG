@@ -18,7 +18,7 @@ load_dotenv()
 # Import routers
 from webapp.ontology.routes import router as ontology_router
 from webapp.kg.routes import router as kg_router
-from webapp.rag.routes import router as rag_router
+from webapp.nlp_rag.routes import router as nlp_rag_router
 from webapp.validation.routes import router as validation_router
 from webapp.quality.routes import router as quality_router
 
@@ -75,7 +75,7 @@ templates = Jinja2Templates(directory="webapp/templates")
 # Include routers
 app.include_router(ontology_router, tags=["ontology"])
 app.include_router(kg_router, tags=["knowledge-graph"])
-app.include_router(rag_router, tags=["rag"])
+app.include_router(nlp_rag_router, tags=["nlp_rag"])
 app.include_router(validation_router, tags=["validation"])
 app.include_router(quality_router, tags=["quality"])
 
@@ -134,7 +134,7 @@ async def api_info():
         "endpoints": {
             "ontology": "/ontology",
             "knowledge_graph": "/kg",
-            "rag": "/rag",
+            "nlp_rag": "/nlp_rag",
             "health": "/health"
         }
     }
@@ -143,9 +143,9 @@ async def api_info():
 async def get_platform_stats():
     """Get platform statistics."""
     try:
-        from kg.neo4j.database import neo4j_db
-        from rag.vector_store import vector_store
-        from ontology.src.manager import ontology_manager
+        from kg.database import neo4j_db
+        from nlp_rag.processors.vector_store import vector_store
+        from ontology.manager import ontology_manager
         from ingestion.haz_ingest import ingestion_pipeline
         
         # Get database stats

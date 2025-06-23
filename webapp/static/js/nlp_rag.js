@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadRAGData() {
     try {
         const [statsResponse, documentsResponse, historyResponse] = await Promise.all([
-            fetch('/rag/stats'),
-            fetch('/rag/documents'),
-            fetch('/rag/history')
+            fetch('/nlp_rag/stats'),
+            fetch('/nlp_rag/documents'),
+            fetch('/nlp_rag/history')
         ]);
 
         const statsData = await statsResponse.json();
@@ -156,7 +156,7 @@ async function submitQuery() {
     HazardSafeKG.showLoading(submitButton);
 
     try {
-        const response = await fetch('/rag/query', {
+        const response = await fetch('/nlp_rag/query', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -237,7 +237,7 @@ async function validateSafety() {
     HazardSafeKG.showLoading(submitButton);
 
     try {
-        const response = await fetch('/rag/validate', {
+        const response = await fetch('/nlp_rag/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -328,7 +328,7 @@ async function uploadDocument() {
     HazardSafeKG.showLoading(submitButton);
 
     try {
-        const response = await fetch('/rag/upload', {
+        const response = await fetch('/nlp_rag/upload', {
             method: 'POST',
             body: formData
         });
@@ -353,7 +353,7 @@ async function uploadDocument() {
 
 async function loadSuggestions(query) {
     try {
-        const response = await fetch(`/rag/suggestions?query=${encodeURIComponent(query)}`);
+        const response = await fetch(`/nlp_rag/suggestions?query=${encodeURIComponent(query)}`);
         const result = await response.json();
         
         // In a real implementation, you would show these suggestions in a dropdown
@@ -474,7 +474,7 @@ async function analyzeText() {
     HazardSafeKG.showLoading(submitButton);
 
     try {
-        const response = await fetch('/rag/nlp/analyze', {
+        const response = await fetch('/nlp_rag/nlp/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -527,7 +527,7 @@ async function uploadAndAnalyzeText() {
         formData.append('sentiment_analysis', sentimentAnalysis);
         formData.append('safety_extraction', safetyExtraction);
 
-        const response = await fetch('/rag/nlp/upload-analyze', {
+        const response = await fetch('/nlp_rag/nlp/upload-analyze', {
             method: 'POST',
             body: formData
         });
