@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ontology to Knowledge Graph Pipeline - HazardSafe-KG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .pipeline-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .pipeline-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .pipeline-header .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .pipeline-step {
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .pipeline-step.active {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .pipeline-step.completed {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .pipeline-step.failed {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        
+        .step-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .result-card {
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        
+        .result-card.success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .result-card.error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        
+        .result-card.warning {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .feature-card .card-header {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+        }
+        
+        .feature-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            padding: 10px 12px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+        
+        .text-muted {
+            color: #7f8c8d !important;
+        }
+        
+        .container {
+            max-width: 1400px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                HazardSafe-KG
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/ontology">Ontology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/kg">Knowledge Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/nlp_rag">NLP & RAG System</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/validation">Validation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/quality">Quality</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/system-flowchart">Architecture</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="pipeline-header">
+        <div class="container text-center">
+            <h1><i class="fas fa-project-diagram me-3"></i>Ontology to Knowledge Graph Pipeline</h1>
+            <p class="lead">Transform TTL ontology files into a structured Neo4j knowledge graph through a 5-step validation pipeline</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Pipeline Overview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle me-2"></i>Pipeline Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <div class="pipeline-step active" id="step1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Ingestion</div>
+                                    <div class="step-desc">TTL → RDF Graph</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="pipeline-step" id="step2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Management</div>
+                                    <div class="step-desc">Schema + SHACL</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="pipeline-step" id="step3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Validation</div>
+                                    <div class="step-desc">SHACL Validation</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="pipeline-step" id="step4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-title">Quality</div>
+                                    <div class="step-desc">Data Quality Check</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="pipeline-step" id="step5">
+                                    <div class="step-number">5</div>
+                                    <div class="step-title">Storage</div>
+                                    <div class="step-desc">Neo4j KG</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Controls -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs me-2"></i>Pipeline Controls</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ontologyDirectory" class="form-label">Ontology Directory</label>
+                                    <input type="text" class="form-control" id="ontologyDirectory" value="data/ontology" placeholder="Path to ontology files">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Actions</label>
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <button class="btn btn-primary btn-custom" id="runPipeline">
+                                            <i class="fas fa-play me-2"></i>Run Pipeline
+                                        </button>
+                                        <button class="btn btn-info btn-custom" id="validateOnly">
+                                            <i class="fas fa-check me-2"></i>Validate Only
+                                        </button>
+                                        <button class="btn btn-secondary btn-custom" id="checkStatus">
+                                            <i class="fas fa-info me-2"></i>Check Status
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-line me-2"></i>Pipeline Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="pipelineStatus">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-hourglass-half fa-3x mb-3"></i>
+                                <p>Click "Check Status" to view current pipeline status</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Results -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar me-2"></i>Pipeline Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="pipelineResults">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                <p>Run the pipeline to see detailed results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step Details -->
+        <div class="row">
+            <div class="col-12">
+                <div class="feature-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list me-2"></i>Step Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="stepDetails">
+                            <!-- Step 1 Details -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="step1Header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1Details">
+                                        <strong>Step 1: Ontology File Ingestion</strong>
+                                    </button>
+                                </h2>
+                                <div id="step1Details" class="accordion-collapse collapse show" data-bs-parent="#stepDetails">
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Load and parse TTL ontology files into an RDF graph</p>
+                                        <p><strong>Input:</strong> TTL, OWL, RDF/XML, JSON-LD files</p>
+                                        <p><strong>Output:</strong> Parsed RDF graph with triples</p>
+                                        <div id="step1Results" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 Details -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="step2Header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2Details">
+                                        <strong>Step 2: Ontology Management</strong>
+                                    </button>
+                                </h2>
+                                <div id="step2Details" class="accordion-collapse collapse" data-bs-parent="#stepDetails">
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Extract ontology schema and SHACL constraints</p>
+                                        <p><strong>Input:</strong> RDF graph from Step 1</p>
+                                        <p><strong>Output:</strong> Ontology schema + SHACL constraints</p>
+                                        <div id="step2Results" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 Details -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="step3Header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3Details">
+                                        <strong>Step 3: SHACL Validation</strong>
+                                    </button>
+                                </h2>
+                                <div id="step3Details" class="accordion-collapse collapse" data-bs-parent="#stepDetails">
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Validate extracted entities and relationships using SHACL</p>
+                                        <p><strong>Input:</strong> Extracted entities/relations + SHACL constraints</p>
+                                        <p><strong>Output:</strong> Ontology-validated RDF triples</p>
+                                        <div id="step3Results" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4 Details -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="step4Header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step4Details">
+                                        <strong>Step 4: Data Quality Check</strong>
+                                    </button>
+                                </h2>
+                                <div id="step4Details" class="accordion-collapse collapse" data-bs-parent="#stepDetails">
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Assess data quality and perform compatibility checks</p>
+                                        <p><strong>Input:</strong> Validated triples from Step 3</p>
+                                        <p><strong>Output:</strong> High-quality data with quality metrics</p>
+                                        <div id="step4Results" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 5 Details -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="step5Header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step5Details">
+                                        <strong>Step 5: Knowledge Graph Storage</strong>
+                                    </button>
+                                </h2>
+                                <div id="step5Details" class="accordion-collapse collapse" data-bs-parent="#stepDetails">
+                                    <div class="accordion-body">
+                                        <p><strong>Purpose:</strong> Store validated triples as nodes and edges in Neo4j</p>
+                                        <p><strong>Input:</strong> High-quality data from Step 4</p>
+                                        <p><strong>Output:</strong> Knowledge graph in Neo4j database</p>
+                                        <div id="step5Results" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 id="loadingMessage">Processing...</h5>
+                    <p id="loadingDetails" class="text-muted">Please wait while the pipeline is running</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const runPipelineBtn = document.getElementById('runPipeline');
+        const validateOnlyBtn = document.getElementById('validateOnly');
+        const checkStatusBtn = document.getElementById('checkStatus');
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        
+        // Run complete pipeline
+        runPipelineBtn.addEventListener('click', async function() {
+            const ontologyDirectory = document.getElementById('ontologyDirectory').value;
+            
+            showLoading('Running Ontology-to-KG Pipeline', 'This may take several minutes...');
+            
+            try {
+                const response = await fetch('/ontology/pipeline/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ontology_directory: ontologyDirectory
+                    })
+                });
+                
+                const result = await response.json();
+                hideLoading();
+                
+                if (result.success) {
+                    showPipelineResults(result.results);
+                    updatePipelineSteps(result.results);
+                } else {
+                    showError('Pipeline execution failed', result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Network error', error.message);
+            }
+        });
+        
+        // Validate only (steps 1-3)
+        validateOnlyBtn.addEventListener('click', async function() {
+            const ontologyDirectory = document.getElementById('ontologyDirectory').value;
+            
+            showLoading('Validating Ontology Files', 'Checking file format and structure...');
+            
+            try {
+                const response = await fetch('/ontology/pipeline/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ontology_directory: ontologyDirectory
+                    })
+                });
+                
+                const result = await response.json();
+                hideLoading();
+                
+                if (result.success) {
+                    showValidationResults(result.validation_results);
+                    updateValidationSteps(result.validation_results);
+                } else {
+                    showError('Validation failed', result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Network error', error.message);
+            }
+        });
+        
+        // Check pipeline status
+        checkStatusBtn.addEventListener('click', async function() {
+            showLoading('Checking Pipeline Status', 'Verifying system readiness...');
+            
+            try {
+                const response = await fetch('/ontology/pipeline/status');
+                const result = await response.json();
+                hideLoading();
+                
+                if (result.success) {
+                    showPipelineStatus(result.pipeline_status);
+                } else {
+                    showError('Status check failed', result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Network error', error.message);
+            }
+        });
+        
+        function showLoading(message, details) {
+            document.getElementById('loadingMessage').textContent = message;
+            document.getElementById('loadingDetails').textContent = details;
+            loadingModal.show();
+        }
+        
+        function hideLoading() {
+            loadingModal.hide();
+        }
+        
+        function showPipelineResults(results) {
+            const resultsDiv = document.getElementById('pipelineResults');
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.total_entities_created || 0}</div>
+                            <div class="metric-label">Entities Created</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.total_relationships_created || 0}</div>
+                            <div class="metric-label">Relationships Created</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">${(results.quality_score * 100).toFixed(1)}%</div>
+                            <div class="metric-label">Quality Score</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.overall_success ? 'Success' : 'Failed'}</div>
+                            <div class="metric-label">Overall Status</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            if (results.errors && results.errors.length > 0) {
+                html += `
+                    <div class="alert alert-danger mt-3">
+                        <h6>Errors:</h6>
+                        <ul>
+                            ${results.errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function showValidationResults(results) {
+            const resultsDiv = document.getElementById('pipelineResults');
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.step1_ingestion.files_loaded || 0}</div>
+                            <div class="metric-label">Files Loaded</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.step2_management.classes_extracted || 0}</div>
+                            <div class="metric-label">Classes Extracted</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.step3_validation.valid_triples || 0}</div>
+                            <div class="metric-label">Valid Triples</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function showPipelineStatus(status) {
+            const statusDiv = document.getElementById('pipelineStatus');
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Ontology Files</h6>
+                        <p><strong>Count:</strong> ${status.ontology_files_count}</p>
+                        <p><strong>Ready:</strong> ${status.pipeline_ready ? 'Yes' : 'No'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Neo4j Connection</h6>
+                        <p><strong>Status:</strong> ${status.neo4j_connected ? 'Connected' : 'Disconnected'}</p>
+                    </div>
+                </div>
+            `;
+            
+            if (status.ontology_files && status.ontology_files.length > 0) {
+                html += `
+                    <div class="mt-3">
+                        <h6>Ontology Files:</h6>
+                        <ul class="list-group">
+                            ${status.ontology_files.map(file => `
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    ${file.file}
+                                    <span class="badge bg-primary rounded-pill">${file.extension}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        function updatePipelineSteps(results) {
+            // Reset all steps
+            document.querySelectorAll('.pipeline-step').forEach(step => {
+                step.classList.remove('active', 'completed', 'failed');
+            });
+            
+            // Update based on results
+            if (results.step1_ingestion.success) {
+                document.getElementById('step1').classList.add('completed');
+                showStepResults('step1Results', results.step1_ingestion);
+            }
+            
+            if (results.step2_management.success) {
+                document.getElementById('step2').classList.add('completed');
+                showStepResults('step2Results', results.step2_management);
+            }
+            
+            if (results.step3_validation.success) {
+                document.getElementById('step3').classList.add('completed');
+                showStepResults('step3Results', results.step3_validation);
+            }
+            
+            if (results.step4_quality.success) {
+                document.getElementById('step4').classList.add('completed');
+                showStepResults('step4Results', results.step4_quality);
+            }
+            
+            if (results.step5_storage.success) {
+                document.getElementById('step5').classList.add('completed');
+                showStepResults('step5Results', results.step5_storage);
+            }
+        }
+        
+        function updateValidationSteps(results) {
+            // Reset all steps
+            document.querySelectorAll('.pipeline-step').forEach(step => {
+                step.classList.remove('active', 'completed', 'failed');
+            });
+            
+            // Update based on validation results
+            if (results.step1_ingestion.success) {
+                document.getElementById('step1').classList.add('completed');
+                showStepResults('step1Results', results.step1_ingestion);
+            }
+            
+            if (results.step2_management.success) {
+                document.getElementById('step2').classList.add('completed');
+                showStepResults('step2Results', results.step2_management);
+            }
+            
+            if (results.step3_validation.success) {
+                document.getElementById('step3').classList.add('completed');
+                showStepResults('step3Results', results.step3_validation);
+            }
+        }
+        
+        function showStepResults(elementId, results) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            let html = `
+                <div class="result-card ${results.success ? 'success' : 'error'}">
+                    <h6>${results.success ? 'Success' : 'Failed'}</h6>
+                    <p><strong>Files:</strong> ${results.files_loaded || 0}</p>
+                    <p><strong>Triples:</strong> ${results.total_triples || 0}</p>
+            `;
+            
+            if (results.errors && results.errors.length > 0) {
+                html += `
+                    <div class="alert alert-warning mt-2">
+                        <small>${results.errors.join(', ')}</small>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            element.innerHTML = html;
+        }
+        
+        function showError(title, message) {
+            const resultsDiv = document.getElementById('pipelineResults');
+            resultsDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6>${title}</h6>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+    });
+    </script>
+</body>
+</html> 
