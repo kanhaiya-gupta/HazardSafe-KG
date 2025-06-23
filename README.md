@@ -348,7 +348,7 @@ The platform is **production-ready for development** with:
 
 ## 📄 License
 
-This project is licensed under the Private License
+This project is proprietary software. All rights are reserved by the author. Unauthorized use, reproduction, or distribution is prohibited.
 
 ## 📞 Support
 
