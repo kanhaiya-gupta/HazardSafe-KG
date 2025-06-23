@@ -8,6 +8,7 @@ let ragData = {
 document.addEventListener('DOMContentLoaded', function() {
     loadRAGData();
     setupEventListeners();
+    createPipelineInfoModal();
 });
 
 async function loadRAGData() {
@@ -672,6 +673,95 @@ function clearNLPResults() {
 }
 
 function exportNLPResults() {
-    // Placeholder for NLP results export functionality
-    HazardSafeKG.showNotification('NLP results export functionality coming soon', 'info');
-} 
+    const resultsContainer = document.getElementById('nlp-results');
+    const content = resultsContainer.innerText;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'nlp-analysis-results.txt';
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    HazardSafeKG.showNotification('NLP results exported successfully', 'success');
+}
+
+// Document to Knowledge Graph Pipeline functions
+function showPipelineInfo() {
+    const modal = new bootstrap.Modal(document.getElementById('pipelineInfoModal'));
+    modal.show();
+}
+
+// Create pipeline info modal if it doesn't exist
+function createPipelineInfoModal() {
+    if (!document.getElementById('pipelineInfoModal')) {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'pipelineInfoModal';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-project-diagram me-2"></i>Document to Knowledge Graph Pipeline
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Pipeline Steps:</h6>
+                                <ol>
+                                    <li><strong>Document Upload:</strong> Upload CSV, Excel, or JSON files</li>
+                                    <li><strong>Data Parsing:</strong> Extract and validate structured data</li>
+                                    <li><strong>Entity Extraction:</strong> Identify entities and their properties</li>
+                                    <li><strong>Relationship Mapping:</strong> Map relationships between entities</li>
+                                    <li><strong>KG Storage:</strong> Store in Neo4j knowledge graph</li>
+                                </ol>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Supported Formats:</h6>
+                                <ul>
+                                    <li><strong>CSV:</strong> Comma-separated values with headers</li>
+                                    <li><strong>Excel:</strong> .xlsx and .xls files with multiple sheets</li>
+                                    <li><strong>JSON:</strong> Structured JSON data arrays or objects</li>
+                                </ul>
+                                
+                                <h6 class="fw-bold mt-3">Features:</h6>
+                                <ul>
+                                    <li>Automatic entity detection</li>
+                                    <li>Relationship mapping</li>
+                                    <li>Data validation</li>
+                                    <li>Quality assessment</li>
+                                    <li>Neo4j integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h6><i class="fas fa-info-circle me-2"></i>How it works:</h6>
+                            <p class="mb-0">
+                                The pipeline automatically analyzes your structured data files, extracts entities and relationships, 
+                                validates the data quality, and stores everything in a Neo4j knowledge graph for advanced querying 
+                                and analysis.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="/nlp_rag/pipeline" class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>Launch Pipeline
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+}
+
+// Initialize pipeline modal on page load
+document.addEventListener('DOMContentLoaded', function() {
+    createPipelineInfoModal();
+}); 

@@ -253,6 +253,11 @@
         <div class="container text-center">
             <h1><i class="fas fa-search me-2"></i>NLP & RAG System</h1>
             <p class="lead">AI-powered document analysis, entity extraction, and intelligent question answering</p>
+            <div class="mt-3">
+                <a href="/nlp_rag/pipeline" class="btn btn-light btn-lg">
+                    <i class="fas fa-project-diagram me-2"></i>Document to Knowledge Graph Pipeline
+                </a>
+            </div>
         </div>
     </div>
 
@@ -318,6 +323,11 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="nlp-tab" data-bs-toggle="tab" data-bs-target="#nlp-content" type="button" role="tab">
                             <i class="fas fa-brain me-2"></i>NLP Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="document-kg-tab" data-bs-toggle="tab" data-bs-target="#document-kg-content" type="button" role="tab">
+                            <i class="fas fa-project-diagram me-2"></i>Document to KG
                         </button>
                     </li>
                 </ul>
@@ -653,6 +663,68 @@
                                             <i class="fas fa-upload me-2"></i>Upload & Analyze
                                         </button>
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document to Knowledge Graph Tab -->
+                <div class="tab-pane fade" id="document-kg-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-project-diagram me-2"></i>Document to Knowledge Graph Pipeline</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="mb-4">
+                                        <i class="fas fa-file-alt fa-4x text-primary mb-3"></i>
+                                        <h4>Transform Documents into Knowledge Graph</h4>
+                                        <p class="lead">Upload CSV, Excel, and JSON files to automatically extract entities and relationships for your knowledge graph</p>
+                                    </div>
+                                    
+                                    <div class="row mb-4">
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <i class="fas fa-upload fa-2x text-success mb-2"></i>
+                                                <h6>Upload Documents</h6>
+                                                <p class="small text-muted">CSV, Excel, JSON files</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <i class="fas fa-cogs fa-2x text-info mb-2"></i>
+                                                <h6>Process & Extract</h6>
+                                                <p class="small text-muted">Entity and relationship extraction</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <i class="fas fa-database fa-2x text-warning mb-2"></i>
+                                                <h6>Store in Neo4j</h6>
+                                                <p class="small text-muted">Knowledge graph creation</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-md-block">
+                                        <a href="/nlp_rag/pipeline" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-play me-2"></i>Launch Pipeline
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-lg" onclick="showPipelineInfo()">
+                                            <i class="fas fa-info-circle me-2"></i>Learn More
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h6 class="fw-bold">Supported File Types:</h6>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <span class="badge bg-success fs-6">CSV</span>
+                                            <span class="badge bg-info fs-6">Excel (.xlsx, .xls)</span>
+                                            <span class="badge bg-warning fs-6">JSON</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -238,6 +238,157 @@ class KnowledgeGraphService:
                 "message": f"Error creating compatibility relationship: {str(e)}"
             }
     
+    # Test operations
+    async def create_test(self, test_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new safety test node."""
+        try:
+            test_id = test_data.get("id", str(uuid.uuid4()))
+            test_data["id"] = test_id
+            test_data["created_at"] = datetime.now().isoformat()
+            test_data["updated_at"] = datetime.now().isoformat()
+            
+            node_id = await self.db.create_node(["SafetyTest"], test_data)
+            
+            if node_id:
+                logger.info(f"Created test: {test_data.get('name', 'Unknown')}")
+                return {
+                    "success": True,
+                    "test_id": node_id,
+                    "message": f"Successfully created test: {test_data.get('name', 'Unknown')}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "Failed to create test node"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error creating test: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating test: {str(e)}"
+            }
+    
+    async def get_test(self, test_id: str) -> Optional[Dict[str, Any]]:
+        """Get a test by ID."""
+        try:
+            result = await self.db.execute_query(
+                "MATCH (t:SafetyTest {id: $test_id}) RETURN t",
+                {"test_id": test_id}
+            )
+            return result[0]["t"] if result else None
+        except Exception as e:
+            logger.error(f"Error getting test: {e}")
+            return None
+    
+    async def search_tests(self, search_term: str, limit: int = 50) -> List[Dict[str, Any]]:
+        """Search tests by name or type."""
+        try:
+            query = """
+            MATCH (t:SafetyTest)
+            WHERE t.name CONTAINS $search_term 
+               OR t.test_type CONTAINS $search_term
+            RETURN t
+            LIMIT $limit
+            """
+            return await self.db.execute_query(query, {
+                "search_term": search_term,
+                "limit": limit
+            })
+        except Exception as e:
+            logger.error(f"Error searching tests: {e}")
+            return []
+    
+    # Assessment operations
+    async def create_assessment(self, assessment_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new risk assessment node."""
+        try:
+            assessment_id = assessment_data.get("id", str(uuid.uuid4()))
+            assessment_data["id"] = assessment_id
+            assessment_data["created_at"] = datetime.now().isoformat()
+            assessment_data["updated_at"] = datetime.now().isoformat()
+            
+            node_id = await self.db.create_node(["RiskAssessment"], assessment_data)
+            
+            if node_id:
+                logger.info(f"Created assessment: {assessment_data.get('title', 'Unknown')}")
+                return {
+                    "success": True,
+                    "assessment_id": node_id,
+                    "message": f"Successfully created assessment: {assessment_data.get('title', 'Unknown')}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "Failed to create assessment node"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error creating assessment: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating assessment: {str(e)}"
+            }
+    
+    async def get_assessment(self, assessment_id: str) -> Optional[Dict[str, Any]]:
+        """Get an assessment by ID."""
+        try:
+            result = await self.db.execute_query(
+                "MATCH (a:RiskAssessment {id: $assessment_id}) RETURN a",
+                {"assessment_id": assessment_id}
+            )
+            return result[0]["a"] if result else None
+        except Exception as e:
+            logger.error(f"Error getting assessment: {e}")
+            return None
+    
+    async def search_assessments(self, search_term: str, limit: int = 50) -> List[Dict[str, Any]]:
+        """Search assessments by title or risk level."""
+        try:
+            query = """
+            MATCH (a:RiskAssessment)
+            WHERE a.title CONTAINS $search_term 
+               OR a.risk_level CONTAINS $search_term
+            RETURN a
+            LIMIT $limit
+            """
+            return await self.db.execute_query(query, {
+                "search_term": search_term,
+                "limit": limit
+            })
+        except Exception as e:
+            logger.error(f"Error searching assessments: {e}")
+            return []
+    
+    async def create_assessment_relationship(self, substance_id: str, assessment_id: str) -> Dict[str, Any]:
+        """Create an ASSESSED_FOR relationship between substance and assessment."""
+        try:
+            properties = {
+                "created_at": datetime.now().isoformat()
+            }
+            
+            success = await self.db.create_relationship(
+                substance_id, assessment_id, "ASSESSED_FOR", properties
+            )
+            
+            if success:
+                return {
+                    "success": True,
+                    "message": f"Created assessment relationship between substance {substance_id} and assessment {assessment_id}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "Failed to create assessment relationship"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error creating assessment relationship: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating assessment relationship: {str(e)}"
+            }
+
     # Analytics and queries
     async def get_substance_network(self, substance_id: str, depth: int = 2) -> Dict[str, Any]:
         """Get the network of relationships around a substance."""

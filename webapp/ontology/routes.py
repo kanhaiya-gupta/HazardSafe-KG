@@ -117,6 +117,11 @@ async def ontology_dashboard(request: Request):
     """Ontology management dashboard"""
     return templates.TemplateResponse("ontology/index.html", {"request": request})
 
+@router.get("/pipeline", response_class=HTMLResponse)
+async def ontology_pipeline(request: Request):
+    """Ontology to Knowledge Graph Pipeline page"""
+    return templates.TemplateResponse("ontology/pipeline.html", {"request": request})
+
 @router.get("/list")
 async def list_ontologies():
     """List all ontologies"""
@@ -528,3 +533,138 @@ async def delete_ontology(ontology_id: str):
     SAMPLE_ONTOLOGIES.remove(ontology)
     
     return {"message": "Ontology deleted successfully", "ontology_id": ontology_id}
+
+@router.post("/pipeline/run")
+async def run_ontology_to_kg_pipeline(
+    ontology_directory: str = "data/ontology"
+) -> Dict[str, Any]:
+    """
+    Run the complete ontology-to-knowledge graph pipeline.
+    
+    This endpoint executes the 5-step pipeline:
+    1. Ontology File Ingestion: TTL Ontology Files → Parsed RDF graph
+    2. Ontology Management: RDF graph → Ontology schema + SHACL constraints
+    3. SHACL Validation: Extracted entities/relations → Ontology-validated RDF triples
+    4. Data Quality Check: Validated triples → High-quality data
+    5. Knowledge Graph Storage: Validated triples → Nodes/edges in Neo4j
+    """
+    try:
+        from ontology.ontology_to_kg_pipeline import run_ontology_to_kg_pipeline
+        
+        results = await run_ontology_to_kg_pipeline(ontology_directory)
+        
+        return {
+            "success": results["overall_success"],
+            "message": "Ontology-to-KG pipeline completed",
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"Pipeline execution failed: {e}")
+        return {
+            "success": False,
+            "message": f"Pipeline execution failed: {str(e)}",
+            "results": {}
+        }
+
+@router.get("/pipeline/status")
+async def get_pipeline_status() -> Dict[str, Any]:
+    """
+    Get the current status of the ontology-to-KG pipeline.
+    """
+    try:
+        # Check if ontology files exist
+        ontology_dir = Path("data/ontology")
+        ontology_files = []
+        
+        if ontology_dir.exists():
+            for file_path in ontology_dir.rglob("*"):
+                if file_path.is_file() and file_path.suffix.lower() in ['.ttl', '.owl', '.rdf', '.xml', '.json', '.jsonld']:
+                    ontology_files.append({
+                        "file": str(file_path),
+                        "size": file_path.stat().st_size,
+                        "extension": file_path.suffix
+                    })
+        
+        # Check Neo4j connection
+        from kg.services import KnowledgeGraphService
+        kg_service = KnowledgeGraphService()
+        await kg_service.initialize()
+        
+        # Get graph statistics
+        graph_stats = await kg_service.get_graph_statistics()
+        
+        await kg_service.close()
+        
+        return {
+            "success": True,
+            "pipeline_status": {
+                "ontology_files_count": len(ontology_files),
+                "ontology_files": ontology_files,
+                "neo4j_connected": "error" not in graph_stats,
+                "graph_statistics": graph_stats,
+                "pipeline_ready": len(ontology_files) > 0 and "error" not in graph_stats
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get pipeline status: {e}")
+        return {
+            "success": False,
+            "message": f"Failed to get pipeline status: {str(e)}",
+            "pipeline_status": {}
+        }
+
+@router.post("/pipeline/validate")
+async def validate_ontology_files(
+    ontology_directory: str = "data/ontology"
+) -> Dict[str, Any]:
+    """
+    Validate ontology files before running the pipeline.
+    """
+    try:
+        from ontology.ontology_to_kg_pipeline import OntologyToKGPipeline
+        
+        pipeline = OntologyToKGPipeline()
+        
+        # Run only steps 1-3 for validation
+        await pipeline.initialize()
+        
+        # Step 1: Ontology File Ingestion
+        ingestion_result = await pipeline._step1_ontology_ingestion(ontology_directory)
+        
+        if not ingestion_result["success"]:
+            await pipeline.close()
+            return {
+                "success": False,
+                "message": "Ontology ingestion failed",
+                "validation_results": {
+                    "step1_ingestion": ingestion_result
+                }
+            }
+        
+        # Step 2: Ontology Management
+        management_result = await pipeline._step2_ontology_management()
+        
+        # Step 3: SHACL Validation (without storage)
+        validation_result = await pipeline._step3_shacl_validation()
+        
+        await pipeline.close()
+        
+        return {
+            "success": True,
+            "message": "Ontology validation completed",
+            "validation_results": {
+                "step1_ingestion": ingestion_result,
+                "step2_management": management_result,
+                "step3_validation": validation_result
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Ontology validation failed: {e}")
+        return {
+            "success": False,
+            "message": f"Ontology validation failed: {str(e)}",
+            "validation_results": {}
+        }
