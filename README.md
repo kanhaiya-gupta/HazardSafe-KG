@@ -39,154 +39,40 @@ HazardSafe-KG/
 └── main.py              # Application entry point
 ```
 
-## 🧠 Module 1: Ontology & Knowledge Graph
+## 🚀 Features
 
-### Overview
-The ontology module provides semantic modeling of safety concepts using OWL, RDF, and SHACL technologies. It enables structured representation of hazardous substances, containers, tests, and risk assessments.
+### 🔍 **NLP & RAG System**
+- **Document Upload & Processing**: Support for PDF, DOCX, and TXT files
+- **Intelligent Question Answering**: AI-powered responses based on uploaded documents
+- **Entity Recognition**: Extract chemicals, hazards, equipment, and safety information
+- **Relationship Extraction**: Identify connections between entities
+- **Sentiment Analysis**: Analyze text sentiment for safety assessments
+- **Model Configuration**: Choose from multiple LLM, embedding, and retriever models
+- **Query History**: Track and review previous interactions
 
-### Key Features
-- **Class Management**: Create and manage ontology classes (HazardousSubstance, Container, SafetyTest, RiskAssessment)
-- **Property Definition**: Define data properties with domains, ranges, and constraints
-- **Relationship Modeling**: Establish semantic relationships between concepts
-- **Validation**: SHACL-based constraint validation
-- **Export**: OWL/RDF and SHACL export capabilities
+### 🏗️ **Ontology Management**
+- **SHACL Validation**: Shape-based data validation
+- **Ontology Import/Export**: Support for RDF, OWL, and JSON-LD formats
+- **Visual Ontology Editor**: Interactive graph-based editing
+- **Reasoning Engine**: Automated inference and consistency checking
 
-### API Endpoints
-```
-GET  /ontology/           # Ontology dashboard
-GET  /ontology/stats      # Get ontology statistics
-GET  /ontology/classes    # List all classes
-POST /ontology/classes    # Create new class
-GET  /ontology/properties # List all properties
-POST /ontology/properties # Create new property
-GET  /ontology/relationships # List all relationships
-POST /ontology/relationships # Create new relationship
-GET  /ontology/export/owl # Export as OWL/RDF
-GET  /ontology/export/shacl # Export SHACL constraints
-GET  /ontology/validate   # Validate ontology consistency
-```
+### 🕸️ **Knowledge Graph**
+- **Neo4j Integration**: Graph database for complex relationships
+- **Interactive Visualization**: D3.js-powered graph exploration
+- **Cypher Query Interface**: Direct graph querying capabilities
+- **Relationship Mining**: Automated discovery of entity connections
 
-### Sample Ontology Structure
-```turtle
-@prefix hs: <http://hazardsafe-kg.org/ontology#> .
+### ✅ **Validation Engine**
+- **Multi-format Validation**: CSV, JSON, and custom data validation
+- **Compatibility Checking**: Substance-container compatibility verification
+- **Chemical Formula Validation**: Molecular structure verification
+- **Regulatory Compliance**: Safety standard validation
 
-hs:HazardousSubstance
-    a owl:Class ;
-    rdfs:label "Hazardous Substance" ;
-    rdfs:comment "A chemical substance that poses risks to health, safety, or the environment" .
-
-hs:Container
-    a owl:Class ;
-    rdfs:label "Container" ;
-    rdfs:comment "A vessel designed to safely store and transport hazardous substances" .
-
-hs:stored_in
-    a owl:ObjectProperty ;
-    rdfs:domain hs:HazardousSubstance ;
-    rdfs:range hs:Container ;
-    rdfs:label "stored in" .
-```
-
-## 📊 Module 2: Knowledge Graph
-
-### Overview
-The knowledge graph module provides interactive exploration and querying of safety data using Neo4j and graph visualization. It enables complex relationship analysis and safety insights discovery.
-
-### Key Features
-- **Interactive Visualization**: D3.js-based graph visualization with zoom, pan, and node interaction
-- **Multi-Query Support**: Cypher, SPARQL, and natural language queries
-- **Path Finding**: Discover connections between safety entities
-- **Search & Filter**: Advanced search with node type filtering
-- **Recommendations**: AI-powered entity recommendations
-- **Export**: Graph data export in multiple formats
-
-### API Endpoints
-```
-GET  /kg/                 # KG dashboard
-GET  /kg/stats           # Get KG statistics
-GET  /kg/nodes           # List nodes (with optional filtering)
-GET  /kg/relationships   # List relationships
-POST /kg/query           # Execute graph queries
-GET  /kg/visualize       # Get visualization data
-GET  /kg/node/{id}       # Get specific node details
-GET  /kg/search          # Search nodes
-GET  /kg/path            # Find paths between nodes
-GET  /kg/recommendations # Get entity recommendations
-```
-
-### Sample Cypher Queries
-```cypher
-// Find all hazardous substances
-MATCH (n:HazardousSubstance) RETURN n
-
-// Find substances and their containers
-MATCH (s:HazardousSubstance)-[r:STORED_IN]->(c:Container) 
-RETURN s, r, c
-
-// Find safety tests for containers
-MATCH (c:Container)-[r:VALIDATED_BY]->(t:SafetyTest) 
-RETURN c, r, t
-```
-
-### Graph Visualization Features
-- **Force-directed layout** with D3.js
-- **Color-coded nodes** by entity type
-- **Interactive relationships** with labels
-- **Node details modal** with properties
-- **Zoom and pan** controls
-- **Responsive design** for different screen sizes
-
-## 🔍 Module 3: Retrieval-Augmented Generation (RAG)
-
-### Overview
-The RAG module provides AI-powered document analysis and question answering using vector search and language models. It enables intelligent extraction of safety information from technical documents.
-
-### Key Features
-- **Document Processing**: Upload and process safety documents (PDFs, technical specs, SDS)
-- **Vector Search**: Semantic document retrieval using embeddings
-- **Question Answering**: AI-powered responses with source citations
-- **Safety Validation**: Automated validation against safety standards
-- **Query History**: Track and analyze user queries
-- **Smart Suggestions**: Context-aware query suggestions
-
-### API Endpoints
-```
-GET  /rag/               # RAG dashboard
-GET  /rag/stats          # Get RAG statistics
-GET  /rag/documents      # List documents
-POST /rag/upload         # Upload new document
-POST /rag/query          # Ask questions
-POST /rag/validate       # Validate safety requirements
-GET  /rag/search         # Search documents
-GET  /rag/history        # Query history
-GET  /rag/suggestions    # Query suggestions
-```
-
-### Document Types Supported
-- **Safety Data Sheets (SDS)**: Chemical safety information
-- **Technical Specifications**: Container and equipment specs
-- **Test Protocols**: Safety testing procedures
-- **Regulatory Documents**: Compliance requirements
-- **Risk Assessments**: Safety evaluation reports
-
-### Sample RAG Queries
-```
-Q: "What containers are suitable for storing sulfuric acid?"
-A: "Polyethylene containers are suitable for storing sulfuric acid. These containers have a pressure rating of 2.0 bar and temperature rating of 60°C. The material is resistant to most acids and bases."
-
-Q: "What safety measures are required for chemical storage?"
-A: "Safety measures include proper ventilation, PPE (personal protective equipment), and spill containment procedures. Storage areas must have proper ventilation and emergency response equipment."
-```
-
-## Features
-
-- **Ontology Management**: Create, edit, and manage semantic ontologies for hazardous substances
-- **Knowledge Graph**: Neo4j-based graph database for storing and querying safety relationships
-- **RAG System**: AI-powered document processing and retrieval-augmented generation
-- **Validation Engine**: SHACL-based validation rules for data quality assurance
-- **Quality Assessment**: Comprehensive data quality analysis with metrics, reports, and recommendations
-- **System Architecture**: Interactive flowchart showing system components and data flow
-- **Web Interface**: Modern, responsive UI for all platform features
+### 📊 **Quality Assessment**
+- **Data Quality Metrics**: Completeness, accuracy, and consistency scoring
+- **Quality Reports**: Detailed HTML reports with visualizations
+- **Interactive Dashboard**: Real-time quality monitoring
+- **Recommendations**: Automated improvement suggestions
 
 ## 🚀 Getting Started
 

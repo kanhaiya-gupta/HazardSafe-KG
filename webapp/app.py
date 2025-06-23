@@ -73,11 +73,11 @@ app.mount("/static", StaticFiles(directory="webapp/static"), name="static")
 templates = Jinja2Templates(directory="webapp/templates")
 
 # Include routers
-app.include_router(ontology_router)
-app.include_router(kg_router)
-app.include_router(rag_router)
-app.include_router(validation_router)
-app.include_router(quality_router)
+app.include_router(ontology_router, tags=["ontology"])
+app.include_router(kg_router, tags=["knowledge-graph"])
+app.include_router(rag_router, tags=["rag"])
+app.include_router(validation_router, tags=["validation"])
+app.include_router(quality_router, tags=["quality"])
 
 @app.on_event("startup")
 async def startup_event():

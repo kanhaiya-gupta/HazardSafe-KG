@@ -33,6 +33,36 @@ class SafetyValidation(BaseModel):
     test_conditions: Dict[str, Any]
     validation_criteria: List[str]
 
+# Pydantic models for NLP operations
+class NLPRequest(BaseModel):
+    text: str
+    nlp_model: str = "spacy"  # spacy, nltk, transformers, custom
+    language: str = "en"  # en, es, fr, de
+    entity_extraction: bool = True
+    relationship_extraction: bool = True
+    sentiment_analysis: bool = False
+    safety_extraction: bool = True
+
+class Entity(BaseModel):
+    text: str
+    label: str
+    start: int
+    end: int
+    confidence: float
+
+class Relationship(BaseModel):
+    entity1: str
+    entity2: str
+    relation: str
+    confidence: float
+
+class NLPResponse(BaseModel):
+    entities: List[Entity]
+    relationships: List[Relationship]
+    sentiment: Optional[Dict[str, Any]] = None
+    safety_info: Optional[Dict[str, Any]] = None
+    analysis_summary: str
+
 # Sample RAG data (in production, this would come from a vector database)
 SAMPLE_DOCUMENTS = [
     {
@@ -219,14 +249,115 @@ async def get_query_suggestions(query: str):
     suggestions = []
     query_lower = query.lower()
     
-    # Generate suggestions based on document content
-    for doc in SAMPLE_DOCUMENTS:
-        if query_lower in doc["title"].lower():
-            suggestions.append(f"What is {doc['title']}?")
-        if query_lower in doc["content"].lower():
-            suggestions.append(f"Tell me about {doc['title']}")
+    # Sample suggestions based on common safety queries
+    common_queries = [
+        "What containers are suitable for storing",
+        "What safety measures are required for",
+        "How to test container corrosion resistance",
+        "What are the regulatory requirements for",
+        "What PPE is required for handling",
+        "How to dispose of hazardous chemicals",
+        "What are the storage temperature requirements for",
+        "How to handle chemical spills of"
+    ]
+    
+    for suggestion in common_queries:
+        if query_lower in suggestion.lower():
+            suggestions.append(suggestion)
     
     return {"suggestions": suggestions[:5]}
+
+# NLP Analysis Endpoints
+@router.post("/nlp/analyze")
+async def analyze_text(nlp_request: NLPRequest):
+    """Analyze text using NLP for entity extraction and relationship analysis"""
+    try:
+        # In production, this would use actual NLP models
+        analysis_result = perform_nlp_analysis(
+            nlp_request.text,
+            nlp_request.nlp_model,
+            nlp_request.language,
+            nlp_request.entity_extraction,
+            nlp_request.relationship_extraction,
+            nlp_request.sentiment_analysis,
+            nlp_request.safety_extraction
+        )
+        
+        return analysis_result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"NLP analysis failed: {str(e)}")
+
+@router.post("/nlp/upload-analyze")
+async def upload_and_analyze_text(
+    file: UploadFile = File(...),
+    nlp_model: str = "spacy",
+    language: str = "en",
+    entity_extraction: bool = True,
+    relationship_extraction: bool = True,
+    sentiment_analysis: bool = False,
+    safety_extraction: bool = True
+):
+    """Upload a text file and analyze it using NLP"""
+    try:
+        # Read file content
+        content = await file.read()
+        text = content.decode('utf-8')
+        
+        # Perform NLP analysis
+        analysis_result = perform_nlp_analysis(
+            text,
+            nlp_model,
+            language,
+            entity_extraction,
+            relationship_extraction,
+            sentiment_analysis,
+            safety_extraction
+        )
+        
+        return {
+            "filename": file.filename,
+            "analysis": analysis_result
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"File analysis failed: {str(e)}")
+
+@router.get("/nlp/models")
+async def get_nlp_models():
+    """Get available NLP models"""
+    return {
+        "models": [
+            {
+                "id": "spacy",
+                "name": "spaCy",
+                "description": "Industrial-strength Natural Language Processing",
+                "languages": ["en", "es", "fr", "de"],
+                "capabilities": ["entity_recognition", "relationship_extraction", "safety_extraction"]
+            },
+            {
+                "id": "nltk",
+                "name": "NLTK",
+                "description": "Natural Language Toolkit for Python",
+                "languages": ["en"],
+                "capabilities": ["entity_recognition", "sentiment_analysis"]
+            },
+            {
+                "id": "transformers",
+                "name": "Transformers",
+                "description": "State-of-the-art Natural Language Processing",
+                "languages": ["en", "es", "fr", "de"],
+                "capabilities": ["entity_recognition", "relationship_extraction", "sentiment_analysis", "safety_extraction"]
+            },
+            {
+                "id": "custom",
+                "name": "Custom Model",
+                "description": "Custom trained model for chemical safety",
+                "languages": ["en"],
+                "capabilities": ["entity_recognition", "relationship_extraction", "safety_extraction"]
+            }
+        ]
+    }
 
 # Helper functions for RAG operations
 def perform_rag_query(question: str, context_type: str, max_results: int, llm_model: str = "gpt-3.5-turbo", embedding_model: str = "text-embedding-ada-002", retriever_type: str = "dense"):
@@ -314,3 +445,137 @@ def perform_safety_validation(validation: SafetyValidation):
     validation_result["valid"] = len(validation_result["warnings"]) == 0
     
     return validation_result
+
+def perform_nlp_analysis(text: str, nlp_model: str, language: str, entity_extraction: bool, 
+                        relationship_extraction: bool, sentiment_analysis: bool, safety_extraction: bool):
+    """Perform NLP analysis on text (placeholder implementation)"""
+    # In production, this would use actual NLP models
+    # For now, return sample analysis results
+    
+    entities = []
+    relationships = []
+    sentiment = None
+    safety_info = None
+    
+    # Sample entity extraction
+    if entity_extraction:
+        # Simple keyword-based entity extraction
+        chemical_keywords = ["sulfuric acid", "h2so4", "hydrochloric acid", "hcl", "nitric acid", "hno3"]
+        container_keywords = ["polyethylene", "glass", "container", "bottle", "tank"]
+        safety_keywords = ["corrosive", "toxic", "flammable", "explosive", "hazardous"]
+        
+        text_lower = text.lower()
+        
+        for keyword in chemical_keywords:
+            if keyword in text_lower:
+                start = text_lower.find(keyword)
+                entities.append({
+                    "text": keyword,
+                    "label": "CHEMICAL",
+                    "start": start,
+                    "end": start + len(keyword),
+                    "confidence": 0.9
+                })
+        
+        for keyword in container_keywords:
+            if keyword in text_lower:
+                start = text_lower.find(keyword)
+                entities.append({
+                    "text": keyword,
+                    "label": "CONTAINER",
+                    "start": start,
+                    "end": start + len(keyword),
+                    "confidence": 0.85
+                })
+        
+        for keyword in safety_keywords:
+            if keyword in text_lower:
+                start = text_lower.find(keyword)
+                entities.append({
+                    "text": keyword,
+                    "label": "HAZARD",
+                    "start": start,
+                    "end": start + len(keyword),
+                    "confidence": 0.8
+                })
+    
+    # Sample relationship extraction
+    if relationship_extraction and len(entities) >= 2:
+        # Simple relationship extraction based on proximity
+        for i, entity1 in enumerate(entities):
+            for j, entity2 in enumerate(entities[i+1:], i+1):
+                if abs(entity1["start"] - entity2["start"]) < 100:  # Within 100 characters
+                    if entity1["label"] == "CHEMICAL" and entity2["label"] == "CONTAINER":
+                        relationships.append({
+                            "entity1": entity1["text"],
+                            "entity2": entity2["text"],
+                            "relation": "STORED_IN",
+                            "confidence": 0.75
+                        })
+                    elif entity1["label"] == "CHEMICAL" and entity2["label"] == "HAZARD":
+                        relationships.append({
+                            "entity1": entity1["text"],
+                            "entity2": entity2["text"],
+                            "relation": "HAS_PROPERTY",
+                            "confidence": 0.8
+                        })
+    
+    # Sample sentiment analysis
+    if sentiment_analysis:
+        positive_words = ["safe", "suitable", "approved", "tested", "compliant"]
+        negative_words = ["dangerous", "unsafe", "corrosive", "toxic", "hazardous"]
+        
+        text_lower = text.lower()
+        positive_count = sum(1 for word in positive_words if word in text_lower)
+        negative_count = sum(1 for word in negative_words if word in text_lower)
+        
+        if positive_count > negative_count:
+            sentiment = {"polarity": "positive", "score": 0.6}
+        elif negative_count > positive_count:
+            sentiment = {"polarity": "negative", "score": -0.4}
+        else:
+            sentiment = {"polarity": "neutral", "score": 0.0}
+    
+    # Sample safety information extraction
+    if safety_extraction:
+        safety_info = {
+            "hazards": [],
+            "precautions": [],
+            "storage_requirements": [],
+            "handling_procedures": []
+        }
+        
+        text_lower = text.lower()
+        
+        if "corrosive" in text_lower:
+            safety_info["hazards"].append("Corrosive substance")
+        if "toxic" in text_lower:
+            safety_info["hazards"].append("Toxic substance")
+        if "ventilation" in text_lower:
+            safety_info["precautions"].append("Proper ventilation required")
+        if "ppe" in text_lower or "protective equipment" in text_lower:
+            safety_info["precautions"].append("PPE required")
+        if "storage" in text_lower:
+            safety_info["storage_requirements"].append("Special storage conditions")
+    
+    # Generate analysis summary
+    analysis_summary = f"Analysis completed using {nlp_model} model. "
+    analysis_summary += f"Found {len(entities)} entities and {len(relationships)} relationships. "
+    
+    if sentiment:
+        analysis_summary += f"Sentiment: {sentiment['polarity']}. "
+    
+    if safety_info and any(safety_info.values()):
+        analysis_summary += "Safety information extracted."
+    
+    return {
+        "entities": entities,
+        "relationships": relationships,
+        "sentiment": sentiment,
+        "safety_info": safety_info,
+        "analysis_summary": analysis_summary,
+        "model_info": {
+            "nlp_model": nlp_model,
+            "language": language
+        }
+    }

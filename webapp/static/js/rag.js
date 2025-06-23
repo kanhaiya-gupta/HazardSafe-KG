@@ -52,6 +52,18 @@ function setupEventListeners() {
         submitQuery();
     });
 
+    // NLP form submission
+    document.getElementById('nlpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        analyzeText();
+    });
+
+    // NLP upload form submission
+    document.getElementById('nlpUploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        uploadAndAnalyzeText();
+    });
+
     // Validation form submission
     document.getElementById('validationForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -438,5 +450,228 @@ function exportResults() {
 }
 
 function downloadDocument() {
-    HazardSafeKG.showNotification('Download functionality not yet implemented', 'info');
+    // Placeholder for document download functionality
+    HazardSafeKG.showNotification('Document download functionality coming soon', 'info');
+}
+
+// NLP Analysis Functions
+async function analyzeText() {
+    const text = document.getElementById('textInput').value;
+    const nlpModel = document.getElementById('nlpModel').value;
+    const language = document.getElementById('language').value;
+    const entityExtraction = document.getElementById('entityExtraction').checked;
+    const relationshipExtraction = document.getElementById('relationshipExtraction').checked;
+    const sentimentAnalysis = document.getElementById('sentimentAnalysis').checked;
+    const safetyExtraction = document.getElementById('safetyExtraction').checked;
+
+    if (!text.trim()) {
+        HazardSafeKG.showNotification('Please enter text to analyze', 'warning');
+        return;
+    }
+
+    const submitButton = document.querySelector('#nlpForm button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    HazardSafeKG.showLoading(submitButton);
+
+    try {
+        const response = await fetch('/rag/nlp/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                text: text,
+                nlp_model: nlpModel,
+                language: language,
+                entity_extraction: entityExtraction,
+                relationship_extraction: relationshipExtraction,
+                sentiment_analysis: sentimentAnalysis,
+                safety_extraction: safetyExtraction
+            })
+        });
+
+        const result = await response.json();
+        displayNLPResults(result);
+
+    } catch (error) {
+        console.error('Error analyzing text:', error);
+        HazardSafeKG.showNotification('Error analyzing text', 'error');
+    } finally {
+        HazardSafeKG.hideLoading(submitButton, originalText);
+    }
+}
+
+async function uploadAndAnalyzeText() {
+    const fileInput = document.getElementById('nlpFile');
+    const nlpModel = document.getElementById('nlpModel').value;
+    const language = document.getElementById('language').value;
+    const entityExtraction = document.getElementById('entityExtraction').checked;
+    const relationshipExtraction = document.getElementById('relationshipExtraction').checked;
+    const sentimentAnalysis = document.getElementById('sentimentAnalysis').checked;
+    const safetyExtraction = document.getElementById('safetyExtraction').checked;
+
+    if (!fileInput.files[0]) {
+        HazardSafeKG.showNotification('Please select a file to analyze', 'warning');
+        return;
+    }
+
+    const submitButton = document.querySelector('#nlpUploadForm button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    HazardSafeKG.showLoading(submitButton);
+
+    try {
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('nlp_model', nlpModel);
+        formData.append('language', language);
+        formData.append('entity_extraction', entityExtraction);
+        formData.append('relationship_extraction', relationshipExtraction);
+        formData.append('sentiment_analysis', sentimentAnalysis);
+        formData.append('safety_extraction', safetyExtraction);
+
+        const response = await fetch('/rag/nlp/upload-analyze', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        displayNLPResults(result.analysis, result.filename);
+
+    } catch (error) {
+        console.error('Error uploading and analyzing file:', error);
+        HazardSafeKG.showNotification('Error analyzing file', 'error');
+    } finally {
+        HazardSafeKG.hideLoading(submitButton, originalText);
+    }
+}
+
+function displayNLPResults(result, filename = null) {
+    const resultsContainer = document.getElementById('nlp-results');
+    
+    let html = `
+        <div class="alert alert-primary">
+            <h6><i class="fas fa-brain me-2"></i>Analysis Results</h6>
+            ${filename ? `<p class="mb-2"><strong>File:</strong> ${filename}</p>` : ''}
+            <p class="mb-2">${result.analysis_summary}</p>
+        </div>
+    `;
+
+    // Display entities
+    if (result.entities && result.entities.length > 0) {
+        html += `
+            <div class="mt-3">
+                <h6><i class="fas fa-tags me-2"></i>Entities Found (${result.entities.length})</h6>
+                <div class="row">
+        `;
+        
+        result.entities.forEach(entity => {
+            const confidence = Math.round(entity.confidence * 100);
+            html += `
+                <div class="col-md-6 mb-2">
+                    <div class="card">
+                        <div class="card-body p-2">
+                            <strong>${entity.text}</strong>
+                            <span class="badge bg-primary ms-2">${entity.label}</span>
+                            <span class="badge bg-${confidence > 80 ? 'success' : confidence > 60 ? 'warning' : 'danger'} ms-1">${confidence}%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+
+    // Display relationships
+    if (result.relationships && result.relationships.length > 0) {
+        html += `
+            <div class="mt-3">
+                <h6><i class="fas fa-link me-2"></i>Relationships Found (${result.relationships.length})</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Entity 1</th>
+                                <th>Relation</th>
+                                <th>Entity 2</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+        
+        result.relationships.forEach(rel => {
+            const confidence = Math.round(rel.confidence * 100);
+            html += `
+                <tr>
+                    <td><strong>${rel.entity1}</strong></td>
+                    <td><span class="badge bg-info">${rel.relation}</span></td>
+                    <td><strong>${rel.entity2}</strong></td>
+                    <td><span class="badge bg-${confidence > 80 ? 'success' : confidence > 60 ? 'warning' : 'danger'}">${confidence}%</span></td>
+                </tr>
+            `;
+        });
+        
+        html += `</tbody></table></div></div>`;
+    }
+
+    // Display sentiment analysis
+    if (result.sentiment) {
+        const sentimentColor = result.sentiment.polarity === 'positive' ? 'success' : 
+                              result.sentiment.polarity === 'negative' ? 'danger' : 'secondary';
+        html += `
+            <div class="mt-3">
+                <h6><i class="fas fa-smile me-2"></i>Sentiment Analysis</h6>
+                <div class="alert alert-${sentimentColor}">
+                    <strong>${result.sentiment.polarity.toUpperCase()}</strong> 
+                    (Score: ${result.sentiment.score.toFixed(2)})
+                </div>
+            </div>
+        `;
+    }
+
+    // Display safety information
+    if (result.safety_info && Object.values(result.safety_info).some(arr => arr.length > 0)) {
+        html += `
+            <div class="mt-3">
+                <h6><i class="fas fa-shield-alt me-2"></i>Safety Information</h6>
+        `;
+        
+        Object.entries(result.safety_info).forEach(([category, items]) => {
+            if (items.length > 0) {
+                html += `
+                    <div class="mb-2">
+                        <strong>${category.replace(/_/g, ' ').toUpperCase()}:</strong>
+                        <ul class="mb-0">
+                `;
+                items.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+        });
+        
+        html += `</div>`;
+    }
+
+    resultsContainer.innerHTML = html;
+}
+
+function loadSampleText(text) {
+    document.getElementById('textInput').value = text;
+}
+
+function clearNLPResults() {
+    document.getElementById('nlp-results').innerHTML = `
+        <div class="ai-response-area">
+            <div class="text-center text-muted">
+                <i class="fas fa-brain fa-3x mb-2" style="color: #3498db;"></i>
+                <h6>Ready for Analysis</h6>
+                <p class="small mb-0">Input text to extract entities and relationships</p>
+            </div>
+        </div>
+    `;
+}
+
+function exportNLPResults() {
+    // Placeholder for NLP results export functionality
+    HazardSafeKG.showNotification('NLP results export functionality coming soon', 'info');
 } 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAG System - HazardSafe-KG</title>
+    <title>NLP & RAG System - HazardSafe-KG</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
@@ -232,10 +232,13 @@
                         <a class="nav-link" href="/kg">Knowledge Graph</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/rag">RAG System</a>
+                        <a class="nav-link active" href="/rag">NLP & RAG System</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/validation">Validation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/quality">Quality</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/system-flowchart">Architecture</a>
@@ -247,9 +250,9 @@
 
     <!-- Header Section -->
     <div class="rag-header">
-        <div class="container">
-            <h1><i class="fas fa-search me-2"></i>RAG System</h1>
-            <p class="lead">AI-powered document analysis and safety information retrieval</p>
+        <div class="container text-center">
+            <h1><i class="fas fa-search me-2"></i>NLP & RAG System</h1>
+            <p class="lead">AI-powered document analysis, entity extraction, and intelligent question answering</p>
         </div>
     </div>
 
@@ -304,185 +307,355 @@
 
         <!-- Main Content -->
         <div class="row">
-            <!-- Left Panel: Query + History -->
-            <div class="col-lg-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-question-circle me-2"></i>Ask Questions</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="queryForm">
-                            <div class="mb-3">
-                                <label for="questionInput" class="form-label">Your Question</label>
-                                <textarea class="form-control" id="questionInput" rows="3" placeholder="Ask about safety information, container compatibility, or regulatory requirements..."></textarea>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="contextType" class="form-label">Context Type</label>
-                                    <select class="form-select" id="contextType">
-                                        <option value="all">All Documents</option>
-                                        <option value="safety_data_sheet">Safety Data Sheets</option>
-                                        <option value="technical_specification">Technical Specifications</option>
-                                        <option value="test_protocol">Test Protocols</option>
-                                        <option value="regulatory">Regulatory Documents</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="maxResults" class="form-label">Max Results</label>
-                                    <input type="number" class="form-control" id="maxResults" value="5" min="1" max="20">
-                                </div>
-                            </div>
-                            
-                            <!-- Model Configuration Section -->
-                            <div class="mb-3">
-                                <h6 class="fw-bold mb-2 text-primary">
-                                    <i class="fas fa-cogs me-2"></i>Model Configuration
-                                </h6>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="llmModel" class="form-label">LLM Model</label>
-                                        <select class="form-select" id="llmModel">
-                                            <option value="gpt-4">GPT-4</option>
-                                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
-                                            <option value="claude-3">Claude-3</option>
-                                            <option value="local-llm">Local LLM</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="embeddingModel" class="form-label">Embedding Model</label>
-                                        <select class="form-select" id="embeddingModel">
-                                            <option value="text-embedding-ada-002" selected>OpenAI Ada-002</option>
-                                            <option value="all-MiniLM-L6-v2">Sentence Transformers</option>
-                                            <option value="local-embeddings">Local Embeddings</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="retrieverType" class="form-label">Retriever Type</label>
-                                        <select class="form-select" id="retrieverType">
-                                            <option value="dense" selected>Dense Retrieval</option>
-                                            <option value="sparse">Sparse Retrieval</option>
-                                            <option value="hybrid">Hybrid Retrieval</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="includeSources" checked>
-                                <label class="form-check-label small" for="includeSources">
-                                    Include source citations
-                                </label>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-custom w-100">
-                                <i class="fas fa-search me-2"></i>Ask Question
-                            </button>
-                        </form>
-
-                        <hr class="my-3">
-
-                        <h6 class="fw-bold mb-2">Quick Questions</h6>
-                        <div class="text-center">
-                            <button class="quick-question-btn" onclick="loadQuickQuestion('What containers are suitable for storing sulfuric acid?')">
-                                Container compatibility
-                            </button>
-                            <button class="quick-question-btn" onclick="loadQuickQuestion('What safety measures are required for chemical storage?')">
-                                Safety measures
-                            </button>
-                            <button class="quick-question-btn" onclick="loadQuickQuestion('How to test container corrosion resistance?')">
-                                Corrosion testing
-                            </button>
-                            <button class="quick-question-btn" onclick="loadQuickQuestion('What are the regulatory requirements for hazardous chemical storage?')">
-                                Regulatory requirements
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Query History -->
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-history me-2"></i>Query History</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="query-history">
-                            <!-- Query history will be loaded here -->
-                        </div>
-                    </div>
-                </div>
+            <!-- Navigation Tabs -->
+            <div class="col-12 mb-3">
+                <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="rag-tab" data-bs-toggle="tab" data-bs-target="#rag-content" type="button" role="tab">
+                            <i class="fas fa-search me-2"></i>RAG System
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="nlp-tab" data-bs-toggle="tab" data-bs-target="#nlp-content" type="button" role="tab">
+                            <i class="fas fa-brain me-2"></i>NLP Analysis
+                        </button>
+                    </li>
+                </ul>
             </div>
 
-            <!-- Right Panel: Results + Upload -->
-            <div class="col-lg-6">
-                <div class="feature-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5><i class="fas fa-lightbulb me-2"></i>AI Response</h5>
-                        <div>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="clearResults()">
-                                <i class="fas fa-trash"></i> Clear
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="exportResults()">
-                                <i class="fas fa-download"></i> Export
-                            </button>
+            <!-- Tab Content -->
+            <div class="tab-content" id="mainTabContent">
+                <!-- RAG System Tab -->
+                <div class="tab-pane fade show active" id="rag-content" role="tabpanel">
+                    <div class="row">
+                        <!-- Left Panel: Query + History -->
+                        <div class="col-lg-6">
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-question-circle me-2"></i>Ask Questions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="queryForm">
+                                        <div class="mb-3">
+                                            <label for="questionInput" class="form-label">Your Question</label>
+                                            <textarea class="form-control" id="questionInput" rows="3" placeholder="Ask about safety information, container compatibility, or regulatory requirements..."></textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="contextType" class="form-label">Context Type</label>
+                                                <select class="form-select" id="contextType">
+                                                    <option value="all">All Documents</option>
+                                                    <option value="safety_data_sheet">Safety Data Sheets</option>
+                                                    <option value="technical_specification">Technical Specifications</option>
+                                                    <option value="test_protocol">Test Protocols</option>
+                                                    <option value="regulatory">Regulatory Documents</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="maxResults" class="form-label">Max Results</label>
+                                                <input type="number" class="form-control" id="maxResults" value="5" min="1" max="20">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Model Configuration Section -->
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold mb-2 text-primary">
+                                                <i class="fas fa-cogs me-2"></i>Model Configuration
+                                            </h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="llmModel" class="form-label">LLM Model</label>
+                                                    <select class="form-select" id="llmModel">
+                                                        <option value="gpt-4">GPT-4</option>
+                                                        <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+                                                        <option value="claude-3">Claude-3</option>
+                                                        <option value="local-llm">Local LLM</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="embeddingModel" class="form-label">Embedding Model</label>
+                                                    <select class="form-select" id="embeddingModel">
+                                                        <option value="text-embedding-ada-002" selected>OpenAI Ada-002</option>
+                                                        <option value="all-MiniLM-L6-v2">Sentence Transformers</option>
+                                                        <option value="local-embeddings">Local Embeddings</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="retrieverType" class="form-label">Retriever Type</label>
+                                                    <select class="form-select" id="retrieverType">
+                                                        <option value="dense" selected>Dense Retrieval</option>
+                                                        <option value="sparse">Sparse Retrieval</option>
+                                                        <option value="hybrid">Hybrid Retrieval</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="includeSources" checked>
+                                            <label class="form-check-label small" for="includeSources">
+                                                Include source citations
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-custom w-100">
+                                            <i class="fas fa-search me-2"></i>Ask Question
+                                        </button>
+                                    </form>
+
+                                    <hr class="my-3">
+
+                                    <h6 class="fw-bold mb-2">Quick Questions</h6>
+                                    <div class="text-center">
+                                        <button class="quick-question-btn" onclick="loadQuickQuestion('What containers are suitable for storing sulfuric acid?')">
+                                            Container compatibility
+                                        </button>
+                                        <button class="quick-question-btn" onclick="loadQuickQuestion('What safety measures are required for chemical storage?')">
+                                            Safety measures
+                                        </button>
+                                        <button class="quick-question-btn" onclick="loadQuickQuestion('How to test container corrosion resistance?')">
+                                            Corrosion testing
+                                        </button>
+                                        <button class="quick-question-btn" onclick="loadQuickQuestion('What are the regulatory requirements for hazardous chemical storage?')">
+                                            Regulatory requirements
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Query History -->
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-history me-2"></i>Query History</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="query-history">
+                                        <!-- Query history will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="query-results">
-                            <div class="ai-response-area">
-                                <div class="text-center text-muted">
-                                    <i class="fas fa-robot fa-3x mb-2" style="color: #3498db;"></i>
-                                    <h6>Ready to Answer</h6>
-                                    <p class="small mb-0">Ask a question to get AI-powered safety insights</p>
+
+                        <!-- Right Panel: Results + Upload -->
+                        <div class="col-lg-6">
+                            <div class="feature-card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-lightbulb me-2"></i>AI Response</h5>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="clearResults()">
+                                            <i class="fas fa-trash"></i> Clear
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="exportResults()">
+                                            <i class="fas fa-download"></i> Export
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="query-results">
+                                        <div class="ai-response-area">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-robot fa-3x mb-2" style="color: #3498db;"></i>
+                                                <h6>Ready to Answer</h6>
+                                                <p class="small mb-0">Ask a question to get AI-powered safety insights</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Upload -->
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-upload me-2"></i>Upload Document</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="uploadForm" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="documentTitle" class="form-label">Document Title</label>
+                                            <input type="text" class="form-control" id="documentTitle" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="documentDescription" class="form-label">Description</label>
+                                            <textarea class="form-control" id="documentDescription" rows="2" required></textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="documentType" class="form-label">Document Type</label>
+                                                <select class="form-select" id="documentType" required>
+                                                    <option value="">Select type...</option>
+                                                    <option value="safety_data_sheet">Safety Data Sheet</option>
+                                                    <option value="technical_specification">Technical Specification</option>
+                                                    <option value="test_protocol">Test Protocol</option>
+                                                    <option value="regulatory">Regulatory Document</option>
+                                                    <option value="risk_assessment">Risk Assessment</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="documentTags" class="form-label">Tags</label>
+                                                <input type="text" class="form-control" id="documentTags" placeholder="sulfuric_acid, corrosive, storage">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="documentFile" class="form-label">Document File</label>
+                                            <div class="upload-area" onclick="document.getElementById('documentFile').click()">
+                                                <i class="fas fa-cloud-upload-alt fa-1x text-muted mb-1"></i>
+                                                <p class="mb-0 small">Click to browse or drag and drop</p>
+                                                <p class="text-muted small mb-0">Supported: PDF, DOCX, TXT</p>
+                                                <input type="file" id="documentFile" accept=".pdf,.docx,.txt" style="display: none;" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-custom w-100">
+                                            <i class="fas fa-upload me-2"></i>Upload Document
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Document Upload -->
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-upload me-2"></i>Upload Document</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="uploadForm" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="documentTitle" class="form-label">Document Title</label>
-                                <input type="text" class="form-control" id="documentTitle" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="documentDescription" class="form-label">Description</label>
-                                <textarea class="form-control" id="documentDescription" rows="2" required></textarea>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="documentType" class="form-label">Document Type</label>
-                                    <select class="form-select" id="documentType" required>
-                                        <option value="">Select type...</option>
-                                        <option value="safety_data_sheet">Safety Data Sheet</option>
-                                        <option value="technical_specification">Technical Specification</option>
-                                        <option value="test_protocol">Test Protocol</option>
-                                        <option value="regulatory">Regulatory Document</option>
-                                        <option value="risk_assessment">Risk Assessment</option>
-                                    </select>
+                <!-- NLP Analysis Tab -->
+                <div class="tab-pane fade" id="nlp-content" role="tabpanel">
+                    <div class="row">
+                        <!-- Left Panel: Text Input + Analysis Options -->
+                        <div class="col-lg-6">
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-brain me-2"></i>Text Analysis</h5>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="documentTags" class="form-label">Tags</label>
-                                    <input type="text" class="form-control" id="documentTags" placeholder="sulfuric_acid, corrosive, storage">
+                                <div class="card-body">
+                                    <form id="nlpForm">
+                                        <div class="mb-3">
+                                            <label for="textInput" class="form-label">Input Text</label>
+                                            <textarea class="form-control" id="textInput" rows="6" placeholder="Paste your text here for entity extraction and relationship analysis..."></textarea>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold mb-2 text-primary">
+                                                <i class="fas fa-cogs me-2"></i>Analysis Options
+                                            </h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="nlpModel" class="form-label">NLP Model</label>
+                                                    <select class="form-select" id="nlpModel">
+                                                        <option value="spacy" selected>spaCy</option>
+                                                        <option value="nltk">NLTK</option>
+                                                        <option value="transformers">Transformers</option>
+                                                        <option value="custom">Custom Model</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="language" class="form-label">Language</label>
+                                                    <select class="form-select" id="language">
+                                                        <option value="en" selected>English</option>
+                                                        <option value="es">Spanish</option>
+                                                        <option value="fr">French</option>
+                                                        <option value="de">German</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold mb-2">Analysis Types</h6>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="entityExtraction" checked>
+                                                <label class="form-check-label" for="entityExtraction">
+                                                    Entity Recognition (Chemicals, Hazards, Equipment)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="relationshipExtraction" checked>
+                                                <label class="form-check-label" for="relationshipExtraction">
+                                                    Relationship Extraction
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="sentimentAnalysis">
+                                                <label class="form-check-label" for="sentimentAnalysis">
+                                                    Sentiment Analysis
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="safetyExtraction" checked>
+                                                <label class="form-check-label" for="safetyExtraction">
+                                                    Safety Information Extraction
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary btn-custom w-100">
+                                            <i class="fas fa-brain me-2"></i>Analyze Text
+                                        </button>
+                                    </form>
+
+                                    <hr class="my-3">
+
+                                    <h6 class="fw-bold mb-2">Sample Texts</h6>
+                                    <div class="text-center">
+                                        <button class="quick-question-btn" onclick="loadSampleText('Sulfuric acid is a highly corrosive chemical that requires special storage containers made of polyethylene or glass.')">
+                                            Chemical Safety
+                                        </button>
+                                        <button class="quick-question-btn" onclick="loadSampleText('The container must be tested for corrosion resistance before storing hazardous materials.')">
+                                            Container Testing
+                                        </button>
+                                        <button class="quick-question-btn" onclick="loadSampleText('Proper ventilation and PPE are required when handling toxic substances.')">
+                                            Safety Procedures
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="documentFile" class="form-label">Document File</label>
-                                <div class="upload-area" onclick="document.getElementById('documentFile').click()">
-                                    <i class="fas fa-cloud-upload-alt fa-1x text-muted mb-1"></i>
-                                    <p class="mb-0 small">Click to browse or drag and drop</p>
-                                    <p class="text-muted small mb-0">Supported: PDF, DOCX, TXT</p>
-                                    <input type="file" id="documentFile" accept=".pdf,.docx,.txt" style="display: none;" required>
+                        </div>
+
+                        <!-- Right Panel: Analysis Results -->
+                        <div class="col-lg-6">
+                            <div class="feature-card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-chart-bar me-2"></i>Analysis Results</h5>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="clearNLPResults()">
+                                            <i class="fas fa-trash"></i> Clear
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="exportNLPResults()">
+                                            <i class="fas fa-download"></i> Export
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="nlp-results">
+                                        <div class="ai-response-area">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-brain fa-3x mb-2" style="color: #3498db;"></i>
+                                                <h6>Ready for Analysis</h6>
+                                                <p class="small mb-0">Input text to extract entities and relationships</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-custom w-100">
-                                <i class="fas fa-upload me-2"></i>Upload Document
-                            </button>
-                        </form>
+
+                            <!-- File Upload for NLP -->
+                            <div class="feature-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-file-text me-2"></i>Upload Text File</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="nlpUploadForm" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="nlpFile" class="form-label">Text File</label>
+                                            <div class="upload-area" onclick="document.getElementById('nlpFile').click()">
+                                                <i class="fas fa-cloud-upload-alt fa-1x text-muted mb-1"></i>
+                                                <p class="mb-0 small">Click to browse or drag and drop</p>
+                                                <p class="text-muted small mb-0">Supported: TXT, DOCX, PDF</p>
+                                                <input type="file" id="nlpFile" accept=".txt,.docx,.pdf" style="display: none;">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-custom w-100">
+                                            <i class="fas fa-upload me-2"></i>Upload & Analyze
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
