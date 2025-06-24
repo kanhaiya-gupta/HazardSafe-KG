@@ -20,6 +20,18 @@
             border-radius: 0 0 10px 10px;
         }
         
+        .validation-header h1 i {
+            color: #27ae60;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         .validation-header h1 {
             font-size: 2.2rem;
             font-weight: 600;
@@ -269,7 +281,7 @@
     <!-- Header Section -->
     <div class="validation-header">
         <div class="container text-center">
-            <h1><i class="fas fa-shield-check me-2"></i>Validation Engine</h1>
+            <h1><i class="fas fa-check-circle me-3"></i>Validation Engine</h1>
             <p class="lead">SHACL-based validation rules for data quality assurance and safety compliance verification</p>
         </div>
     </div>
