@@ -211,6 +211,23 @@
         .nav-tabs .nav-link.active:hover {
             color: white;
         }
+        
+        /* Model Configuration Styling */
+        .model-config-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .config-option {
+            margin-bottom: 15px;
+        }
+        
+        .config-option:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -368,12 +385,12 @@
                                         </div>
                                         
                                         <!-- Model Configuration Section -->
-                                        <div class="mb-3">
-                                            <h6 class="fw-bold mb-2 text-primary">
+                                        <div class="mb-4 model-config-section">
+                                            <h6 class="fw-bold mb-3 text-primary">
                                                 <i class="fas fa-cogs me-2"></i>Model Configuration
                                             </h6>
-                                            <div class="row">
-                                                <div class="col-md-4">
+                                            <div class="row g-3">
+                                                <div class="col-md-4 config-option">
                                                     <label for="llmModel" class="form-label">LLM Model</label>
                                                     <select class="form-select" id="llmModel">
                                                         <option value="gpt-4">GPT-4</option>
@@ -382,7 +399,7 @@
                                                         <option value="local-llm">Local LLM</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-4 config-option">
                                                     <label for="embeddingModel" class="form-label">Embedding Model</label>
                                                     <select class="form-select" id="embeddingModel">
                                                         <option value="text-embedding-ada-002" selected>OpenAI Ada-002</option>
@@ -390,7 +407,7 @@
                                                         <option value="local-embeddings">Local Embeddings</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-4 config-option">
                                                     <label for="retrieverType" class="form-label">Retriever Type</label>
                                                     <select class="form-select" id="retrieverType">
                                                         <option value="dense" selected>Dense Retrieval</option>
@@ -401,11 +418,14 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" id="includeSources" checked>
-                                            <label class="form-check-label small" for="includeSources">
-                                                Include source citations
-                                            </label>
+                                        <div class="mb-4">
+                                            <h6 class="fw-bold mb-2">Query Options</h6>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="includeSources" checked>
+                                                <label class="form-check-label" for="includeSources">
+                                                    Include source citations
+                                                </label>
+                                            </div>
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-custom w-100">
                                             <i class="fas fa-search me-2"></i>Ask Question
