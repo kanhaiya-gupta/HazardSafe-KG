@@ -10,6 +10,8 @@ A comprehensive software platform for structured analysis and processing of safe
 
 ## 🏗️ System Architecture & Flowcharts
 
+The HazardSafe-KG platform features a modular architecture with integrated components for comprehensive safety analysis. The system architecture is available as an interactive flowchart within the web application. 
+
 ![HazardSafe-KG System Architecture](docs/Architecture.gif)
 
 *Interactive system workflows and component interactions showing data flow and AI processing pipelines*
@@ -28,32 +30,6 @@ A comprehensive software platform for structured analysis and processing of safe
 
 ### Example Knowledge Graph
 ![Example KG](docs/assets/example-kg.jpeg)
-
-
-## 🏗️ Architecture Overview
-
-The HazardSafe-KG platform features a modular architecture with integrated components for comprehensive safety analysis. The system architecture is available as an interactive flowchart within the web application at `/system-flowchart`.
-
-```
-HazardSafe-KG/
-├── webapp/                 # FastAPI GUI hub
-│   ├── app.py             # Main FastAPI application
-│   ├── ontology/          # Ontology management module
-│   ├── kg/               # Knowledge Graph module
-│   ├── rag/              # RAG system module
-│   ├── validation/         # Validation rules module
-│   ├── quality/          # Quality assessment module
-│   ├── static/           # CSS, JS, and assets
-│   └── templates/        # HTML templates
-│       └── architecture/ # System architecture flowchart
-├── ontology/             # Ontology source files
-├── kg/                   # Knowledge Graph storage
-├── ingestion/            # Document ingestion pipeline
-├── validation/           # Safety validation rules
-├── data/                 # Data storage
-├── tests/                # Test suite
-└── main.py              # Application entry point
-```
 
 ## 🚀 Features
 
