@@ -1,392 +1,791 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HazardSafe-KG - AI-Powered Safety Analysis Platform</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        
-        .home-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            border-radius: 0 0 10px 10px;
-        }
-        
-        .home-header h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .home-header .lead {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 0;
-        }
-        
-        .stats-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
-            transition: box-shadow 0.2s ease;
-            margin-bottom: 15px;
-        }
-        
-        .stats-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        }
-        
-        .stats-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-            margin: 0 auto 10px;
-            background: #3498db;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
-            margin-bottom: 15px;
-            overflow: hidden;
-            transition: box-shadow 0.2s ease;
-        }
-        
-        .feature-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        }
-        
-        .feature-card .card-header {
-            background: #f8f9fa;
-            color: #2c3e50;
-            border-bottom: 1px solid #e9ecef;
-            padding: 15px 20px;
-        }
-        
-        .feature-card .card-header h5 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 1.5rem;
-            color: white;
-            background: #3498db;
-        }
-        
-        .feature-card h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #2c3e50;
-        }
-        
-        .feature-card p {
-            color: #6c757d;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-custom {
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-custom:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .section-title h2 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .section-title p {
-            font-size: 1rem;
-            color: #6c757d;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .text-muted {
-            color: #7f8c8d !important;
-        }
-        
-        .container {
-            max-width: 1400px;
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-shield-alt me-2"></i>
-                HazardSafe-KG
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/ontology">Ontology</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/kg">Knowledge Graph</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/nlp_rag">NLP & RAG System</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/validation">Validation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/quality">Quality</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/system-flowchart">Architecture</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
+{% block title %}HazardSafe Knowledge Graph Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
     <!-- Header Section -->
-    <div class="home-header">
-        <div class="container text-center">
-            <h2 class="mb-0" style="font-size: 1.8rem; font-weight: 500;">AI-Powered Knowledge Management for Hazardous Substances</h2>
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="main-title">
+                <i class="fas fa-shield-alt"></i>
+                HazardSafe Knowledge Graph Platform
+            </h1>
+            <p class="subtitle">
+                Comprehensive platform for chemical safety knowledge management and intelligent analysis
+            </p>
         </div>
     </div>
 
-    <div class="container">
-        <!-- Statistics Cards -->
-        <div class="row mb-3">
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="card-body text-center">
-                        <div class="stats-icon">
-                            <i class="fas fa-cube"></i>
-                        </div>
-                        <h4 class="text-primary mb-1" id="ontology-count">0</h4>
-                        <p class="text-muted mb-0 small">Ontology Classes</p>
+    <!-- Module Overview -->
+    <div class="modules-section">
+        <h2 class="section-title">
+            <i class="fas fa-compass"></i>
+            Platform Modules & Capabilities
+        </h2>
+        <div class="modules-grid">
+            <div class="module-card" data-module="ontology">
+                <div class="module-header" style="border-left: 4px solid var(--primary-color)">
+                    <div class="module-icon">
+                        <i class="fas fa-sitemap"></i>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="card-body text-center">
-                        <div class="stats-icon">
-                            <i class="fas fa-project-diagram"></i>
-                        </div>
-                        <h4 class="text-success mb-1" id="kg-nodes">0</h4>
-                        <p class="text-muted mb-0 small">Knowledge Graph Nodes</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="card-body text-center">
-                        <div class="stats-icon">
-                            <i class="fas fa-link"></i>
-                        </div>
-                        <h4 class="text-info mb-1" id="kg-relationships">0</h4>
-                        <p class="text-muted mb-0 small">Graph Relationships</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="card-body text-center">
-                        <div class="stats-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4 class="text-warning mb-1" id="documents">0</h4>
-                        <p class="text-muted mb-0 small">Documents Processed</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Platform Features -->
-        <div class="section-title">
-            <h2>Platform Features</h2>
-            <p>Comprehensive safety analysis through integrated AI and knowledge management</p>
-        </div>
-        
-        <div class="row">
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-brain me-2"></i>Ontology Management</h5>
-                    </div>
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
+                    <div class="module-title">
                         <h3>Ontology Management</h3>
-                        <p>Create and manage semantic ontologies for hazardous substances using OWL, RDF, and SHACL technologies.</p>
-                        <a href="/ontology" class="btn btn-primary btn-custom">
-                            <i class="fas fa-arrow-right me-2"></i>Manage
-                        </a>
                     </div>
                 </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-project-diagram me-2"></i>Knowledge Graph</h5>
-                    </div>
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-project-diagram"></i>
+                <div class="module-body">
+                    <p class="module-description">Define and manage knowledge structures for chemical safety, hazards, and regulatory compliance using RDF/OWL standards.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-file-code"></i>
+                            <span>RDF/OWL Support</span>
                         </div>
-                        <h3>Knowledge Graph</h3>
-                        <p>Interactive exploration and querying of safety data using Neo4j with advanced visualization capabilities.</p>
-                        <a href="/kg" class="btn btn-info btn-custom">
-                            <i class="fas fa-arrow-right me-2"></i>Explore
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-search me-2"></i>NLP & RAG System</h5>
-                    </div>
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
+                        <div class="submodule-item">
                             <i class="fas fa-search"></i>
+                            <span>SPARQL Queries</span>
                         </div>
-                        <h3>NLP & RAG System</h3>
-                        <p>AI-powered document analysis with entity extraction, relationship mining, and intelligent question answering.</p>
-                        <a href="/nlp_rag" class="btn btn-success btn-custom">
-                            <i class="fas fa-arrow-right me-2"></i>Analyze & Query
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-shield-check me-2"></i>Validation Engine</h5>
-                    </div>
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
+                        <div class="submodule-item">
                             <i class="fas fa-check-circle"></i>
+                            <span>Validation Engine</span>
                         </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-cube"></i>
+                            <span>Knowledge Entities</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-link"></i>
+                            <span>Relationships</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/ontology" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            Explore Ontology
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-card" data-module="kg">
+                <div class="module-header" style="border-left: 4px solid var(--accent-color)">
+                    <div class="module-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="module-title">
+                        <h3>Knowledge Graph</h3>
+                    </div>
+                </div>
+                <div class="module-body">
+                    <p class="module-description">Visualize and query complex relationships between chemicals, hazards, safety protocols, and regulatory requirements.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-database"></i>
+                            <span>Neo4j Integration</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-eye"></i>
+                            <span>Graph Visualization</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-search"></i>
+                            <span>Cypher Queries</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-node"></i>
+                            <span>Graph Nodes</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-route"></i>
+                            <span>Graph Edges</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/kg" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            Explore Knowledge Graph
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-card" data-module="nlp_rag">
+                <div class="module-header" style="border-left: 4px solid var(--success-color)">
+                    <div class="module-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="module-title">
+                        <h3>NLP & RAG System</h3>
+                    </div>
+                </div>
+                <div class="module-body">
+                    <p class="module-description">Intelligent document analysis, entity extraction, and question answering using advanced language models and retrieval systems.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-brain"></i>
+                            <span>Language Models</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Document Processing</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Question Answering</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-file"></i>
+                            <span>Documents</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-tags"></i>
+                            <span>Entities</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/nlp_rag" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            Explore NLP & RAG
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-card" data-module="validation">
+                <div class="module-header" style="border-left: 4px solid var(--warning-color)">
+                    <div class="module-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="module-title">
                         <h3>Validation Engine</h3>
-                        <p>SHACL-based validation rules for data quality assurance and safety compliance verification.</p>
-                        <a href="/validation" class="btn btn-warning btn-custom">
-                            <i class="fas fa-arrow-right me-2"></i>Validate
+                    </div>
+                </div>
+                <div class="module-body">
+                    <p class="module-description">Ensure data quality, consistency, and integrity across all knowledge graph components and data sources.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Data Integrity</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-sync"></i>
+                            <span>Consistency Checks</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Error Detection</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-check"></i>
+                            <span>Validation Rules</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-times"></i>
+                            <span>Issues Found</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/validation" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            Run Validation
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Second Row for Quality -->
-        <div class="row mt-3">
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-chart-line me-2"></i>Quality Assessment</h5>
+            <div class="module-card" data-module="quality">
+                <div class="module-header" style="border-left: 4px solid var(--info)">
+                    <div class="module-icon">
+                        <i class="fas fa-chart-bar"></i>
                     </div>
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
+                    <div class="module-title">
                         <h3>Quality Assessment</h3>
-                        <p>Comprehensive data quality analysis with metrics, reports, and recommendations for continuous improvement.</p>
-                        <a href="/quality" class="btn btn-secondary btn-custom">
-                            <i class="fas fa-arrow-right me-2"></i>Assess
+                    </div>
+                </div>
+                <div class="module-body">
+                    <p class="module-description">Comprehensive quality metrics and performance analysis for knowledge graph completeness, accuracy, and reliability.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Performance Metrics</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-percentage"></i>
+                            <span>Completeness</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Accuracy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <span>Quality Score</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Performance</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/quality" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            Assess Quality
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="feature-card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-rocket me-2"></i>Quick Actions</h5>
+            <div class="module-card" data-module="architecture">
+                <div class="module-header" style="border-left: 4px solid var(--secondary-color)">
+                    <div class="module-icon">
+                        <i class="fas fa-architecture"></i>
                     </div>
-                    <div class="card-body text-center">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <a href="/system-flowchart" class="btn btn-outline-primary btn-custom w-100 mb-2">
-                                    <i class="fas fa-sitemap me-2"></i>View Architecture
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="/ontology" class="btn btn-outline-success btn-custom w-100 mb-2">
-                                    <i class="fas fa-brain me-2"></i>Start with Ontology
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="/kg" class="btn btn-outline-info btn-custom w-100 mb-2">
-                                    <i class="fas fa-project-diagram me-2"></i>Explore Knowledge Graph
-                                </a>
-                            </div>
+                    <div class="module-title">
+                        <h3>System Architecture</h3>
+                    </div>
+                </div>
+                <div class="module-body">
+                    <p class="module-description">Explore the comprehensive system architecture, data flow, and integration patterns of the HazardSafe-KG platform.</p>
+                    
+                    <div class="submodules">
+                        <div class="submodule-item">
+                            <i class="fas fa-cogs"></i>
+                            <span>System Design</span>
                         </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Data Flow</span>
+                        </div>
+                        <div class="submodule-item">
+                            <i class="fas fa-plug"></i>
+                            <span>Integration</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group"></i>
+                            <span>System Layers</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-microchip"></i>
+                            <span>Components</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="/system-flowchart" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i>
+                            View Architecture
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
-        <div class="container text-center">
-            <p class="mb-0">&copy; 2024 HazardSafe-KG. AI-powered safety analysis platform for hazardous substances.</p>
+    <!-- Statistics Cards -->
+    <div class="stats-section">
+        <h2 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Platform Overview
+        </h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="entity-count">0</h3>
+                        <p>Knowledge Entities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="relationship-count">0</h3>
+                        <p>Relationships</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="document-count">0</h3>
+                        <p>Documents Processed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="safety-score">0%</h3>
+                        <p>Safety Compliance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Areas -->
+    <div class="applications-section">
+        <h2 class="section-title">
+            <i class="fas fa-microscope"></i>
+            Application Areas & Impact
+        </h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="application-card">
+                    <h4><i class="fas fa-flask"></i> Chemical Safety Management</h4>
+                    <p>Comprehensive chemical hazard identification, classification, and safety protocol management for industrial and laboratory environments.</p>
+                    <ul>
+                        <li>Hazard identification and classification</li>
+                        <li>Safety data sheet management</li>
+                        <li>Chemical compatibility analysis</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="application-card">
+                    <h4><i class="fas fa-gavel"></i> Regulatory Compliance</h4>
+                    <p>Ensure adherence to international safety standards and regulatory requirements for chemical handling and storage.</p>
+                    <ul>
+                        <li>OSHA compliance monitoring</li>
+                        <li>REACH regulation support</li>
+                        <li>GHS classification system</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="application-card">
+                    <h4><i class="fas fa-industry"></i> Industrial Safety</h4>
+                    <p>Advanced safety management for chemical manufacturing, storage, and transportation operations.</p>
+                    <ul>
+                        <li>Process safety management</li>
+                        <li>Risk assessment and mitigation</li>
+                        <li>Emergency response planning</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="application-card">
+                    <h4><i class="fas fa-graduation-cap"></i> Research & Development</h4>
+                    <p>Support academic and industrial research in chemical safety, knowledge representation, and intelligent systems.</p>
+                    <ul>
+                        <li>Knowledge graph research</li>
+                        <li>NLP for chemical documents</li>
+                        <li>Safety prediction models</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="features-section">
+        <h2 class="section-title">
+            <i class="fas fa-star"></i>
+            Key Platform Features
+        </h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-sitemap"></i>
+                        <h4>Ontology Engineering</h4>
+                    </div>
+                    <p>Advanced ontology management with RDF/OWL support, SPARQL querying, and comprehensive validation capabilities.</p>
+                    <div class="feature-stats">
+                        <span class="badge badge-primary">RDF/OWL</span>
+                        <span class="badge badge-success">SPARQL</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-brain"></i>
+                        <h4>Intelligent NLP</h4>
+                    </div>
+                    <p>Advanced natural language processing with entity extraction, relationship mapping, and intelligent question answering.</p>
+                    <div class="feature-stats">
+                        <span class="badge badge-primary">Entity Extraction</span>
+                        <span class="badge badge-info">RAG System</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <i class="fas fa-project-diagram"></i>
+                        <h4>Graph Analytics</h4>
+                    </div>
+                    <p>Powerful graph database integration with Neo4j, complex querying, and interactive visualization capabilities.</p>
+                    <div class="feature-stats">
+                        <span class="badge badge-primary">Neo4j</span>
+                        <span class="badge badge-warning">Cypher</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Guide -->
+    <div class="quick-start-section">
+        <h2 class="section-title">
+            <i class="fas fa-rocket"></i>
+            Getting Started
+        </h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Explore Ontology</h4>
+                    <p>Start with the ontology module to understand the knowledge structure and define chemical safety concepts</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Build Knowledge Graph</h4>
+                    <p>Create and populate the knowledge graph with chemical entities, hazards, and safety relationships</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Process Documents</h4>
+                    <p>Use NLP & RAG to extract knowledge from safety documents and regulatory materials</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>Validate & Assess</h4>
+                    <p>Run validation checks and quality assessments to ensure data integrity and system performance</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Capabilities -->
+    <div class="capabilities-section">
+        <h2 class="section-title">
+            <i class="fas fa-tools"></i>
+            Platform Capabilities
+        </h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h4>Modular Architecture</h4>
+                    <p>Extensible design with purpose-specific modules that can be easily added or modified for different use cases.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Interactive Visualization</h4>
+                    <p>Real-time graph visualization, performance metrics, and result analysis with interactive dashboards.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h4>Data Integration</h4>
+                    <p>Seamless integration with multiple data sources including databases, documents, and external APIs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h4>Quality Assurance</h4>
+                    <p>Comprehensive validation and quality assessment framework ensuring data integrity and system reliability.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h4>Knowledge Sharing</h4>
+                    <p>Export knowledge graphs, share ontologies, and collaborate with the safety community.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4>Educational Resources</h4>
+                    <p>Comprehensive documentation, tutorials, and examples for learning knowledge graph concepts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section with Color Band -->
+    <footer class="footer-section mt-5">
+        <!-- Color Band -->
+        <div class="footer-color-band">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="footer-brand">
+                            <h4 class="text-white mb-2">
+                                <i class="fas fa-shield-alt"></i>
+                                HazardSafe-KG
+                            </h4>
+                            <p class="text-light mb-0">Comprehensive chemical safety knowledge management platform</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="footer-stats">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <h5 class="text-white mb-1">1,247</h5>
+                                        <small class="text-light">Entities</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <h5 class="text-white mb-1">3,891</h5>
+                                        <small class="text-light">Relationships</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <h5 class="text-white mb-1">98.5%</h5>
+                                        <small class="text-light">Safety Score</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="footer-actions">
+                            <a href="https://github.com/kanhaiya-gupta/HazardSafe-KG" target="_blank" class="btn btn-outline-light btn-sm me-2">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                            <a href="http://localhost:8000/docs" target="_blank" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-code"></i> API Docs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Footer Content -->
+        <div class="footer-main bg-dark text-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h6 class="text-primary mb-3">Platform Modules</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="/ontology" class="text-light text-decoration-none">
+                                    <i class="fas fa-sitemap me-2"></i>Ontology Management
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="/kg" class="text-light text-decoration-none">
+                                    <i class="fas fa-project-diagram me-2"></i>Knowledge Graph
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="/nlp_rag" class="text-light text-decoration-none">
+                                    <i class="fas fa-search me-2"></i>NLP & RAG System
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="/validation" class="text-light text-decoration-none">
+                                    <i class="fas fa-check-circle me-2"></i>Validation Engine
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="/quality" class="text-light text-decoration-none">
+                                    <i class="fas fa-chart-bar me-2"></i>Quality Assessment
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h6 class="text-success mb-3">Application Areas</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-flask text-success me-2"></i>Chemical Safety Management
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-gavel text-success me-2"></i>Regulatory Compliance
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-industry text-success me-2"></i>Industrial Safety
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-graduation-cap text-success me-2"></i>Research & Development
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-shield-alt text-success me-2"></i>Risk Assessment
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h6 class="text-info mb-3">Technology Stack</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-server text-info me-2"></i>FastAPI Framework
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-database text-info me-2"></i>Neo4j Graph Database
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-brain text-info me-2"></i>OpenAI/Anthropic LLMs
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-project-diagram text-info me-2"></i>D3.js Visualization
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-code text-info me-2"></i>Bootstrap UI Framework
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h6 class="text-warning mb-3">Quick Links</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="/system-flowchart" class="text-light text-decoration-none">
+                                    <i class="fas fa-architecture text-warning me-2"></i>System Architecture
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="/docs" class="text-light text-decoration-none">
+                                    <i class="fas fa-book text-warning me-2"></i>Documentation
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#helpModal" class="text-light text-decoration-none">
+                                    <i class="fas fa-question-circle text-warning me-2"></i>Help & Support
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" class="text-light text-decoration-none">
+                                    <i class="fas fa-info-circle text-warning me-2"></i>About Platform
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="https://github.com/kanhaiya-gupta/HazardSafe-KG/issues" target="_blank" class="text-light text-decoration-none">
+                                    <i class="fas fa-bug text-warning me-2"></i>Report Issues
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr class="my-4 border-secondary">
+                
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-0 text-muted">
+                            &copy; 2024 HazardSafe Knowledge Graph Platform. All rights reserved. | 
+                            <span class="text-primary">Version 1.0.0</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="social-links">
+                            <a href="https://github.com/kanhaiya-gupta/HazardSafe-KG" target="_blank" class="text-muted me-3">
+                                <i class="fab fa-github fa-lg"></i>
+                            </a>
+                            <a href="http://localhost:8000/docs" target="_blank" class="text-muted me-3">
+                                <i class="fas fa-code fa-lg"></i>
+                            </a>
+                            <a href="/system-flowchart" class="text-muted">
+                                <i class="fas fa-architecture fa-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
-</body>
-</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for module cards
+    const moduleCards = document.querySelectorAll('.module-card');
+    moduleCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const module = this.dataset.module;
+            if (module === 'architecture') {
+                window.location.href = '/system-flowchart';
+            } else {
+                window.location.href = `/${module}`;
+            }
+        });
+    });
+
+    // Add hover effects
+    moduleCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+        });
+    });
+
+    // Simulate loading statistics (replace with actual API calls)
+    setTimeout(() => {
+        document.getElementById('entity-count').textContent = '1,247';
+        document.getElementById('relationship-count').textContent = '3,891';
+        document.getElementById('document-count').textContent = '156';
+        document.getElementById('safety-score').textContent = '98.5%';
+    }, 1000);
+});
+</script>
+{% endblock %}
